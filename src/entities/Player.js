@@ -28,6 +28,12 @@ class Player extends Phaser.Sprite {
     this.onDone = onDone;
   }
 
+  mineTile (tile, onDone) {
+    // hmmm - maybe move "onDone" as an option on State.
+    // when you change states can have "success", "fail"...
+    onDone();
+  }
+
   update () {
     const {animations} = this;
     this.updatePath();

@@ -62,28 +62,42 @@ class World extends Phaser.State {
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
 
-  onDone (xt, yt) {
-    const tile = this.map.layers[1].data[yt][xt].index;
-    if ([1201, 1202, 1203].includes(tile)) {
-      this.grid[yt][xt] = 0;
-      this.map.putTile(-1, xt, yt, 1);
+  onDone (e, xt, yt) {
 
-      let done = false;
-      this.mobs.forEach(m => {
-        if (done) return;
-        const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
-        if (dist < 250) {
-          done = true;
-          this.makePath(m, this.player.x + 16, this.player.y + 16);
+    if (!e instanceof Player) {
+      return;
+    }
+
+    const tile = this.map.layers[1].data[yt][xt];
+    if ([1201, 1202, 1203].includes(tile.index)) {
+
+      const idx = tile.index;
+      e.mineTile(tile, () => {
+
+        this.grid[yt][xt] = 0;
+        this.map.putTile(-1, xt, yt, 1);
+
+        let done = false;
+        this.mobs.forEach(m => {
+          if (done) return;
+          const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
+          if (dist < 250) {
+            done = true;
+            this.makePath(m, this.player.x + 16, this.player.y + 16);
+          }
+        });
+
+        if (idx === 1201) {
+          this.inventory.addItem("wood");
         }
-      });
+        if (idx === 1202) {
+          this.inventory.addItem("coal");
+        }
+        if (idx === 1203) {
+          this.inventory.addItem("stone");
+        }
 
-      if (tile === 1201) {
-        this.inventory.addItem("wood");
-      }
-      if (tile === 1202) {
-        this.inventory.addItem("coal");
-      }
+      });
     }
   }
 
@@ -125,7 +139,7 @@ class World extends Phaser.State {
           // don't go in water...
           path = path.slice(0, -1);
         }
-        e.setPath(path, () => this.onDone(xt, yt, oldx));
+        e.setPath(path, () => this.onDone(e, xt, yt, oldx));
       });
     this.estar.calculate();
     this.grid[yt][xt] = oldx;

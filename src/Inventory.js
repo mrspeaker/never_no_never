@@ -6,33 +6,45 @@ class Inventory extends Phaser.Group {
     super(game);
     game.add.existing(this);
 
-    const box = this.create(game.width / 2 - 144, game.height - 100, "inventory");
+    const box = this.create(
+      game.width / 2 - 144,
+      game.height - 100, "inventory");
     box.fixedToCamera = true;
     this.box = box;
 
     this.items = [];
+    this.selected = -1;
+
+  }
+
+  selectItem (idx) {
+    this.selected = idx;
 
   }
 
   addItem (item) {
 
+    // Move me eh.
+    const items = {
+      "wood": { name: "wood", frame: 0 },
+      "coal": { name: "coal", frame: 1 },
+      "stone": { name: "stone", frame: 2 }
+    };
+
     const s = this.create(0, 0, "icons");
     s.fixedToCamera = true;
-    s.frame = item === "wood" ? 0 : 1;
+    s.frame = items[item].frame;
+
+    console.log(items[item], s.frame);
 
     this.items.push({
-      item: item,
+      item: items[item],
       sprite: s,
       value: 1
     });
 
-    s.cameraOffset.x = this.box.cameraOffset.x + (((this.items.length - 1) % 6) * 48) + 4;
+    s.cameraOffset.x = this.box.cameraOffset.x + (((this.items.length - 1) % 6) * 48) + 6;
     s.cameraOffset.y = this.box.cameraOffset.y + (((this.items.length - 1) / 6 | 0) * 48) + 8;
-
-//    s.cameraOffset.y =
-    //s.x = this.box.x + 100;// this.box.x + (this.items.length * 12) + 6;
-    //s.y = this.box.y; //this.box.y + 8;
-
   }
 
 }
