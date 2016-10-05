@@ -1,4 +1,5 @@
 const Phaser = window.Phaser;
+import Blocks from "./Blocks";
 
 class Inventory extends Phaser.Group {
 
@@ -14,31 +15,22 @@ class Inventory extends Phaser.Group {
 
     this.items = [];
     this.selected = -1;
+    // TODO: add gfx for selected
 
   }
 
   selectItem (idx) {
     this.selected = idx;
-
+    // TODO: move gfx for selected
   }
 
   addItem (item) {
-
-    // Move me eh.
-    const items = {
-      "wood": { name: "wood", frame: 0 },
-      "coal": { name: "coal", frame: 1 },
-      "stone": { name: "stone", frame: 2 }
-    };
-
     const s = this.create(0, 0, "icons");
     s.fixedToCamera = true;
-    s.frame = items[item].frame;
-
-    console.log(items[item], s.frame);
+    s.frame = Blocks[item].frame;
 
     this.items.push({
-      item: items[item],
+      item: Blocks[item],
       sprite: s,
       value: 1
     });

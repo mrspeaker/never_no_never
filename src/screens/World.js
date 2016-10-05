@@ -68,6 +68,12 @@ class World extends Phaser.State {
       return;
     }
 
+    const recipes = {
+      "wood": {
+
+      }
+    };
+
     const tile = this.map.layers[1].data[yt][xt];
     if ([1201, 1202, 1203].includes(tile.index)) {
 
