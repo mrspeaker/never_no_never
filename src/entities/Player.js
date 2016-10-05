@@ -1,19 +1,26 @@
 const Phaser = window.Phaser;
+import State from "../State";
 
 class Player extends Phaser.Sprite {
+
+  walkSpeed = 3;
 
   constructor (game, xtile, ytile) {
     super(game, xtile * 32, ytile * 32, "peeps");
     game.add.existing(this);
 
-    const walkSpeed = 5;
-    this.animations.add("walk_right", [0, 1, 2, 1], walkSpeed, true);
-    this.animations.add("walk_left", [3, 4, 5, 4], walkSpeed, true);
-    this.animations.add("walk_up", [6, 7], walkSpeed, true);
-    this.animations.add("walk_down", [8, 9], walkSpeed, true);
+    this.state = new State("idle");
+    this.direction = new State("right");
+
+    const animSpeed = this.walkSpeed * 1.5;
+    this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
+    this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
+    this.animations.add("walk_up", [6, 7], animSpeed, true);
+    this.animations.add("walk_down", [8, 9], animSpeed, true);
 
     this.path = [];
     this.current = null;
+    this.lastPath = null;
   }
 
   setPath (path, onDone) {
@@ -22,21 +29,43 @@ class Player extends Phaser.Sprite {
   }
 
   update () {
-    let {current, path} = this;
     const {animations} = this;
+    this.updatePath();
 
-    if (!path.length) {
-      animations.stop();
+    if (this.state.isFirst()) {
+      const state = this.state.get();
+      const dir = this.direction.get();
+      if (state === "idle") {
+        animations.stop();
+      }
+      else if (state === "walking") {
+        animations.play(`walk_${dir}`);
+      }
     }
+  }
+
+  updatePath () {
+    let {current, path, walkSpeed} = this;
+
     if (!current && path.length) {
-      animations.play("walk_down");
+      this.state.set("walking");
       this.current = path[0];
       this.path = path.slice(1);
+      if (this.lastPath) {
+        if (this.current.y !== this.lastPath.y) {
+          this.direction.set(this.current.y < this.lastPath.y ? "up" : "down");
+        }
+        else if (this.current.x !== this.lastPath.x) {
+          this.direction.set(this.current.x < this.lastPath.x ? "left" : "right");
+        }
+      }
     }
-    const walkSpeed = 3;
+
     if (current) {
       const xo = current.x * 32 - this.x;
       const yo = current.y * 32 - this.y;
+
+      // TODO: replace this "jittery" path follower with current vs lastPath
       let xx = 0;
       let yy = 0;
       if (Math.abs(xo) >= walkSpeed * 0.65) {
@@ -53,14 +82,14 @@ class Player extends Phaser.Sprite {
       this.y += yy;
 
       if (Phaser.Math.distance(this.x, this.y, current.x * 32, current.y * 32) < walkSpeed) {
+        this.lastPath = this.current;
         this.current = null;
         if (!this.path.length) {
           this.onDone();
+          this.state.set("idle");
         }
       }
     }
-
-
   }
 }
 

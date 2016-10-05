@@ -15,20 +15,7 @@ class World extends Phaser.State {
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
   }
 
-  create (game) {
-    game.stage.backgroundColor = "#787878";
-    const map = game.add.tilemap("world");
-    map.addTilesetImage("tiles", "tiles");
-    map.addTilesetImage("mid", "mid");
-    const layer = map.createLayer("base");
-    map.createLayer("mid");
-    layer.resizeWorld();
-
-    this.map = map;
-    this.layer = layer;
-
-    this.mobs = game.add.group();
-
+  mapToGrid (map) {
     const h = map.layers[0].data.length;
     const w = map.layers[0].data[0].length;
     const grid = [];
@@ -45,23 +32,34 @@ class World extends Phaser.State {
       }
       grid.push(gridRow);
     }
+    return grid;
+  }
 
-    var estar = new EasyStar.js();
-    this.grid = grid;
-    estar.setGrid(grid);
+  create (game) {
+    game.stage.backgroundColor = "#787878";
+    const map = this.map = game.add.tilemap("world");
+    map.addTilesetImage("tiles", "tiles");
+    map.addTilesetImage("mid", "mid");
+    const layer = this.layer = map.createLayer("base");
+    map.createLayer("mid");
+    layer.resizeWorld();
+
+    this.grid = this.mapToGrid(map);
+    const estar = this.estar = new EasyStar.js();
+    estar.setGrid(this.grid);
     estar.enableDiagonals();
+    estar.disableCornerCutting();
     estar.setAcceptableTiles([0, 3]);
-    this.estar = estar;
 
     this.player = new Player(game, 1, 1);
     this.inventory = new Inventory(game);
 
-    this.mobs.add(new Zombie(game, 6, 4));
-    this.mobs.add(new Zombie(game, 19, 16));
-    this.mobs.add(new Zombie(game, 2, 28));
+    const mobs = this.mobs = game.add.group();
+    mobs.add(new Zombie(game, 6, 4));
+    mobs.add(new Zombie(game, 19, 16));
+    mobs.add(new Zombie(game, 2, 28));
 
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
-
   }
 
   onDone (xt, yt) {
@@ -115,7 +113,7 @@ class World extends Phaser.State {
     const oldx = this.grid[yt][xt];
     this.grid[yt][xt] = 3;
     this.estar.setGrid(this.grid);
-    const lastNotWalkable = oldx !== 0;
+    // const lastNotWalkable = oldx !== 0;
     this.estar.findPath(
       (e.x + 16) / 32 | 0,
       (e.y + 16) / 32 | 0,
