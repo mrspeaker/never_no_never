@@ -85,13 +85,13 @@ class Inventory extends Phaser.Group {
   }
 
   selectItem (idx) {
-    this.selected = idx;
-    if (idx < 0 || idx > this.maxSlots) {
+    if (this.selected === idx || idx < 0 || idx > this.maxSlots) {
       // hide
+      this.selected = -1;
       this.selectedUI.visible = false;
       return;
     }
-
+    this.selected = idx;
     this.selectedUI.visible = true;
     this.selectedUI.cameraOffset.x = this.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW);
     this.selectedUI.cameraOffset.y = this.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
