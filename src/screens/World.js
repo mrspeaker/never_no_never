@@ -13,6 +13,9 @@ class World extends Phaser.State {
     game.load.image("inventory", "res/inventory.png");
     game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
+    game.load.spritesheet("inv-selection", "res/inv-selection.png", 48, 48);
+    game.load.image("bmaxFont", "res/bmax.png");
+    game.load.image("bmaxFont4x", "res/bmax4x.png");
   }
 
   mapToGrid (map) {
@@ -51,13 +54,25 @@ class World extends Phaser.State {
     estar.disableCornerCutting();
     estar.setAcceptableTiles([0, 3]);
 
-    this.player = new Player(game, 1, 1);
+    this.player = new Player(game, 11, 16);
     this.inventory = new Inventory(game);
 
     const mobs = this.mobs = game.add.group();
     mobs.add(new Zombie(game, 6, 4));
     mobs.add(new Zombie(game, 19, 16));
     mobs.add(new Zombie(game, 2, 28));
+
+    //new RetroFont(game, key, characterWidth, characterHeight, chars, charsPerRow, xSpacing, ySpacing, xOffset, yOffset)
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
+    const bmaxFont4 = game.add.retroFont("bmaxFont4x", 32, 32, chars, 13, 0, 0, 0, 0);
+    bmaxFont4.text = "bmax!";
+    const titleImg = game.add.image(10, 10, bmaxFont4);
+    titleImg.fixedToCamera = true;
+
+    const bmaxFont = this.fonty = game.add.retroFont("bmaxFont", 8, 8, chars, 13, 0, 0, 0, 0);
+    bmaxFont.text = "0123456789!? You bet.";
+    const img = game.add.image(10, 50, bmaxFont);
+    img.fixedToCamera = true;
 
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
@@ -67,6 +82,8 @@ class World extends Phaser.State {
     if (!e instanceof Player) {
       return;
     }
+
+    this.fonty.text = `${xt},${yt}`;
 
     const recipes = {
       "wood": {
@@ -111,6 +128,9 @@ class World extends Phaser.State {
     if (game.input.activePointer.isDown) {
       const xo = game.input.activePointer.worldX;
       const yo = game.input.activePointer.worldY;
+      if (yo > this.inventory.box.y) {
+        return;
+      }
 
       if (xo > game.camera.x + game.width - 50 && yo > game.camera.y + game.height - 50) {
         game.state.start("World");
