@@ -18,6 +18,8 @@ class Player extends Phaser.Sprite {
     this.animations.add("walk_up", [6, 7], animSpeed, true);
     this.animations.add("walk_down", [8, 9], animSpeed, true);
 
+    this.animations.add("mine", [6, 3], animSpeed * 2, true);
+
     this.path = [];
     this.current = null;
     this.lastPath = null;
@@ -26,17 +28,36 @@ class Player extends Phaser.Sprite {
   setPath (path, onDone) {
     this.path = path.slice(1);
     this.onDone = onDone;
+    this.state.set("walking");
   }
 
-  mineTile (tile, onDone) {
-    // hmmm - maybe move "onDone" as an option on State.
-    // when you change states can have "success", "fail"...
-    onDone();
+  mineTile (block, tile, toolEfficiency, onDone) {
+    this.state.set("mining", {
+      onMined: onDone,
+      toolEfficiency,
+      hardness: block.hardness
+    });
+  }
+
+  stopWalking () {
+    this.state.set("idle");
   }
 
   update () {
     const {animations} = this;
-    this.updatePath();
+
+    const current = this.state.get();
+    if (current === "walking") {
+      this.updatePath();
+    }
+    if (current === "mining") {
+      const {data} = this.state;
+      const {toolEfficiency, onMined} = data;
+      if ((data.hardness -= (0.1 * toolEfficiency)) <= 0) {
+        onMined();
+        this.state.set("idle");
+      }
+    }
 
     if (this.state.isFirst()) {
       const state = this.state.get();
@@ -47,6 +68,9 @@ class Player extends Phaser.Sprite {
       else if (state === "walking") {
         animations.play(`walk_${dir}`);
       }
+      else if (state === "mining") {
+        animations.play("mine");
+      }
     }
   }
 
@@ -54,7 +78,7 @@ class Player extends Phaser.Sprite {
     let {current, path, walkSpeed} = this;
 
     if (!current && path.length) {
-      this.state.set("walking");
+      //this.state.set("walking");
       this.current = path[0];
       this.path = path.slice(1);
       if (this.lastPath) {
@@ -92,7 +116,6 @@ class Player extends Phaser.Sprite {
         this.current = null;
         if (!this.path.length) {
           this.onDone();
-          this.state.set("idle");
         }
       }
     }

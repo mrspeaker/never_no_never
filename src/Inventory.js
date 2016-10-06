@@ -96,6 +96,10 @@ class Inventory extends Phaser.Group {
     this.selectedUI.cameraOffset.y = this.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
   }
 
+  holding () {
+    return this.selected < 0 ? null : this.slots[this.selected].item;
+  }
+
   addItem (item, amount = 1) {
     const firstMatch = this.slots.find(s => s.item === item);
     const firstEmpty = this.slots.find(s => s.item === null);

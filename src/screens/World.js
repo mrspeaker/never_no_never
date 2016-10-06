@@ -5,6 +5,7 @@ import Zombie from "../entities/Zombie";
 import Inventory from "../Inventory";
 import Blocks from "../Blocks";
 import BLOCK_TYPE from "../BLOCK_TYPE";
+import Items from "../Items";
 
 class World extends Phaser.State {
 
@@ -43,7 +44,6 @@ class World extends Phaser.State {
       }
       grid.push(gridRow);
     }
-    console.log(grid);
     return grid;
   }
 
@@ -65,6 +65,8 @@ class World extends Phaser.State {
 
     this.player = new Player(game, 11, 16);
     this.inventory = new Inventory(game);
+    this.inventory.addItem("wood_pick");
+    this.inventory.addItem("wood_sword");
 
     const mobs = this.mobs = game.add.group();
     mobs.add(new Zombie(game, 6, 4));
@@ -87,8 +89,7 @@ class World extends Phaser.State {
   }
 
   onDone (e, xt, yt) {
-
-    if (!e instanceof Player) {
+    if (!(e instanceof Player)) {
       return;
     }
 
@@ -97,24 +98,28 @@ class World extends Phaser.State {
     const tile = this.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
     if (block.mine) {
-      e.mineTile(tile, () => {
+      // Chase player
+      let done = false;
+      this.mobs.forEach(m => {
+        if (done) return;
+        const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
+        if (dist < 250) {
+          done = true;
+          this.makePath(m, this.player.x + 16, this.player.y + 16);
+        }
+      });
+
+      const tool = this.inventory.holding();
+      const toolEfficiency = (tool && Items[tool].efficiency) || 1;
+      e.mineTile(block, tile, toolEfficiency, () => {
         this.grid[yt][xt] = 0;
         this.map.putTile(Blocks.clear.tile, xt, yt, 1);
-
-        let done = false;
-        this.mobs.forEach(m => {
-          if (done) return;
-          const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
-          if (dist < 250) {
-            done = true;
-            this.makePath(m, this.player.x + 16, this.player.y + 16);
-          }
-        });
-
         block.yields.forEach(({name, amount}) => {
           this.inventory.addItem(name, amount);
         });
       });
+    } else {
+      e.stopWalking();
     }
   }
 

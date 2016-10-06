@@ -1,9 +1,9 @@
 export default {
   "clear": { name: "clear", tile: -1, walk: true },
   "empty": { name: "empty", tile: 0, walk: true },
-  "tree": { name: "tree", tile: 257, mine: true, yields: [{name: "wood", amount: 1}]},
-  "coalOre": { name: "coalOre", tile: 258, mine: true, yields: [{name: "coal", amount: 1}]},
-  "stoneOre": { name: "stoneOre", tile: 259, mine: true, yields: [{name: "stone", amount: 1}]},
+  "tree": { name: "tree", tile: 257, mine: true, hardness: 10, yields: [{name: "wood", amount: 1}]},
+  "coal_ore": { name: "coal_ore", tile: 258, mine: true, hardness: 20, yields: [{name: "coal", amount: 1}]},
+  "stone_ore": { name: "stone_ore", tile: 259, mine: true, hardness: 50, yields: [{name: "stone", amount: 1}]},
   "water": { name: "water", tile: 2, mine: false },
   "sand": { name: "sand", tile: 1, mine: false, walk: true },
 

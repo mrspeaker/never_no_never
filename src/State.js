@@ -2,15 +2,13 @@ class State {
   constructor (state = "") {
     this.set(state);
   }
-  set (state, blnNoReset) {
-    if (blnNoReset && state === this.state) {
-      return;
-    }
+  set (state, data) {
     this.last = this.state;
     this.state = state;
     this.count = 0;
     this.time = Date.now();
     this.first = true;
+    this.data = data;
   }
   isFirst () {
     const isFirst = this.first;
