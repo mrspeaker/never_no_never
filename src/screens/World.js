@@ -16,6 +16,8 @@ class World extends Phaser.State {
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 48, 48);
     game.load.image("bmaxFont", "res/bmax.png");
     game.load.image("bmaxFont4x", "res/bmax4x.png");
+    game.load.image("bmaxFont9", "res/bmax9.png");
+    game.load.image("bmaxFont9x4", "res/bmax9x4.png");
   }
 
   mapToGrid (map) {
@@ -64,12 +66,12 @@ class World extends Phaser.State {
 
     //new RetroFont(game, key, characterWidth, characterHeight, chars, charsPerRow, xSpacing, ySpacing, xOffset, yOffset)
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
-    const bmaxFont4 = game.add.retroFont("bmaxFont4x", 32, 32, chars, 13, 0, 0, 0, 0);
+    const bmaxFont4 = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
     bmaxFont4.text = "bmax!";
     const titleImg = game.add.image(10, 10, bmaxFont4);
     titleImg.fixedToCamera = true;
 
-    const bmaxFont = this.fonty = game.add.retroFont("bmaxFont", 8, 8, chars, 13, 0, 0, 0, 0);
+    const bmaxFont = this.fonty = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
     bmaxFont.text = "0123456789!? You bet.";
     const img = game.add.image(10, 50, bmaxFont);
     img.fixedToCamera = true;

@@ -14,7 +14,7 @@ class Slot extends Phaser.Group {
     icon.frame = 0;
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
-    const amountUI = this.amountUI = game.add.retroFont("bmaxFont", 8, 8, chars, 13, 0, 0, 0, 0);
+    const amountUI = this.amountUI = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
     amountUI.text = "";
     const img = this.create(24, 24, amountUI);
     img.fixedToCamera = true;
