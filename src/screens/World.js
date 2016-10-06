@@ -3,6 +3,8 @@ import EasyStar from "easystarjs";
 import Player from "../entities/Player";
 import Zombie from "../entities/Zombie";
 import Inventory from "../Inventory";
+import Blocks from "../Blocks";
+import BLOCK_TYPE from "../BLOCK_TYPE";
 
 class World extends Phaser.State {
 
@@ -11,32 +13,37 @@ class World extends Phaser.State {
     game.load.image("tiles", "res/tiles.png");
     game.load.image("mid", "res/mid.png");
     game.load.image("inventory", "res/inventory.png");
+    game.load.image("bmaxFont9", "res/bmax9.png");
+    game.load.image("bmaxFont9x4", "res/bmax9x4.png");
     game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 48, 48);
-    game.load.image("bmaxFont", "res/bmax.png");
-    game.load.image("bmaxFont4x", "res/bmax4x.png");
-    game.load.image("bmaxFont9", "res/bmax9.png");
-    game.load.image("bmaxFont9x4", "res/bmax9x4.png");
   }
 
   mapToGrid (map) {
     const h = map.layers[0].data.length;
     const w = map.layers[0].data[0].length;
+
     const grid = [];
     for (let y = 0; y < h; y++) {
       const gridRow = [];
       for (let x = 0; x < w; x++) {
-        let cell = 0;
+        let cell = BLOCK_TYPE.walkable;
         for (let i = 0; i < map.layers.length; i++) {
           const index = map.layers[i].data[y][x].index;
-          if ([2].includes(index)) cell = 1;
-          else if ([1201, 1202, 1203].includes(index)) cell = 2;
+          const block = Blocks.getByTileId(index);
+          if (!block.walk && !block.mine) {
+            cell = BLOCK_TYPE.solid;
+          }
+          else if (block.mine) {
+            cell = BLOCK_TYPE.mineable;
+          }
         }
         gridRow.push(cell);
       }
       grid.push(gridRow);
     }
+    console.log(grid);
     return grid;
   }
 
@@ -87,20 +94,12 @@ class World extends Phaser.State {
 
     this.fonty.text = `${xt},${yt}`;
 
-    const recipes = {
-      "wood": {
-
-      }
-    };
-
     const tile = this.map.layers[1].data[yt][xt];
-    if ([1201, 1202, 1203].includes(tile.index)) {
-
-      const idx = tile.index;
+    const block = Blocks.getByTileId(tile.index);
+    if (block.mine) {
       e.mineTile(tile, () => {
-
         this.grid[yt][xt] = 0;
-        this.map.putTile(-1, xt, yt, 1);
+        this.map.putTile(Blocks.clear.tile, xt, yt, 1);
 
         let done = false;
         this.mobs.forEach(m => {
@@ -112,16 +111,9 @@ class World extends Phaser.State {
           }
         });
 
-        if (idx === 1201) {
-          this.inventory.addItem("wood");
-        }
-        if (idx === 1202) {
-          this.inventory.addItem("coal");
-        }
-        if (idx === 1203) {
-          this.inventory.addItem("stone");
-        }
-
+        block.yields.forEach(({name, amount}) => {
+          this.inventory.addItem(name, amount);
+        });
       });
     }
   }
@@ -130,12 +122,11 @@ class World extends Phaser.State {
     if (game.input.activePointer.isDown) {
       const xo = game.input.activePointer.worldX;
       const yo = game.input.activePointer.worldY;
-      if (yo > this.inventory.box.y) {
-        return;
-      }
-
       if (xo > game.camera.x + game.width - 50 && yo > game.camera.y + game.height - 50) {
         game.state.start("World");
+        return;
+      }
+      if (yo > this.inventory.box.y) {
         return;
       }
       this.makePath(
@@ -153,9 +144,8 @@ class World extends Phaser.State {
     if (xt <= -1 || yt <= -1) return;
 
     const oldx = this.grid[yt][xt];
-    this.grid[yt][xt] = 3;
+    this.grid[yt][xt] = BLOCK_TYPE.tmpwalkable;
     this.estar.setGrid(this.grid);
-    // const lastNotWalkable = oldx !== 0;
     this.estar.findPath(
       (e.x + 16) / 32 | 0,
       (e.y + 16) / 32 | 0,
@@ -163,7 +153,7 @@ class World extends Phaser.State {
       yt,
       path => {
         if (!path) { return; }
-        if (oldx === 1) {
+        if (oldx === BLOCK_TYPE.solid) {
           // don't go in water...
           path = path.slice(0, -1);
         }

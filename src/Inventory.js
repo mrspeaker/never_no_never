@@ -1,9 +1,9 @@
 const Phaser = window.Phaser;
-import Blocks from "./Blocks";
+import Items from "./Items";
 
 class Slot extends Phaser.Group {
 
-  block = null;
+  item = null;
   amount = 0;
 
   constructor (game) {
@@ -20,9 +20,9 @@ class Slot extends Phaser.Group {
     img.fixedToCamera = true;
   }
 
-  setBlock (block, amount = 1) {
-    this.block = block;
-    this.icon.frame = Blocks[block].icon;
+  setItem (item, amount = 1) {
+    this.item = item;
+    this.icon.frame = Items[item].icon;
     this.amount = amount;
     this.amountUI.text = amount + "";
   }
@@ -30,8 +30,8 @@ class Slot extends Phaser.Group {
   addItem (amount = 1) {
     this.amount += amount;
     if (this.amount <= 0) {
-      this.block = null;
-      this.icon.frame = Blocks.empty.icon;
+      this.item = null;
+      this.icon.frame = Items.empty.icon;
       this.amountUI.text = "";
       return;
     }
@@ -86,7 +86,6 @@ class Inventory extends Phaser.Group {
 
   selectItem (idx) {
     if (this.selected === idx || idx < 0 || idx > this.maxSlots) {
-      // hide
       this.selected = -1;
       this.selectedUI.visible = false;
       return;
@@ -97,15 +96,15 @@ class Inventory extends Phaser.Group {
     this.selectedUI.cameraOffset.y = this.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
   }
 
-  addItem (item) {
-    const firstMatch = this.slots.find(s => s.block === item);
-    const firstEmpty = this.slots.find(s => s.block === null);
+  addItem (item, amount = 1) {
+    const firstMatch = this.slots.find(s => s.item === item);
+    const firstEmpty = this.slots.find(s => s.item === null);
 
     if (firstMatch) {
-      firstMatch.addItem(1);
+      firstMatch.addItem(amount);
     }
     else if (firstEmpty) {
-      firstEmpty.setBlock(item, 1);
+      firstEmpty.setItem(item, amount);
     }
     else {
       // No room!
