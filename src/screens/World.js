@@ -65,8 +65,10 @@ class World extends Phaser.State {
 
     this.player = new Player(game, 11, 16);
     this.inventory = new Inventory(game);
-    this.inventory.addItem("wood_pick");
+    // this.inventory.addItem({name:"wood_pick", hp: 10, hardness: 5});
+    // this.inventory.addItem({name:"wood_sword", hp: 10, hardness: 2});
     this.inventory.addItem("wood_sword");
+    this.inventory.addItem("wood_pick");
 
     const mobs = this.mobs = game.add.group();
     mobs.add(new Zombie(game, 6, 4));
