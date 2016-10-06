@@ -92,7 +92,7 @@ class Inventory extends Phaser.Group {
     }
     this.selected = idx;
     this.selectedUI.visible = true;
-    this.selectedUI.cameraOffset.x = this.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW);
+    this.selectedUI.cameraOffset.x = this.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
     this.selectedUI.cameraOffset.y = this.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
   }
 

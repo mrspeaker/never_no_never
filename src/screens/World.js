@@ -18,7 +18,7 @@ class World extends Phaser.State {
     game.load.image("bmaxFont9x4", "res/bmax9x4.png");
     game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
-    game.load.spritesheet("inv-selection", "res/inv-selection.png", 48, 48);
+    game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 52);
   }
 
   mapToGrid (map) {
