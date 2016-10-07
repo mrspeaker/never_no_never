@@ -143,6 +143,12 @@ class World extends Phaser.State {
     }
   }
 
+  setMode (mode) {
+    this.mode = mode;
+    const isCrafting = this.mode == "crafting";
+    this.ui.craft.visible = isCrafting;
+  }
+
   update (game) {
     switch (this.mode) {
     case "exploring":
@@ -153,16 +159,17 @@ class World extends Phaser.State {
       break;
     }
 
+    this.mobs.forEach(m => {
+      const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
+      if (dist < 32) {
+        this.reset(game);
+      }
+    });
+
     if (Math.random() < 0.005) {
       const mob = this.mobs.getRandom();
       this.makePath(mob, this.player.x + 16, this.player.y + 16, true);
     }
-  }
-
-  setMode (mode) {
-    this.mode = mode;
-    const isCrafting = this.mode == "crafting";
-    this.ui.craft.visible = isCrafting;
   }
 
   updateExploring (game) {
