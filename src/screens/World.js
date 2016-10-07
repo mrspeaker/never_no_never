@@ -125,7 +125,7 @@ class World extends Phaser.State {
         const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
         if (dist < 300) {
           done = true;
-          this.makePath(m, this.player.x + 16, this.player.y + 16);
+          this.makePath(m, this.player.x + 16, this.player.y + 16, true);
         }
       });
 
@@ -155,7 +155,7 @@ class World extends Phaser.State {
 
     if (Math.random() < 0.005) {
       const mob = this.mobs.getRandom();
-      this.makePath(mob, this.player.x + 16, this.player.y + 16);
+      this.makePath(mob, this.player.x + 16, this.player.y + 16, true);
     }
   }
 
@@ -200,7 +200,7 @@ class World extends Phaser.State {
     }
   }
 
-  makePath (e, tx, ty) {
+  makePath (e, tx, ty, dropLast) {
     const layer = this.layer;
     const xt = layer.getTileX(tx);
     const yt = layer.getTileY(ty);
@@ -216,7 +216,7 @@ class World extends Phaser.State {
       yt,
       path => {
         if (!path) { return; }
-        if (oldx === BLOCK_TYPE.solid) {
+        if (oldx === BLOCK_TYPE.solid || dropLast) {
           // don't go in water...
           path = path.slice(0, -1);
         }
