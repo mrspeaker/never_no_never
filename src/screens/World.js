@@ -18,9 +18,14 @@ class World extends Phaser.State {
     game.load.image("inventory", "res/inventory.png");
     game.load.image("bmaxFont9", "res/bmax9.png");
     game.load.image("bmaxFont9x4", "res/bmax9x4.png");
+    game.load.image("crafting", "res/crafting-back.png");
     game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 52);
+  }
+
+  reset (game) {
+    game.state.start("World");
   }
 
   mapToGrid (map) {
@@ -67,6 +72,7 @@ class World extends Phaser.State {
 
     this.player = new Player(game, 11, 16);
     this.inventory = new Inventory(game);
+
     // this.inventory.addItem({name:"wood_pick", hp: 10, hardness: 5});
     // this.inventory.addItem({name:"wood_sword", hp: 10, hardness: 2});
     this.inventory.addItem("wood_sword");
@@ -79,15 +85,25 @@ class World extends Phaser.State {
 
     //new RetroFont(game, key, characterWidth, characterHeight, chars, charsPerRow, xSpacing, ySpacing, xOffset, yOffset)
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
-    const bmaxFont4 = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
-    bmaxFont4.text = "bmax!";
-    const titleImg = game.add.image(10, 10, bmaxFont4);
-    titleImg.fixedToCamera = true;
+    const title = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
+    title.text = "bmax!";
+    game.add.image(10, 10, title).fixedToCamera = true;
 
-    const bmaxFont = this.fonty = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
-    bmaxFont.text = "0123456789!? You bet.";
-    const img = game.add.image(10, 50, bmaxFont);
-    img.fixedToCamera = true;
+    const subtitle = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
+    subtitle.text = "0123456789!? You bet.";
+    game.add.image(10, 50, subtitle).fixedToCamera = true;
+
+    const craft = game.add.image(0, 0, "crafting");
+    craft.fixedToCamera = true;
+    craft.visible = false;
+    craft.inputEnabled = true;
+    craft.events.onInputDown.add(() => this.setMode("exploring"), this);
+
+    this.ui = {
+      title,
+      subtitle,
+      craft,
+    };
 
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
@@ -97,7 +113,7 @@ class World extends Phaser.State {
       return;
     }
 
-    this.fonty.text = `${xt},${yt}`;
+    this.ui.subtitle.text = `${xt},${yt}`;
 
     const tile = this.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
@@ -107,7 +123,7 @@ class World extends Phaser.State {
       this.mobs.forEach(m => {
         if (done) return;
         const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
-        if (dist < 250) {
+        if (dist < 300) {
           done = true;
           this.makePath(m, this.player.x + 16, this.player.y + 16);
         }
@@ -128,48 +144,59 @@ class World extends Phaser.State {
   }
 
   update (game) {
-    this.fonty.text = this.mode;
-
-    if (this.mode === "exploring") {
+    switch (this.mode) {
+    case "exploring":
       this.updateExploring(game);
-    }
-    else {
+      break;
+    case "crafting":
       this.updateCrafting(game);
+      break;
     }
 
+    if (Math.random() < 0.005) {
+      const mob = this.mobs.getRandom();
+      this.makePath(mob, this.player.x + 16, this.player.y + 16);
+    }
+  }
+
+  setMode (mode) {
+    this.mode = mode;
+    const isCrafting = this.mode == "crafting";
+    this.ui.craft.visible = isCrafting;
   }
 
   updateExploring (game) {
-    if (game.input.activePointer.isDown) {
-      const xo = game.input.activePointer.worldX;
-      const yo = game.input.activePointer.worldY;
-      const bottomOfTouchable = this.inventory.box.y - 10;
-      if (yo > bottomOfTouchable) {
-        if (xo > game.camera.x + game.width - 50) {
-          game.state.start("World");
+    const pointer = game.input.activePointer;
+    const {x, y, worldX, worldY} = pointer;
+
+    if (pointer.isDown) {
+      const bottomOfTouchable = this.inventory.ui.box.cameraOffset.y - 5;
+      if (y > bottomOfTouchable) {
+        if (x > game.width - 50) {
+          this.reset(game);
         }
-        if (xo < game.camera.x + 50) {
-          // Crafting...
-          this.mode = "crafting";
+        if (x < 50) {
+          this.setMode("crafting");
         }
         return;
       }
 
+      // Walk to spot
       this.makePath(
         this.player,
-        xo,
-        yo
+        worldX,
+        worldY
       );
     }
   }
 
   updateCrafting (game) {
     if (game.input.activePointer.isDown) {
-      const xo = game.input.activePointer.worldX;
-      const yo = game.input.activePointer.worldY;
-      if (yo < game.camera.y + 50) {
-        this.mode = "exploring";
-      }
+      // const xo = game.input.activePointer.worldX;
+      // const yo = game.input.activePointer.worldY;
+      // if (yo < game.camera.y + 50) {
+      //   this.setMode("exploring");
+      // }
     }
   }
 

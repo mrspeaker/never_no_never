@@ -9,33 +9,38 @@ class Slot extends Phaser.Group {
   constructor (game) {
     super(game);
 
-    const icon = this.icon = this.create(0, 0, "icons");
+    const icon = this.create(0, 0, "icons");
     icon.fixedToCamera = true;
     icon.frame = 0;
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
-    const amountUI = this.amountUI = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
-    amountUI.text = "";
-    const img = this.create(24, 24, amountUI);
-    img.fixedToCamera = true;
+    const amount = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
+    this.create(24, 24, amount).fixedToCamera = true;
+
+    this.ui = {
+      icon,
+      amount
+    };
+
+
   }
 
   setItem (item, amount = 1) {
     this.item = item;
-    this.icon.frame = Items[item].icon;
+    this.ui.icon.frame = Items[item].icon;
     this.amount = amount;
-    this.amountUI.text = amount + "";
+    this.ui.amount.text = amount + "";
   }
 
   addItem (amount = 1) {
     this.amount += amount;
     if (this.amount <= 0) {
       this.item = null;
-      this.icon.frame = Items.empty.icon;
-      this.amountUI.text = "";
+      this.ui.icon.frame = Items.empty.icon;
+      this.ui.amount.text = "";
       return;
     }
-    this.amountUI.text = this.amount + "";
+    this.ui.amount.text = this.amount + "";
   }
 
 }
@@ -55,25 +60,30 @@ class Inventory extends Phaser.Group {
       game.width / 2 - 144,
       game.height - 100, "inventory");
     box.fixedToCamera = true;
-    this.box = box;
     box.inputEnabled = true;
     box.events.onInputDown.add(this.onClick, this);
+
+    const selected = this.create(
+      box.x,
+      box.y,
+      "inv-selection"
+    );
+    selected.fixedToCamera = true;
 
     this.slots = Array
       .from(new Array(this.maxSlots), (_, i) => {
         var s = new Slot(game);
-        s.x = this.box.x + ((i % this.slotsPerRow) * this.slotTileW) + 6;
-        s.y = this.box.y + ((i / this.slotsPerRow | 0) * this.slotTileH) + 8;
+        s.x = box.x + ((i % this.slotsPerRow) * this.slotTileW) + 6;
+        s.y = box.y + ((i / this.slotsPerRow | 0) * this.slotTileH) + 8;
         return s;
       })
       .map(s => this.add(s));
 
-    this.selectedUI = this.create(
-      this.box.x,
-      this.box.y,
-      "inv-selection"
-    );
-    this.selectedUI.fixedToCamera = true;
+    this.ui = {
+      box,
+      selected
+    };
+
     this.selectItem(-1);
 
   }
@@ -87,13 +97,13 @@ class Inventory extends Phaser.Group {
   selectItem (idx) {
     if (this.selected === idx || idx < 0 || idx > this.maxSlots) {
       this.selected = -1;
-      this.selectedUI.visible = false;
+      this.ui.selected.visible = false;
       return;
     }
     this.selected = idx;
-    this.selectedUI.visible = true;
-    this.selectedUI.cameraOffset.x = this.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
-    this.selectedUI.cameraOffset.y = this.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
+    this.ui.selected.visible = true;
+    this.ui.selected.cameraOffset.x = this.ui.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
+    this.ui.selected.cameraOffset.y = this.ui.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
   }
 
   holding () {
