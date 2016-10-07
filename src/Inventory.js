@@ -11,7 +11,7 @@ class Slot extends Phaser.Group {
 
     const icon = this.create(0, 0, "icons");
     icon.fixedToCamera = true;
-    icon.frame = 0;
+    icon.frame = Items.empty.icon;
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
     const amount = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
@@ -35,6 +35,7 @@ class Slot extends Phaser.Group {
   addItem (amount = 1) {
     this.amount += amount;
     if (this.amount <= 0) {
+      this.amount = 0;
       this.item = null;
       this.ui.icon.frame = Items.empty.icon;
       this.ui.amount.text = "";
@@ -107,7 +108,7 @@ class Inventory extends Phaser.Group {
   }
 
   holding () {
-    return this.selected < 0 ? null : this.slots[this.selected].item;
+    return this.selected < 0 ? null : this.slots[this.selected];
   }
 
   addItem (item, amount = 1) {

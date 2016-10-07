@@ -130,8 +130,9 @@ class World extends Phaser.State {
       });
 
       const tool = this.inventory.holding();
-      const toolEfficiency = (tool && Items[tool].efficiency) || 1;
+      const toolEfficiency = (tool.item && Items[tool.item].efficiency) || 1;
       e.mineTile(block, tile, toolEfficiency, () => {
+        tool.addItem(-1);
         this.grid[yt][xt] = 0;
         this.map.putTile(Blocks.clear.tile, xt, yt, 1);
         block.yields.forEach(({name, amount}) => {
