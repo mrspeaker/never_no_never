@@ -207,7 +207,7 @@ class World extends Phaser.State {
     }
   }
 
-  makePath (e, tx, ty, dropLast) {
+  makePath (e, tx, ty) {
     const layer = this.layer;
     const xt = layer.getTileX(tx);
     const yt = layer.getTileY(ty);
@@ -223,7 +223,7 @@ class World extends Phaser.State {
       yt,
       path => {
         if (!path) { return; }
-        if (oldx === BLOCK_TYPE.solid || dropLast) {
+        if (oldx === BLOCK_TYPE.solid) {
           // don't go in water...
           path = path.slice(0, -1);
         }
