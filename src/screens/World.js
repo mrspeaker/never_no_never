@@ -55,7 +55,7 @@ class World extends Phaser.State {
   }
 
   create (game) {
-    game.stage.backgroundColor = "#787878";
+    game.stage.backgroundColor = "#343436";
     const map = this.map = game.add.tilemap("world");
     map.addTilesetImage("tiles", "tiles");
     map.addTilesetImage("mid", "mid");
@@ -83,8 +83,7 @@ class World extends Phaser.State {
     mobs.add(new Zombie(game, 19, 16));
     mobs.add(new Zombie(game, 2, 28));
 
-    //new RetroFont(game, key, characterWidth, characterHeight, chars, charsPerRow, xSpacing, ySpacing, xOffset, yOffset)
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
     const title = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
     title.text = "bmax!";
     game.add.image(10, 10, title).fixedToCamera = true;
@@ -108,17 +107,17 @@ class World extends Phaser.State {
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
 
-  onDone (e, xt, yt) {
+  onPathWalked (e, xt, yt) {
     if (!(e instanceof Player)) {
       return;
     }
-
     this.ui.subtitle.text = `${xt},${yt}`;
 
     const tile = this.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
     if (block.mine) {
-      // Chase player
+
+      // Closest zombie chase player
       let done = false;
       this.mobs.forEach(m => {
         if (done) return;
@@ -130,7 +129,9 @@ class World extends Phaser.State {
       });
 
       const tool = this.inventory.holding();
-      const toolEfficiency = (tool.item && Items[tool.item].efficiency) || 1;
+      const toolEfficiency = (tool && tool.item && Items[tool.item].efficiency) || 1;
+
+      // TODO: handle nicer: player -> tool -> target block
       e.mineTile(block, tile, toolEfficiency, () => {
         this.grid[yt][xt] = 0;
         this.map.putTile(Blocks.clear.tile, xt, yt, 1);
@@ -162,6 +163,7 @@ class World extends Phaser.State {
       break;
     }
 
+    // Collision detect
     this.mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
       if (dist < 32) {
@@ -169,6 +171,7 @@ class World extends Phaser.State {
       }
     });
 
+    // Randomly run towards player
     if (Math.random() < 0.005) {
       const mob = this.mobs.getRandom();
       this.makePath(mob, this.player.x + 16, this.player.y + 16, true);
@@ -222,15 +225,14 @@ class World extends Phaser.State {
     this.estar.findPath(
       (e.x + 16) / 32 | 0,
       (e.y + 16) / 32 | 0,
-      xt,
-      yt,
+      xt, yt,
       path => {
         if (!path) { return; }
         if (oldx === BLOCK_TYPE.solid) {
           // don't go in water...
           path = path.slice(0, -1);
         }
-        e.setPath(path, () => this.onDone(e, xt, yt, oldx));
+        e.setPath(path, () => this.onPathWalked(e, xt, yt));
       });
     this.estar.calculate();
     this.grid[yt][xt] = oldx;

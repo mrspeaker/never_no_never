@@ -13,7 +13,7 @@ class Slot extends Phaser.Group {
     icon.fixedToCamera = true;
     icon.frame = Items.empty.icon;
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\"$                  0123456789";
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
     const amount = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
     this.create(24, 24, amount).fixedToCamera = true;
 
@@ -22,26 +22,27 @@ class Slot extends Phaser.Group {
       amount
     };
 
+  }
 
+  updateUI () {
+    const {item, amount, ui} = this;
+    ui.icon.frame = !item ? Items.empty.icon : Items[item].icon;
+    ui.amount.text = (amount < 2 ? "" : amount) + "";
   }
 
   setItem (item, amount = 1) {
     this.item = item;
-    this.ui.icon.frame = Items[item].icon;
     this.amount = amount;
-    this.ui.amount.text = amount + "";
+    this.updateUI();
   }
 
   addItem (amount = 1) {
     this.amount += amount;
     if (this.amount <= 0) {
-      this.amount = 0;
       this.item = null;
-      this.ui.icon.frame = Items.empty.icon;
-      this.ui.amount.text = "";
-      return;
+      this.amount = 0;
     }
-    this.ui.amount.text = this.amount + "";
+    this.updateUI();
   }
 
 }
@@ -64,11 +65,7 @@ class Inventory extends Phaser.Group {
     box.inputEnabled = true;
     box.events.onInputDown.add(this.onClick, this);
 
-    const selected = this.create(
-      box.x,
-      box.y,
-      "inv-selection"
-    );
+    const selected = this.create(box.x, box.y, "inv-selection");
     selected.fixedToCamera = true;
 
     this.slots = Array

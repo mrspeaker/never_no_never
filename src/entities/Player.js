@@ -47,16 +47,13 @@ class Player extends Phaser.Sprite {
     const {animations} = this;
 
     const current = this.state.get();
-    if (current === "walking") {
-      this.updatePath();
-    }
-    if (current === "mining") {
-      const {data} = this.state;
-      const {toolEfficiency, onMined} = data;
-      if ((data.hardness -= (0.1 * toolEfficiency)) <= 0) {
-        onMined();
-        this.state.set("idle");
-      }
+    switch (current) {
+    case "walking":
+      this.updateExploring();
+      break;
+    case "mining":
+      this.updateMining();
+      break;
     }
 
     if (this.state.isFirst()) {
@@ -74,7 +71,16 @@ class Player extends Phaser.Sprite {
     }
   }
 
-  updatePath () {
+  updateMining () {
+    const {data} = this.state;
+    const {toolEfficiency, onMined} = data;
+    if ((data.hardness -= (0.1 * toolEfficiency)) <= 0) {
+      onMined();
+      this.state.set("idle");
+    }
+  }
+
+  updateExploring () {
     let {current, path, walkSpeed} = this;
 
     if (!current && path.length) {
