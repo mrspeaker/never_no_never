@@ -9,6 +9,8 @@ import Items from "../Items";
 
 class World extends Phaser.State {
 
+  mode = "exploring";
+
   preload (game) {
     game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
     game.load.image("tiles", "res/tiles.png");
@@ -126,21 +128,48 @@ class World extends Phaser.State {
   }
 
   update (game) {
+    this.fonty.text = this.mode;
+
+    if (this.mode === "exploring") {
+      this.updateExploring(game);
+    }
+    else {
+      this.updateCrafting(game);
+    }
+
+  }
+
+  updateExploring (game) {
     if (game.input.activePointer.isDown) {
       const xo = game.input.activePointer.worldX;
       const yo = game.input.activePointer.worldY;
-      if (xo > game.camera.x + game.width - 50 && yo > game.camera.y + game.height - 50) {
-        game.state.start("World");
+      const bottomOfTouchable = this.inventory.box.y - 10;
+      if (yo > bottomOfTouchable) {
+        if (xo > game.camera.x + game.width - 50) {
+          game.state.start("World");
+        }
+        if (xo < game.camera.x + 50) {
+          // Crafting...
+          this.mode = "crafting";
+        }
         return;
       }
-      if (yo > this.inventory.box.y) {
-        return;
-      }
+
       this.makePath(
         this.player,
         xo,
         yo
       );
+    }
+  }
+
+  updateCrafting (game) {
+    if (game.input.activePointer.isDown) {
+      const xo = game.input.activePointer.worldX;
+      const yo = game.input.activePointer.worldY;
+      if (yo < game.camera.y + 50) {
+        this.mode = "exploring";
+      }
     }
   }
 
