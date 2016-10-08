@@ -5,6 +5,8 @@ class Zombie extends Phaser.Sprite {
   constructor (game, xtile, ytile) {
     super(game, xtile * 32, ytile * 32, "peeps");
 
+    console.log(arguments);
+
     const walkSpeed = 5;
     this.animations.add("walk_right", [20, 21, 22, 21], walkSpeed, true);
     this.animations.add("walk_left", [23, 24, 25, 24], walkSpeed, true);
@@ -20,6 +22,14 @@ class Zombie extends Phaser.Sprite {
   setPath (path, onDone) {
     this.path = path.slice(1);
     this.onDone = onDone;
+  }
+
+  reset (x, y) {
+    this.x = x * 32;
+    this.y = y * 32;
+    this.path = [];
+    this.current = null;
+    this.onDone && this.onDone();
   }
 
   update () {
@@ -60,8 +70,6 @@ class Zombie extends Phaser.Sprite {
         }
       }
     }
-
-
   }
 }
 

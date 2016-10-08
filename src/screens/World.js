@@ -1,12 +1,11 @@
 const Phaser = window.Phaser;
-import EasyStar from "easystarjs";
-import Player from "../entities/Player";
-import Zombie from "../entities/Zombie";
-import Inventory from "../Inventory";
-import Blocks from "../Blocks";
-import BLOCK_TYPE from "../BLOCK_TYPE";
-import Items from "../Items";
+import Map from "../Map";
 import Controls from "../Controls";
+import Player from "../entities/Player";
+import Inventory from "../Inventory";
+import Zombie from "../entities/Zombie";
+import Blocks from "../Blocks";
+import Items from "../Items";
 
 class World extends Phaser.State {
 
@@ -32,59 +31,19 @@ class World extends Phaser.State {
     game.state.start("World");
   }
 
-  mapToGrid (map) {
-    const h = map.layers[0].data.length;
-    const w = map.layers[0].data[0].length;
-
-    const grid = [];
-    for (let y = 0; y < h; y++) {
-      const gridRow = [];
-      for (let x = 0; x < w; x++) {
-        let cell = BLOCK_TYPE.walkable;
-        for (let i = 0; i < map.layers.length; i++) {
-          const index = map.layers[i].data[y][x].index;
-          const block = Blocks.getByTileId(index);
-          if (!block.walk && !block.mine) {
-            cell = BLOCK_TYPE.solid;
-          }
-          else if (block.mine) {
-            cell = BLOCK_TYPE.mineable;
-          }
-        }
-        gridRow.push(cell);
-      }
-      grid.push(gridRow);
-    }
-    return grid;
-  }
-
   create (game) {
     game.stage.backgroundColor = "#343436";
-    const map = this.map = game.add.tilemap("world");
-    map.addTilesetImage("tiles", "tiles");
-    map.addTilesetImage("mid", "mid");
-    const layer = this.layer = map.createLayer("base");
-    map.createLayer("mid");
-    layer.resizeWorld();
 
-    this.grid = this.mapToGrid(map);
-    const estar = this.estar = new EasyStar.js();
-    estar.setGrid(this.grid);
-    estar.enableDiagonals();
-    estar.disableCornerCutting();
-    estar.setAcceptableTiles([0, 3]);
+    this.world = new Map(game);
 
     this.player = new Player(game, 11, 16);
     this.controls = new Controls(game);
     this.inventory = new Inventory(game);
-
-    // this.inventory.addItem({name:"wood_pick", hp: 10, hardness: 5});
-    // this.inventory.addItem({name:"wood_sword", hp: 10, hardness: 2});
     this.inventory.addItem("wood_sword");
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 4; i++) {
-      const {x, y} = this.findEmptySpot();
+      const {x, y} = this.world.findEmptySpot();
       mobs.add(new Zombie(game, x, y));
     }
 
@@ -116,7 +75,7 @@ class World extends Phaser.State {
     }
     this.ui.subtitle.text = `${xt},${yt}`;
 
-    const tile = this.map.layers[1].data[yt][xt];
+    const tile = this.world.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
     if (block.mine) {
 
@@ -127,7 +86,7 @@ class World extends Phaser.State {
         const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
         if (dist < 300) {
           done = true;
-          this.makePath(m, this.player.x + 16, this.player.y + 16, true);
+          this.world.makePath(m, this.player.x + 16, this.player.y + 16);
         }
       });
 
@@ -136,8 +95,8 @@ class World extends Phaser.State {
 
       // TODO: handle nicer: player -> tool -> target block
       e.mineTile(block, tile, toolEfficiency, () => {
-        this.grid[yt][xt] = 0;
-        this.map.putTile(Blocks.clear.tile, xt, yt, 1);
+        this.world.grid[yt][xt] = 0;
+        this.world.map.putTile(Blocks.clear.tile, xt, yt, 1);
         block.yields.forEach(({name, amount}) => {
           this.inventory.addItem(name, amount);
         });
@@ -156,22 +115,9 @@ class World extends Phaser.State {
     this.ui.craft.visible = isCrafting;
   }
 
-  findEmptySpot () {
-    let y = null;
-    let x = null;
-    let spot = -1;
-
-    while (spot !== 0) {
-      y = Math.random() * this.map.height | 0;
-      x = Math.random() * this.map.width | 0;
-      spot = this.grid[y][x];
-    }
-    return {x, y};
-  }
-
   update (game) {
     this.controls.update();
-    
+
     switch (this.mode) {
     case "exploring":
       this.updateExploring(game);
@@ -187,13 +133,9 @@ class World extends Phaser.State {
       if (dist < 32) {
         const holding = this.inventory.holding();
         if (holding && holding.item && Items[holding.item].damage) {
-          // Hit zombie
-          const {x, y} = this.findEmptySpot();
-          m.x = x * 32;
-          m.y = y * 32;
-          m.path = [];
-          m.current = null;
-          m.onDone && m.onDone();
+          // kill zombie
+          const {x, y} = this.world.findEmptySpot();
+          m.reset(x, y);
           this.player.state.set("idle");
         } else {
           // Dead
@@ -206,7 +148,7 @@ class World extends Phaser.State {
     // Randomly run towards player
     if (Math.random() < 0.005) {
       const mob = this.mobs.getRandom();
-      this.makePath(mob, this.player.x + 16, this.player.y + 16, true);
+      this.world.makePath(mob, this.player.x + 16, this.player.y + 16);
     }
   }
 
@@ -227,10 +169,13 @@ class World extends Phaser.State {
       }
 
       // Walk to spot
-      this.makePath(
+      this.world.makePath(
         this.player,
         worldX,
-        worldY
+        worldY,
+        () => {
+          this.onPathWalked(this.player, worldX / 32 | 0, worldY / 32 | 0);
+        }
       );
     }
   }
@@ -258,30 +203,6 @@ class World extends Phaser.State {
     }
   }
 
-  makePath (e, tx, ty) {
-    const layer = this.layer;
-    const xt = layer.getTileX(tx);
-    const yt = layer.getTileY(ty);
-    if (xt <= -1 || yt <= -1) return;
-
-    const oldx = this.grid[yt][xt];
-    this.grid[yt][xt] = BLOCK_TYPE.tmpwalkable;
-    this.estar.setGrid(this.grid);
-    this.estar.findPath(
-      (e.x + 16) / 32 | 0,
-      (e.y + 16) / 32 | 0,
-      xt, yt,
-      path => {
-        if (!path) { return; }
-        if (oldx === BLOCK_TYPE.solid) {
-          // don't go in water...
-          path = path.slice(0, -1);
-        }
-        e.setPath(path, () => this.onPathWalked(e, xt, yt));
-      });
-    this.estar.calculate();
-    this.grid[yt][xt] = oldx;
-  }
 }
 
 export default World;
