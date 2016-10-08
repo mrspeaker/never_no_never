@@ -2,7 +2,7 @@ import Blocks from "./Blocks";
 import BLOCK_TYPE from "./BLOCK_TYPE";
 //import Items from "../Items";
 import EasyStar from "easystarjs";
-
+import Player from "./entities/Player";
 
 class Map {
 
@@ -63,16 +63,22 @@ class Map {
     this.grid[yt][xt] = BLOCK_TYPE.tmpwalkable;
     this.estar.setGrid(this.grid);
     this.estar.findPath(
-      (e.x + 16) / 32 | 0,
-      (e.y + 16) / 32 | 0,
+      e.x / 32 | 0,
+      e.y / 32 | 0,
       xt, yt,
       path => {
         if (!path) { return; }
-        if (oldx === BLOCK_TYPE.solid) {
-          // don't go in water...
+        // TODO: still a bug with this on diagonals
+        if (oldx === BLOCK_TYPE.solid ||
+          (e instanceof Player && oldx !== BLOCK_TYPE.walkable)) {
           path = path.slice(0, -1);
         }
-        e.setPath(path, onWalked || (() => {}));
+        if (path.length === 1 && oldx !== BLOCK_TYPE.walkable) {
+          onWalked && onWalked();
+        }
+        else {
+          e.setPath(path, onWalked || (() => {}));
+        }
       });
     this.estar.calculate();
     this.grid[yt][xt] = oldx;

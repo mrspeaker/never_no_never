@@ -65,6 +65,8 @@ class Zombie extends Phaser.Sprite {
         this.current = null;
         if (!this.path.length) {
           this.onDone();
+          this.x = current.x * 32;
+          this.y = current.y * 32;
         }
       }
     }

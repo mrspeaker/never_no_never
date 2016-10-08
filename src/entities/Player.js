@@ -19,6 +19,7 @@ class Player extends Phaser.Sprite {
     this.animations.add("walk_down", [8, 9], animSpeed, true);
 
     this.animations.add("mine", [6, 3], animSpeed * 2, true);
+    this.animations.add("attack", [12, 13], animSpeed * 2, true);
 
     this.path = [];
     this.current = null;
@@ -122,6 +123,8 @@ class Player extends Phaser.Sprite {
         this.current = null;
         if (!this.path.length) {
           this.onDone();
+          this.x = current.x * 32;
+          this.y = current.y * 32;
         }
       }
     }

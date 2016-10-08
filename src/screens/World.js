@@ -65,33 +65,35 @@ class World extends Phaser.State {
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
 
-  onPathWalked (e, xt, yt) {
-    if (!(e instanceof Player)) {
-      return;
-    }
-    this.ui.subtitle.text = `${xt},${yt}`;
+  onPathWalked (xt, yt) {
+    const {ui, world, player, mobs} = this;
+    ui.subtitle.text = `${xt},${yt}`;
 
-    const tile = this.world.map.layers[1].data[yt][xt];
+    const tile = world.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
     if (block.mine) {
       // Closest zombie chase player
       let done = false;
-      this.mobs.forEach(m => {
+      mobs.forEach(m => {
         if (done) return;
-        const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
+        const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
         if (dist < 300) {
           done = true;
-          this.world.makePath(m, this.player.x + 16, this.player.y + 16);
+          world.makePath(m, player.x, player.y);
         }
       });
 
       const tool = this.inventory.holding();
       const toolEfficiency = Items[tool.item].efficiency || 1;
-
+      if (Items[tool.item].damage) {
+        // Can't mine with a weapon.
+        player.stopWalking();
+        return;
+      }
       // TODO: handle nicer: player -> tool -> target block
-      e.mineTile(block, tile, toolEfficiency, () => {
-        this.world.grid[yt][xt] = 0;
-        this.world.map.putTile(Blocks.clear.tile, xt, yt, 1);
+      player.mineTile(block, tile, toolEfficiency, () => {
+        world.grid[yt][xt] = 0;
+        world.map.putTile(Blocks.clear.tile, xt, yt, 1);
         block.yields.forEach(({name, amount}) => {
           this.inventory.addItem(name, amount);
         });
@@ -100,7 +102,7 @@ class World extends Phaser.State {
         }
       });
     } else {
-      e.stopWalking();
+      player.stopWalking();
     }
   }
 
@@ -111,9 +113,10 @@ class World extends Phaser.State {
   }
 
   update (game) {
-    this.controls.update();
+    const {mode, player, mobs, controls} = this;
+    controls.update();
 
-    switch (this.mode) {
+    switch (mode) {
     case "exploring":
       this.updateExploring(game);
       break;
@@ -123,27 +126,34 @@ class World extends Phaser.State {
     }
 
     // Collision detect
-    this.mobs.forEach(m => {
-      const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
-      if (dist < 32) {
+    mobs.forEach(m => {
+      const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
+      if (dist < 60) {
         const holding = this.inventory.holding();
-        if (Items[holding.item].damage) {
-          // kill zombie
-          const {x, y} = this.world.findEmptySpot();
-          m.reset(x, y);
-          this.player.state.set("idle");
-        } else {
-          // Dead
-          this.reset(game);
+        const damage = Items[holding.item].damage;
+        if (damage) {
+          player.animations.play("attack");
         }
+        if (dist < 32) {
+          if (damage) {
+            // kill zombie
+            const {x, y} = this.world.findEmptySpot();
+            m.reset(x, y);
+            player.state.set("idle");
+          } else {
+            // You're dead
+            this.reset(game);
+          }
 
+        }
       }
+
     });
 
     // Randomly run towards player
     if (Math.random() < 0.005) {
-      const mob = this.mobs.getRandom();
-      this.world.makePath(mob, this.player.x + 16, this.player.y + 16);
+      const mob = mobs.getRandom();
+      this.world.makePath(mob, player.x, player.y);
     }
   }
 
@@ -169,7 +179,7 @@ class World extends Phaser.State {
         worldX,
         worldY,
         () => {
-          this.onPathWalked(this.player, worldX / 32 | 0, worldY / 32 | 0);
+          this.onPathWalked(worldX / 32 | 0, worldY / 32 | 0);
         }
       );
     }
