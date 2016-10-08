@@ -124,6 +124,20 @@ class Inventory extends Phaser.Group {
 
   }
 
+  hasItem (item, amount = 1) {
+    const match = this.slots.find(s => s.item === item);
+    return match && match.amount >= amount;
+  }
+
+  useItem (item, amount) {
+    const match = this.slots.find(s => s.item === item);
+    if (match && match.amount >= amount) {
+      match.addItem(-amount);
+      return true;
+    }
+    return false;
+  }
+
 }
 
 export default Inventory;

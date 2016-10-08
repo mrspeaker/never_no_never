@@ -11,6 +11,9 @@ class World extends Phaser.State {
 
   mode = "exploring";
 
+  isDown = false;
+  justPressed = false;
+
   preload (game) {
     game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
     game.load.image("tiles", "res/tiles.png");
@@ -76,7 +79,6 @@ class World extends Phaser.State {
     // this.inventory.addItem({name:"wood_pick", hp: 10, hardness: 5});
     // this.inventory.addItem({name:"wood_sword", hp: 10, hardness: 2});
     this.inventory.addItem("wood_sword");
-    this.inventory.addItem("wood_pick", 10);
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 4; i++) {
@@ -96,8 +98,8 @@ class World extends Phaser.State {
     const craft = game.add.image(0, 0, "crafting");
     craft.fixedToCamera = true;
     craft.visible = false;
-    craft.inputEnabled = true;
-    craft.events.onInputDown.add(() => this.setMode("exploring"), this);
+    //craft.inputEnabled = true;
+    //craft.events.onInputDown.add(() => this.setMode("exploring"), this);
 
     this.ui = {
       title,
@@ -168,6 +170,19 @@ class World extends Phaser.State {
   }
 
   update (game) {
+    // TODO: abstract to a "pointer" class
+    const pointer = game.input.activePointer;
+    if (pointer.isDown && !this.isDown) {
+      this.isDown = true;
+      this.justPressed = true;
+    }
+    else if (pointer.isDown) {
+      this.justPressed = false;
+    }
+    else {
+      this.isDown = false;
+    }
+
     switch (this.mode) {
     case "exploring":
       this.updateExploring(game);
@@ -207,10 +222,11 @@ class World extends Phaser.State {
   }
 
   updateExploring (game) {
+    const {justPressed} = this;
     const pointer = game.input.activePointer;
     const {x, y, worldX, worldY} = pointer;
 
-    if (pointer.isDown) {
+    if (justPressed) {
       const bottomOfTouchable = this.inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable) {
         if (x > game.width - 50) {
@@ -232,12 +248,26 @@ class World extends Phaser.State {
   }
 
   updateCrafting (game) {
-    if (game.input.activePointer.isDown) {
-      // const xo = game.input.activePointer.worldX;
-      // const yo = game.input.activePointer.worldY;
-      // if (yo < game.camera.y + 50) {
-      //   this.setMode("exploring");
-      // }
+    const {justPressed} = this;
+    const pointer = game.input.activePointer;
+    const {x, y} = pointer;
+
+    if (justPressed) {
+      if (y < 200) {
+        if (x < game.width / 2 ) {
+          // Craft!
+          if (this.inventory.hasItem("wood", 2)) {
+            this.inventory.useItem("wood", 2);
+            this.inventory.addItem("wood_pick", 1);
+          }
+          else {
+            // Not enough resources
+          }
+        }
+        else {
+          this.setMode("exploring");
+        }
+      }
     }
   }
 
