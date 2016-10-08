@@ -76,12 +76,13 @@ class World extends Phaser.State {
     // this.inventory.addItem({name:"wood_pick", hp: 10, hardness: 5});
     // this.inventory.addItem({name:"wood_sword", hp: 10, hardness: 2});
     this.inventory.addItem("wood_sword");
-    this.inventory.addItem("wood_pick");
+    this.inventory.addItem("wood_pick", 10);
 
     const mobs = this.mobs = game.add.group();
-    mobs.add(new Zombie(game, 6, 4));
-    mobs.add(new Zombie(game, 19, 16));
-    mobs.add(new Zombie(game, 2, 28));
+    for (let i = 0; i < 4; i++) {
+      const {x, y} = this.findEmptySpot();
+      mobs.add(new Zombie(game, x, y));
+    }
 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
     const title = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
@@ -153,6 +154,19 @@ class World extends Phaser.State {
     this.ui.craft.visible = isCrafting;
   }
 
+  findEmptySpot () {
+    let y = null;
+    let x = null;
+    let spot = -1;
+
+    while (spot !== 0) {
+      y = Math.random() * this.map.height | 0;
+      x = Math.random() * this.map.width | 0;
+      spot = this.grid[y][x];
+    }
+    return {x, y};
+  }
+
   update (game) {
     switch (this.mode) {
     case "exploring":
@@ -167,7 +181,21 @@ class World extends Phaser.State {
     this.mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
       if (dist < 32) {
-        this.reset(game);
+        const holding = this.inventory.holding();
+        if (holding && holding.item && Items[holding.item].damage) {
+          // Hit zombie
+          const {x, y} = this.findEmptySpot();
+          m.x = x * 32;
+          m.y = y * 32;
+          m.path = [];
+          m.current = null;
+          m.onDone && m.onDone();
+          this.player.state.set("idle");
+        } else {
+          // Dead
+          this.reset(game);
+        }
+
       }
     });
 
