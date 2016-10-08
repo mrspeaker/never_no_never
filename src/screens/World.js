@@ -6,6 +6,7 @@ import Inventory from "../Inventory";
 import Blocks from "../Blocks";
 import BLOCK_TYPE from "../BLOCK_TYPE";
 import Items from "../Items";
+import Controls from "../Controls";
 
 class World extends Phaser.State {
 
@@ -74,6 +75,7 @@ class World extends Phaser.State {
     estar.setAcceptableTiles([0, 3]);
 
     this.player = new Player(game, 11, 16);
+    this.controls = new Controls(game);
     this.inventory = new Inventory(game);
 
     // this.inventory.addItem({name:"wood_pick", hp: 10, hardness: 5});
@@ -98,8 +100,6 @@ class World extends Phaser.State {
     const craft = game.add.image(0, 0, "crafting");
     craft.fixedToCamera = true;
     craft.visible = false;
-    //craft.inputEnabled = true;
-    //craft.events.onInputDown.add(() => this.setMode("exploring"), this);
 
     this.ui = {
       title,
@@ -170,19 +170,8 @@ class World extends Phaser.State {
   }
 
   update (game) {
-    // TODO: abstract to a "pointer" class
-    const pointer = game.input.activePointer;
-    if (pointer.isDown && !this.isDown) {
-      this.isDown = true;
-      this.justPressed = true;
-    }
-    else if (pointer.isDown) {
-      this.justPressed = false;
-    }
-    else {
-      this.isDown = false;
-    }
-
+    this.controls.update();
+    
     switch (this.mode) {
     case "exploring":
       this.updateExploring(game);
@@ -222,12 +211,11 @@ class World extends Phaser.State {
   }
 
   updateExploring (game) {
-    const {justPressed} = this;
-    const pointer = game.input.activePointer;
-    const {x, y, worldX, worldY} = pointer;
+    const {controls, inventory} = this;
+    const {justPressed, x, y, worldX, worldY} = controls;
 
     if (justPressed) {
-      const bottomOfTouchable = this.inventory.ui.box.cameraOffset.y - 5;
+      const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable) {
         if (x > game.width - 50) {
           this.reset(game);
@@ -248,17 +236,16 @@ class World extends Phaser.State {
   }
 
   updateCrafting (game) {
-    const {justPressed} = this;
-    const pointer = game.input.activePointer;
-    const {x, y} = pointer;
+    const {controls, inventory} = this;
+    const {justPressed, x, y} = controls;
 
     if (justPressed) {
       if (y < 200) {
         if (x < game.width / 2 ) {
           // Craft!
-          if (this.inventory.hasItem("wood", 2)) {
-            this.inventory.useItem("wood", 2);
-            this.inventory.addItem("wood_pick", 1);
+          if (inventory.hasItem("wood", 2)) {
+            inventory.useItem("wood", 2);
+            inventory.addItem("wood_pick", 1);
           }
           else {
             // Not enough resources
