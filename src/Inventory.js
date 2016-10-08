@@ -105,7 +105,13 @@ class Inventory extends Phaser.Group {
   }
 
   holding () {
-    return this.selected < 0 ? null : this.slots[this.selected];
+    if (this.selected < 0 || !(this.slots[this.selected].item)) {
+      return {
+        item: "empty",
+        amount: 0
+      };
+    }
+    return this.slots[this.selected];
   }
 
   addItem (item, amount = 1) {

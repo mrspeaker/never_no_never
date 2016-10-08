@@ -11,9 +11,6 @@ class World extends Phaser.State {
 
   mode = "exploring";
 
-  isDown = false;
-  justPressed = false;
-
   preload (game) {
     game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
     game.load.image("tiles", "res/tiles.png");
@@ -35,7 +32,6 @@ class World extends Phaser.State {
     game.stage.backgroundColor = "#343436";
 
     this.world = new Map(game);
-
     this.player = new Player(game, 11, 16);
     this.controls = new Controls(game);
     this.inventory = new Inventory(game);
@@ -78,7 +74,6 @@ class World extends Phaser.State {
     const tile = this.world.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
     if (block.mine) {
-
       // Closest zombie chase player
       let done = false;
       this.mobs.forEach(m => {
@@ -91,7 +86,7 @@ class World extends Phaser.State {
       });
 
       const tool = this.inventory.holding();
-      const toolEfficiency = (tool && tool.item && Items[tool.item].efficiency) || 1;
+      const toolEfficiency = Items[tool.item].efficiency || 1;
 
       // TODO: handle nicer: player -> tool -> target block
       e.mineTile(block, tile, toolEfficiency, () => {
@@ -132,7 +127,7 @@ class World extends Phaser.State {
       const dist = Phaser.Math.distance(m.x, m.y, this.player.x, this.player.y);
       if (dist < 32) {
         const holding = this.inventory.holding();
-        if (holding && holding.item && Items[holding.item].damage) {
+        if (Items[holding.item].damage) {
           // kill zombie
           const {x, y} = this.world.findEmptySpot();
           m.reset(x, y);
