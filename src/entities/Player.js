@@ -1,6 +1,7 @@
 const Phaser = window.Phaser;
 import State from "../State";
 import Health from "../components/Health";
+import PathWalker from "../components/PathWalker";
 
 class Player extends Phaser.Sprite {
 
@@ -21,22 +22,22 @@ class Player extends Phaser.Sprite {
     this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
     this.animations.add("walk_up", [6, 7], animSpeed, true);
     this.animations.add("walk_down", [8, 9], animSpeed, true);
-
     this.animations.add("mine", [10, 11], animSpeed * 2, true);
     this.animations.add("attack", [12, 13], animSpeed * 2, true);
-
-    this.path = [];
-    this.current = null;
-    this.lastPath = null;
 
     this.health = new Health(3, 5);
     this.health.onHurt = onHurt;
     this.health.onDie = onDie;
+
+    this.pathWalker = new PathWalker();
   }
 
   setPath (path, onDone) {
-    this.path = path.slice(1);
-    this.onDone = onDone;
+    this.pathWalker.setPath(path.slice(1), () => {
+      this.x = Math.round(this.x / 32) * 32;
+      this.y = Math.round(this.y / 32) * 32;
+      onDone();
+    });
     this.state.set("walking");
   }
 
@@ -102,25 +103,19 @@ class Player extends Phaser.Sprite {
   }
 
   updateExploring () {
-    let {current, path, walkSpeed} = this;
+    const {walkSpeed, pathWalker} = this;
 
-    if (!current && path.length) {
-      //this.state.set("walking");
-      this.current = path[0];
-      this.path = path.slice(1);
-      if (this.lastPath) {
-        if (this.current.y !== this.lastPath.y) {
-          this.direction.set(this.current.y < this.lastPath.y ? "up" : "down");
+    pathWalker.update((c, lastPath) => {
+      if (lastPath) {
+        if (c.y !== lastPath.y) {
+          this.direction.set(c.y < lastPath.y ? "up" : "down");
         }
-        else if (this.current.x !== this.lastPath.x) {
-          this.direction.set(this.current.x < this.lastPath.x ? "left" : "right");
+        else if (c.x !== lastPath.x) {
+          this.direction.set(c.x < lastPath.x ? "left" : "right");
         }
       }
-    }
-
-    if (current) {
-      const xo = current.x * 32 - this.x;
-      const yo = current.y * 32 - this.y;
+      const xo = c.x * 32 - this.x;
+      const yo = c.y * 32 - this.y;
 
       // TODO: replace this "jittery" path follower with current vs lastPath
       let xx = 0;
@@ -138,16 +133,9 @@ class Player extends Phaser.Sprite {
       this.x += xx;
       this.y += yy;
 
-      if (Phaser.Math.distance(this.x, this.y, current.x * 32, current.y * 32) < walkSpeed) {
-        this.lastPath = this.current;
-        this.current = null;
-        if (!this.path.length) {
-          this.onDone();
-          this.x = current.x * 32;
-          this.y = current.y * 32;
-        }
-      }
-    }
+      return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
+    });
+
   }
 }
 
