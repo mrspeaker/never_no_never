@@ -6,10 +6,10 @@ class Controls {
   constructor (game) {
     this.game = game;
     this.setActive();
-    // "activePointer" seems to change on mobile
-    setTimeout(() => {
-      this.setActive();
-    }, 2000);
+    // // "activePointer" seems to change on mobile
+    // setTimeout(() => {
+    //   this.setActive();
+    // }, 2000);
   }
 
   setActive () {

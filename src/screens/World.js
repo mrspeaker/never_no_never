@@ -27,8 +27,9 @@ class World extends Phaser.State {
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 48);
   }
 
-  reset (game) {
-    game.state.start("World");
+  reset () {
+    this.mode = "exploring";
+    this.game.state.start("World");
   }
 
   create (game) {
@@ -133,7 +134,6 @@ class World extends Phaser.State {
   update (game) {
     const {mode, player, mobs, controls} = this;
     controls.update();
-
     switch (mode) {
     case "exploring":
       this.updateExploring(game);
@@ -183,13 +183,12 @@ class World extends Phaser.State {
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable) {
-        if (x > game.width - 50) {
-          this.reset(game);
+        if (x < game.width - 45) {
+          if (x < 50) {
+            this.setMode("crafting");
+          }
+          return;
         }
-        if (x < 50) {
-          this.setMode("crafting");
-        }
-        return;
       }
 
       // Walk to spot

@@ -38,6 +38,14 @@ class Crafting {
       }
     }, this);
 
+    const tmpReset = this.tmpReset = group.create(game.width - 160, 20, "craft-tmp");
+    tmpReset.frame = 2;
+    tmpReset.fixedToCamera = true;
+    tmpReset.inputEnabled = true;
+    tmpReset.events.onInputDown.add(() => {
+      this.world.reset();
+    }, this);
+
     this.visible = false;
   }
 
