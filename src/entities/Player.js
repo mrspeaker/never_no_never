@@ -4,6 +4,11 @@ import State from "../State";
 class Player extends Phaser.Sprite {
 
   walkSpeed = 3;
+  hp = 0;
+  health = 3;
+  maxHealth = 5;
+  armour = 0;
+  maxArmour = 3;
 
   constructor (game, xtile, ytile) {
     super(game, xtile * 32, ytile * 32, "peeps");
@@ -18,7 +23,7 @@ class Player extends Phaser.Sprite {
     this.animations.add("walk_up", [6, 7], animSpeed, true);
     this.animations.add("walk_down", [8, 9], animSpeed, true);
 
-    this.animations.add("mine", [6, 3], animSpeed * 2, true);
+    this.animations.add("mine", [10, 11], animSpeed * 2, true);
     this.animations.add("attack", [12, 13], animSpeed * 2, true);
 
     this.path = [];
@@ -61,6 +66,7 @@ class Player extends Phaser.Sprite {
       const state = this.state.get();
       const dir = this.direction.get();
       if (state === "idle") {
+        this.frame = 0;
         animations.stop();
       }
       else if (state === "walking") {

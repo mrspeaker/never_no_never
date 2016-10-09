@@ -2,6 +2,7 @@ class Crafting {
 
   constructor (game, world) {
     this.world = world;
+    const inventory = world.inventory;
     const group = this.group = game.add.group();
 
     group.create(0, 0, "crafting").fixedToCamera = true;
@@ -10,6 +11,18 @@ class Crafting {
     const craft = group.create(4, bottomOfTouchable + 6, "icons");
     craft.fixedToCamera = true;
     craft.frame = 21;
+
+    const tmp = this.tmp = group.create(30, 150, "craft-tmp");
+    tmp.alpha = 0.2;
+    tmp.fixedToCamera = true;
+    tmp.inputEnabled = true;
+    tmp.events.onInputDown.add(() => {
+      if (inventory.hasItem("wood", 2)) {
+        inventory.useItem("wood", 2);
+        inventory.addItem("wood_pick", 1);
+        this.world.setMode("exploring");
+      }
+    }, this);
 
     this.visible = false;
   }
@@ -20,6 +33,10 @@ class Crafting {
 
   set visible (visible) {
     this.group.visible = visible;
+    if (visible) {
+      const {inventory} = this.world;
+      this.tmp.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
+    }
   }
 
   update (game) {
@@ -35,7 +52,7 @@ class Crafting {
         }
       }
 
-      if (y < 200) {
+      /*if (y < 200) {
         // Craft!
         if (inventory.hasItem("wood", 2)) {
           inventory.useItem("wood", 2);
@@ -45,6 +62,7 @@ class Crafting {
           // Not enough resources
         }
       }
+      */
     }
   }
 
