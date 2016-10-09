@@ -1,16 +1,15 @@
 const Phaser = window.Phaser;
 import State from "../State";
+import Health from "../components/Health";
 
 class Player extends Phaser.Sprite {
 
   walkSpeed = 3;
   hp = 0;
-  health = 3;
-  maxHealth = 5;
   armour = 0;
   maxArmour = 3;
 
-  constructor (game, xtile, ytile) {
+  constructor (game, xtile, ytile, onHurt, onDie) {
     super(game, xtile * 32, ytile * 32, "peeps");
     game.add.existing(this);
 
@@ -29,6 +28,10 @@ class Player extends Phaser.Sprite {
     this.path = [];
     this.current = null;
     this.lastPath = null;
+
+    this.health = new Health(3, 5);
+    this.health.onHurt = onHurt;
+    this.health.onDie = onDie;
   }
 
   setPath (path, onDone) {
@@ -45,8 +48,7 @@ class Player extends Phaser.Sprite {
   }
 
   hit (damage = 1) {
-    this.health = Math.max(0, this.health - damage);
-    return this.health;
+    return this.health.damage(damage);
   }
 
   mineTile (block, tile, toolEfficiency, onDone) {

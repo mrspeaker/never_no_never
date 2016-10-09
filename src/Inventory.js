@@ -101,8 +101,12 @@ class Inventory extends Phaser.Group {
     this.selectItem(y * this.slotsPerRow + x);
   }
 
-  selectItem (idx) {
-    if (this.selected === idx || idx < 0 || idx > this.maxSlots) {
+  selectItem (idx, dontDeselect) {
+    const deselect = this.selected === idx;
+    if (dontDeselect && deselect) {
+      return;
+    }
+    if (deselect || idx < 0 || idx > this.maxSlots) {
       this.selected = -1;
       this.ui.selected.visible = false;
       return;

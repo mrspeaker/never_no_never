@@ -36,12 +36,9 @@ class World extends Phaser.State {
     game.stage.backgroundColor = "#343436";
 
     this.world = new Map(game);
-    this.player = new Player(game, 11, 16);
+    this.player = new Player(game, 11, 16, ::this.playerHurt, ::this.playerDied);
     this.controls = new Controls(game);
-    this.inventory = new Inventory(game, holding => {
-      this.player.switchTool(holding);
-    });
-    //this.inventory.addItem("wood_sword");
+    this.inventory = new Inventory(game, ::this.player.switchTool);
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 4; i++) {
@@ -82,6 +79,21 @@ class World extends Phaser.State {
     };
 
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+  }
+
+  playerHurt (health, maxHealth) {
+    // Update player health ui
+    let i = 0;
+    this.hearts.forEach(h => {
+      if (i < health) h.frame = 0;
+      else if (i < maxHealth) h.frame = 1;
+      else h.frame = 2;
+      i++;
+    });
+  }
+
+  playerDied () {
+    this.reset();
   }
 
   onPathWalked (xt, yt) {
@@ -153,30 +165,17 @@ class World extends Phaser.State {
           player.animations.play("attack");
         }
         if (dist < 32) {
+          m.y -= 64; // "knockback"
           if (damage) {
             // kill zombie
             const {x, y} = this.world.findEmptySpot();
             m.reset(x, y);
             player.state.set("idle");
             holding.addItem(-1);
-          } else {
-            const health = this.player.hit(1);
-            if (health <= 0) {
-              this.reset(game);
-            }
-            else {
-              m.y -= 64; // "knockback"
-              // Update player health ui
-              let i = 0;
-              this.hearts.forEach(h => {
-                if (i < health) h.frame = 0;
-                else if (i < player.maxHealth) h.frame = 1;
-                else h.frame = 2;
-                i++;
-              });
-            }
           }
-
+          else {
+            player.hit(1);
+          }
         }
       }
 

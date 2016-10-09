@@ -21,7 +21,7 @@ class Crafting {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
         const slot = inventory.addItem("wood_sword", 4);
-        inventory.selectItem(slot.idx);
+        inventory.selectItem(slot.idx, true);
         this.visible = true;
       }
     }, this);
@@ -35,7 +35,7 @@ class Crafting {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
         const slot = inventory.addItem("wood_pick", 4);
-        inventory.selectItem(slot.idx);
+        inventory.selectItem(slot.idx, true);
         this.visible = true;
       }
     }, this);
