@@ -1,12 +1,11 @@
 # bmax
 
 * hp
-* hearts
 * knock back
 * crafting
-
+* move pda to inventory slot?
 * find a recipe, unlock
-* reset whole game
+* reset unlocks for testing
 
 * gen world
   * chunks? no... try to make death fast enough
