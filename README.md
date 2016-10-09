@@ -1,7 +1,5 @@
 # bmax
 
-* No switching while mining
-
 * hp
 * knock back
 * crafting

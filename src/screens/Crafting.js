@@ -12,11 +12,25 @@ class Crafting {
     craft.fixedToCamera = true;
     craft.frame = 21;
 
-    const tmp = this.tmp = group.create(30, 150, "craft-tmp");
-    tmp.alpha = 0.2;
-    tmp.fixedToCamera = true;
-    tmp.inputEnabled = true;
-    tmp.events.onInputDown.add(() => {
+    const tmpSword = this.tmpSword = group.create(120, 150, "craft-tmp");
+    tmpSword.frame = 0;
+    tmpSword.alpha = 0.4;
+    tmpSword.fixedToCamera = true;
+    tmpSword.inputEnabled = true;
+    tmpSword.events.onInputDown.add(() => {
+      if (inventory.hasItem("wood", 2)) {
+        inventory.useItem("wood", 2);
+        inventory.addItem("wood_sword", 1);
+        this.world.setMode("exploring");
+      }
+    }, this);
+
+    const tmpPick = this.tmpPick = group.create(120, 210, "craft-tmp");
+    tmpPick.frame = 1;
+    tmpPick.alpha = 0.4;
+    tmpPick.fixedToCamera = true;
+    tmpPick.inputEnabled = true;
+    tmpPick.events.onInputDown.add(() => {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
         inventory.addItem("wood_pick", 1);
@@ -35,7 +49,8 @@ class Crafting {
     this.group.visible = visible;
     if (visible) {
       const {inventory} = this.world;
-      this.tmp.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
+      this.tmpPick.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
+      this.tmpSword.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
     }
   }
 

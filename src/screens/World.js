@@ -20,7 +20,7 @@ class World extends Phaser.State {
     game.load.image("bmaxFont9", "res/bmax9.png");
     game.load.image("bmaxFont9x4", "res/bmax9x4.png");
     game.load.image("crafting", "res/crafting-back.png");
-    game.load.image("craft-tmp", "res/craft-tmp.png");
+    game.load.spritesheet("craft-tmp", "res/craft-tmp.png", 34 * 4, 40);
     game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
     game.load.spritesheet("icons4x4", "res/icons4x4.png", 16, 16);
@@ -40,7 +40,7 @@ class World extends Phaser.State {
     this.inventory = new Inventory(game, holding => {
       this.player.switchTool(holding);
     });
-    this.inventory.addItem("wood_sword");
+    //this.inventory.addItem("wood_sword");
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 4; i++) {
