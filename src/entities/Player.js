@@ -1,5 +1,6 @@
 const Phaser = window.Phaser;
 import State from "../State";
+import Items from "../Items";
 
 class Player extends Phaser.Sprite {
 
@@ -35,6 +36,12 @@ class Player extends Phaser.Sprite {
     this.path = path.slice(1);
     this.onDone = onDone;
     this.state.set("walking");
+  }
+
+  switchTool (slot) {
+    if (this.state.get() === "mining") {
+      this.state.set("idle");
+    }
   }
 
   mineTile (block, tile, toolEfficiency, onDone) {

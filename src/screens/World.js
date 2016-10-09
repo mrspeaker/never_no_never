@@ -37,7 +37,9 @@ class World extends Phaser.State {
     this.world = new Map(game);
     this.player = new Player(game, 11, 16);
     this.controls = new Controls(game);
-    this.inventory = new Inventory(game);
+    this.inventory = new Inventory(game, holding => {
+      this.player.switchTool(holding);
+    });
     this.inventory.addItem("wood_sword");
 
     const mobs = this.mobs = game.add.group();

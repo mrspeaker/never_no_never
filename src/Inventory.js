@@ -54,9 +54,11 @@ class Inventory extends Phaser.Group {
   slotTileW = 48;
   slotTileH = 48;
 
-  constructor (game) {
+  constructor (game, onItemSwitch) {
     super(game);
     game.add.existing(this);
+
+    this.onItemSwitch = onItemSwitch;
 
     const box = this.create(
       game.width / 2 - 144,
@@ -106,6 +108,8 @@ class Inventory extends Phaser.Group {
     this.ui.selected.visible = true;
     this.ui.selected.cameraOffset.x = this.ui.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
     this.ui.selected.cameraOffset.y = this.ui.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
+
+    this.onItemSwitch(this.holding());
   }
 
   holding () {
