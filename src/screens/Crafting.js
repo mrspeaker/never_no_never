@@ -20,8 +20,8 @@ class Crafting {
     tmpSword.events.onInputDown.add(() => {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
-        inventory.addItem("wood_sword", 1);
-        this.world.setMode("exploring");
+        inventory.addItem("wood_sword", 4);
+        this.visible = true;
       }
     }, this);
 
@@ -33,8 +33,8 @@ class Crafting {
     tmpPick.events.onInputDown.add(() => {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
-        inventory.addItem("wood_pick", 1);
-        this.world.setMode("exploring");
+        inventory.addItem("wood_pick", 4);
+        this.visible = true;
       }
     }, this);
 

@@ -158,6 +158,7 @@ class World extends Phaser.State {
             const {x, y} = this.world.findEmptySpot();
             m.reset(x, y);
             player.state.set("idle");
+            holding.addItem(-1);
           } else {
             // You're dead
             this.reset(game);
