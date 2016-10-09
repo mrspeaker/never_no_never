@@ -87,7 +87,7 @@ class World extends Phaser.State {
     this.hearts.forEach(h => {
       if (i < health) h.frame = 0;
       else if (i < maxHealth) h.frame = 1;
-      else h.frame = 2;
+      else if (i < 10) h.frame = 2;
       i++;
     });
   }
