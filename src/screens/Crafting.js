@@ -20,7 +20,8 @@ class Crafting {
     tmpSword.events.onInputDown.add(() => {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
-        inventory.addItem("wood_sword", 4);
+        const slot = inventory.addItem("wood_sword", 4);
+        inventory.selectItem(slot.idx);
         this.visible = true;
       }
     }, this);
@@ -33,12 +34,13 @@ class Crafting {
     tmpPick.events.onInputDown.add(() => {
       if (inventory.hasItem("wood", 2)) {
         inventory.useItem("wood", 2);
-        inventory.addItem("wood_pick", 4);
+        const slot = inventory.addItem("wood_pick", 4);
+        inventory.selectItem(slot.idx);
         this.visible = true;
       }
     }, this);
 
-    const tmpReset = this.tmpReset = group.create(game.width - 160, 20, "craft-tmp");
+    const tmpReset = this.tmpReset = group.create(game.width - 120, 10, "craft-tmp");
     tmpReset.frame = 2;
     tmpReset.fixedToCamera = true;
     tmpReset.inputEnabled = true;

@@ -6,8 +6,9 @@ class Slot extends Phaser.Group {
   item = null;
   amount = 0;
 
-  constructor (game) {
+  constructor (game, idx) {
     super(game);
+    this.idx = idx;
 
     const icon = this.create(0, 0, "icons");
     icon.fixedToCamera = true;
@@ -34,6 +35,7 @@ class Slot extends Phaser.Group {
     this.item = item;
     this.amount = amount;
     this.updateUI();
+    return this;
   }
 
   addItem (amount = 1) {
@@ -43,6 +45,7 @@ class Slot extends Phaser.Group {
       this.amount = 0;
     }
     this.updateUI();
+    return this;
   }
 
 }
@@ -72,7 +75,7 @@ class Inventory extends Phaser.Group {
 
     this.slots = Array
       .from(new Array(this.maxSlots), (_, i) => {
-        var s = new Slot(game);
+        var s = new Slot(game, i);
         s.x = box.x + ((i % this.slotsPerRow) * this.slotTileW) + 6;
         s.y = box.y + ((i / this.slotsPerRow | 0) * this.slotTileH) + 8;
         return s;
@@ -126,16 +129,17 @@ class Inventory extends Phaser.Group {
     const firstMatch = this.slots.find(s => s.item === item);
     const firstEmpty = this.slots.find(s => s.item === null);
 
+    let slot = null;
     if (firstMatch) {
-      firstMatch.addItem(amount);
+      slot = firstMatch.addItem(amount);
     }
     else if (firstEmpty) {
-      firstEmpty.setItem(item, amount);
+      slot = firstEmpty.setItem(item, amount);
     }
     else {
       // No room!
     }
-
+    return slot;
   }
 
   hasItem (item, amount = 1) {
