@@ -77,6 +77,14 @@ class Inventory extends Phaser.Group {
       })
       .map(s => this.add(s));
 
+    const craft = this.create(4, box.y + 6, "icons");
+    craft.fixedToCamera = true;
+    craft.frame = 20;
+
+    const pda = this.create(4, box.y + 48 + 6, "icons");
+    pda.fixedToCamera = true;
+    pda.frame = 22;
+
     this.ui = {
       box,
       selected

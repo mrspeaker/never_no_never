@@ -6,6 +6,7 @@ import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
 import Blocks from "../Blocks";
 import Items from "../Items";
+import Crafting from "./Crafting"
 
 class World extends Phaser.State {
 
@@ -37,6 +38,8 @@ class World extends Phaser.State {
     this.inventory = new Inventory(game);
     this.inventory.addItem("wood_sword");
 
+    this.craftingScreen = new Crafting(game, this);
+
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 4; i++) {
       const {x, y} = this.world.findEmptySpot();
@@ -52,14 +55,10 @@ class World extends Phaser.State {
     subtitle.text = "0123456789!? You bet.";
     game.add.image(10, 50, subtitle).fixedToCamera = true;
 
-    const craft = game.add.image(0, 0, "crafting");
-    craft.fixedToCamera = true;
-    craft.visible = false;
 
     this.ui = {
       title,
       subtitle,
-      craft,
     };
 
     game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
@@ -109,7 +108,7 @@ class World extends Phaser.State {
   setMode (mode) {
     this.mode = mode;
     const isCrafting = this.mode == "crafting";
-    this.ui.craft.visible = isCrafting;
+    this.craftingScreen.visible = isCrafting;
   }
 
   update (game) {
@@ -121,7 +120,7 @@ class World extends Phaser.State {
       this.updateExploring(game);
       break;
     case "crafting":
-      this.updateCrafting(game);
+      this.craftingScreen.update(game);
       break;
     }
 
@@ -182,29 +181,6 @@ class World extends Phaser.State {
           this.onPathWalked(worldX / 32 | 0, worldY / 32 | 0);
         }
       );
-    }
-  }
-
-  updateCrafting (game) {
-    const {controls, inventory} = this;
-    const {justPressed, x, y} = controls;
-
-    if (justPressed) {
-      if (y < 200) {
-        if (x < game.width / 2 ) {
-          // Craft!
-          if (inventory.hasItem("wood", 2)) {
-            inventory.useItem("wood", 2);
-            inventory.addItem("wood_pick", 1);
-          }
-          else {
-            // Not enough resources
-          }
-        }
-        else {
-          this.setMode("exploring");
-        }
-      }
     }
   }
 

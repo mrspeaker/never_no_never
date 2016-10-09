@@ -5,11 +5,22 @@ class Controls {
 
   constructor (game) {
     this.game = game;
-    this.pointer = game.input.activePointer;
+    this.setActive();
+    // "activePointer" seems to change on mobile
+    setTimeout(() => {
+      this.setActive();
+    }, 2000);
+  }
+
+  setActive () {
+    this.pointer = this.game.input.activePointer;
   }
 
   update () {
-    const {pointer} = this;
+    const pointer = this.game.input.activePointer;
+    if (!pointer) {
+      return;
+    }
     if (pointer.isDown && !this.isDown) {
       this.isDown = true;
       this.justPressed = true;

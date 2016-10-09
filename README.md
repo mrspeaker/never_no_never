@@ -6,8 +6,11 @@
 * attacking
 * crafting
 
+* find a recipe, unlock
+* reset whole game
+
 * gen world
-  * chunks?
+  * chunks? no... try to make death fast enough
 
 * Move blocks and items from flyweight to actual objects
   * cellular autonoma ability
