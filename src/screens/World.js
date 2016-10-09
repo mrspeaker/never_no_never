@@ -160,8 +160,21 @@ class World extends Phaser.State {
             player.state.set("idle");
             holding.addItem(-1);
           } else {
-            // You're dead
-            this.reset(game);
+            const health = this.player.hit(1);
+            if (health <= 0) {
+              this.reset(game);
+            }
+            else {
+              m.y -= 64; // "knockback"
+              // Update player health ui
+              let i = 0;
+              this.hearts.forEach(h => {
+                if (i < health) h.frame = 0;
+                else if (i < player.maxHealth) h.frame = 1;
+                else h.frame = 2;
+                i++;
+              });
+            }
           }
 
         }

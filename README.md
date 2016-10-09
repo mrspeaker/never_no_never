@@ -1,6 +1,5 @@
 # bmax
 
-* hp
 * knock back
 * find a recipe, unlock
 * reset unlocks for testing
