@@ -4,9 +4,6 @@ class Crafting {
     this.world = world;
     const group = this.group = game.add.group();
 
-    //group.createMultiple(10, "icons", [1,2,3,4], false);
-    //group.align(12, -1, 48, 48);
-
     group.create(0, 0, "crafting").fixedToCamera = true;
 
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;

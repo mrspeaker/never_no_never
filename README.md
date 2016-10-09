@@ -3,7 +3,6 @@
 * hp
 * hearts
 * knock back
-* attacking
 * crafting
 
 * find a recipe, unlock
