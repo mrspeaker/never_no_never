@@ -43,6 +43,7 @@ class World extends Phaser.State {
 
     this.controls = new Controls(game);
     this.inventory = new Inventory(game, ::this.player.switchTool);
+    this.inventory.addItem("brick", 10);
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 4; i++) {
@@ -196,6 +197,25 @@ class World extends Phaser.State {
     }
   }
 
+  walkToThenAct (worldX, worldY) {
+    // Walk to spot
+    this.world.makePath(
+      this.player,
+      worldX,
+      worldY,
+      () => {
+        this.onPathWalked(worldX / 32 | 0, worldY / 32 | 0);
+      }
+    );
+  }
+
+  placeBlockAt (block, worldX, worldY) {
+    const {base, mid} = this.world.getTileXY(worldX, worldY);
+    if (mid.name === "clear" && base.name === "sand") {
+      this.world.setTileXY(block, worldX, worldY);
+    }
+  }
+
   updateExploring (game) {
     const {controls, inventory} = this;
     const {justPressed, x, y, worldX, worldY} = controls;
@@ -211,15 +231,11 @@ class World extends Phaser.State {
         }
       }
 
-      // Walk to spot
-      this.world.makePath(
-        this.player,
-        worldX,
-        worldY,
-        () => {
-          this.onPathWalked(worldX / 32 | 0, worldY / 32 | 0);
-        }
+      this.player.handleClick(
+        this.walkToThenAct.bind(this, worldX, worldY),
+        this.placeBlockAt.bind(this, Blocks.brick.tile, worldX, worldY)
       );
+
     }
   }
 

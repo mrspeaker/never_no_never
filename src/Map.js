@@ -174,6 +174,29 @@ class Map {
     return grid;
   }
 
+  getTileXY (x, y) {
+    return this.getTile(x / 32 | 0, y / 32 | 0);
+  }
+
+  getTile (x, y) {
+    const base = this.map.layers[0].data[y][x].index;
+    const mid = this.map.layers[1].data[y][x].index;
+    return {
+      base: Blocks.getByTileId(base),
+      mid: Blocks.getByTileId(mid)
+    };
+  }
+
+  setTileXY (tile, x, y) {
+    this.setTile(tile, x / 32 | 0, y / 32 | 0);
+  }
+
+  setTile (tile, xt, yt) {
+    this.map.putTile(tile, xt, yt, 1);
+    const block = Blocks.getByTileId(tile);
+    this.grid[yt][xt] = block.walk ? BLOCK_TYPE.walkable : BLOCK_TYPE.solid;
+  }
+
   makePath (e, tx, ty, onWalked) {
     const layer = this.layer;
     const xt = layer.getTileX(tx);

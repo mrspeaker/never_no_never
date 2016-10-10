@@ -2,6 +2,7 @@ const Phaser = window.Phaser;
 import State from "../State";
 import Health from "../components/Health";
 import PathWalker from "../components/PathWalker";
+import Items from "../Items";
 
 class Player extends Phaser.Sprite {
 
@@ -33,6 +34,11 @@ class Player extends Phaser.Sprite {
   }
 
   setPath (path, onDone) {
+    if (this.state.get() === "building") {
+      console.log("nope, building");
+      // Set end of path to thingl.
+      return;
+    }
     this.pathWalker.setPath(path.slice(1), () => {
       this.x = Math.round(this.x / 32) * 32;
       this.y = Math.round(this.y / 32) * 32;
@@ -41,10 +47,27 @@ class Player extends Phaser.Sprite {
     this.state.set("walking");
   }
 
-  switchTool () {
+  switchTool (tool) {
+    const item = Items[tool.item];
+    const current = this.state.get();
     // Stop mining if switch tool
-    if (this.state.get() === "mining") {
+    if (current === "mining") {
       this.state.set("idle");
+    }
+
+    if (item.placeable) {
+      this.state.set("building");
+    }
+    else if (current === "building") {
+      this.state.set("exploring");
+    }
+  }
+
+  handleClick(walk, place) {
+    if (this.state.get() === "building") {
+      place();
+    } else {
+      walk();
     }
   }
 
@@ -71,6 +94,8 @@ class Player extends Phaser.Sprite {
     case "mining":
       this.updateMining();
       break;
+    case "building":
+      this.updateBuilding();
     }
 
     if (this.state.isFirst()) {
@@ -96,6 +121,10 @@ class Player extends Phaser.Sprite {
       onMined();
       this.state.set("idle");
     }
+  }
+
+  updateBuilding () {
+
   }
 
   updateExploring () {
