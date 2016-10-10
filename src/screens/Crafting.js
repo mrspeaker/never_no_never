@@ -1,8 +1,34 @@
+import Items from "../Items";
+import Title from "../Title";
+
+const recipes = [{
+  source: [{
+    item: "wood",
+    amount: 2
+  }],
+  yields: [{
+    item: "wood_sword",
+    amount: 4
+  }]
+}, {
+  source: [{
+    item: "wood",
+    amount: 2
+  }],
+  yields: [{
+    item: "wood_pick",
+    amount: 4
+  }]
+}];
+
 class Crafting {
+
+  recipeXo = 40;
+  recipeYo = 70;
+  recipeLineSpacing = 42;
 
   constructor (game, world) {
     this.world = world;
-    const inventory = world.inventory;
     const group = this.group = game.add.group();
 
     group.create(0, 0, "crafting").fixedToCamera = true;
@@ -12,34 +38,6 @@ class Crafting {
     craft.fixedToCamera = true;
     craft.frame = 21;
 
-    const tmpSword = this.tmpSword = group.create(120, 150, "craft-tmp");
-    tmpSword.frame = 0;
-    tmpSword.alpha = 0.4;
-    tmpSword.fixedToCamera = true;
-    tmpSword.inputEnabled = true;
-    tmpSword.events.onInputDown.add(() => {
-      if (inventory.hasItem("wood", 2)) {
-        inventory.useItem("wood", 2);
-        const slot = inventory.addItem("wood_sword", 4);
-        inventory.selectItem(slot.idx, true);
-        this.visible = true;
-      }
-    }, this);
-
-    const tmpPick = this.tmpPick = group.create(120, 210, "craft-tmp");
-    tmpPick.frame = 1;
-    tmpPick.alpha = 0.4;
-    tmpPick.fixedToCamera = true;
-    tmpPick.inputEnabled = true;
-    tmpPick.events.onInputDown.add(() => {
-      if (inventory.hasItem("wood", 2)) {
-        inventory.useItem("wood", 2);
-        const slot = inventory.addItem("wood_pick", 4);
-        inventory.selectItem(slot.idx, true);
-        this.visible = true;
-      }
-    }, this);
-
     const tmpReset = this.tmpReset = group.create(game.width - 120, 10, "craft-tmp");
     tmpReset.frame = 2;
     tmpReset.fixedToCamera = true;
@@ -47,6 +45,41 @@ class Crafting {
     tmpReset.events.onInputDown.add(() => {
       this.world.reset();
     }, this);
+
+    recipes.forEach(({source, yields}, i) => {
+
+      const g = game.add.group();
+      group.add(g);
+
+      let xo = this.recipeXo;
+      let yo = this.recipeYo + i * this.recipeLineSpacing;
+
+      source.forEach(({item, amount}) => {
+        //const has = inventory.count(item);
+        Array.from(new Array(amount), (_, ii) => {
+          const x = xo + (ii * 32);
+          const icon = g.create(x, yo, "icons");
+          icon.frame = Items[item].icon;
+          //if (i >= has) icon.alpha = 0.5;
+          icon.fixedToCamera = true;
+        });
+        xo += amount * 32;
+      });
+      const arrow = g.create(xo, yo, "icons");
+      arrow.frame = 30;
+      arrow.fixedToCamera = true;
+      xo += 32;
+      yields.forEach(({item, amount}) => {
+
+        const icon = g.create(xo, yo, "icons");
+        icon.frame = Items[item].icon;
+        icon.fixedToCamera = true;
+        const title = Title(game, amount, 9, xo + 24, yo + 24, true);
+        g.add(title.img);
+        xo += 32;
+
+      });
+    });
 
     this.visible = false;
   }
@@ -59,35 +92,38 @@ class Crafting {
     this.group.visible = visible;
     if (visible) {
       const {inventory} = this.world;
-      this.tmpPick.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
-      this.tmpSword.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
+      // TODO: alpha non-have resources
+      //this.tmpPick.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
+      //this.tmpSword.alpha = inventory.hasItem("wood", 2) ? 1 : 0.4;
     }
   }
 
   update (game) {
-    const {controls, inventory} = this.world;
+    const {world, recipeYo, recipeXo, recipeLineSpacing} = this;
+    const {controls, inventory} = world;
     const {justPressed, x, y} = controls;
 
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable) {
         if (x < 50) {
-          this.world.setMode("exploring");
+          world.setMode("exploring");
           return;
         }
       }
 
-      /*if (y < 200) {
-        // Craft!
-        if (inventory.hasItem("wood", 2)) {
-          inventory.useItem("wood", 2);
-          inventory.addItem("wood_pick", 1);
+      if (y >= recipeYo && y <= recipeYo + recipes.length * recipeLineSpacing) {
+        const idx = (y - recipeYo) / recipeLineSpacing | 0;
+        const {source, yields} = recipes[idx];
+        const hasSources = source.every(({item, amount}) => inventory.hasItem(item, amount));
+        if (hasSources) {
+          yields.forEach(({item, amount}) => {
+            const slot = inventory.addItem(item, amount);
+            inventory.selectItem(slot.idx, true);
+          });
         }
-        else {
-          // Not enough resources
-        }
+        this.visible = true;
       }
-      */
     }
   }
 

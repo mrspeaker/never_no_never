@@ -14,7 +14,6 @@ class Map {
   }
 
   create (game) {
-    // Generate 2D noise in a 1024x768 grid, scaled to [0, 255]
     const noiseBase = new FastSimplexNoise({
       frequency: 0.1,
       max: 1,
