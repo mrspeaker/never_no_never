@@ -13,7 +13,7 @@ class World extends Phaser.State {
   mode = "exploring";
 
   preload (game) {
-    game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
+    //game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
     game.load.image("tiles", "res/tiles.png");
     game.load.image("mid", "res/mid.png");
     game.load.image("inventory", "res/inventory.png");
@@ -36,7 +36,9 @@ class World extends Phaser.State {
     game.stage.backgroundColor = "#343436";
 
     this.world = new Map(game);
-    this.player = new Player(game, 11, 16, ::this.playerHurt, ::this.playerDied);
+    const {x, y} = this.world.findEmptySpot();
+    this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+
     this.controls = new Controls(game);
     this.inventory = new Inventory(game, ::this.player.switchTool);
 
@@ -118,7 +120,7 @@ class World extends Phaser.State {
       const toolEfficiency = Items[tool.item].efficiency || 1;
       if (Items[tool.item].damage) {
         // Can't mine with a weapon.
-        player.stopWalking();
+        player.stop();
         return;
       }
       // TODO: handle nicer: player -> tool -> target block
@@ -133,7 +135,7 @@ class World extends Phaser.State {
         }
       });
     } else {
-      player.stopWalking();
+      player.stop();
     }
   }
 
@@ -174,7 +176,7 @@ class World extends Phaser.State {
             holding.addItem(-1);
           }
           else {
-            player.hit(1);
+            player.health.damage(1);
           }
         }
       }

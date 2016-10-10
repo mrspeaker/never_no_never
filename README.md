@@ -12,7 +12,7 @@
 * Unify map and grid
 * system for player -> tool -> target block
 * system for crafting: res -> more res
-* don't extend sprite/group? compose? (like in crafting.js)
+* don't extend sprite/group? compose? (like in crafting.js) - hm, then it's not auto update-d
 
 * day/night
   * lights

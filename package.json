@@ -17,6 +17,7 @@
     "budo": "^9.2.1"
   },
   "dependencies": {
-    "easystarjs": "^0.3.0"
+    "easystarjs": "^0.3.0",
+    "fast-simplex-noise": "^2.2.0"
   }
 }

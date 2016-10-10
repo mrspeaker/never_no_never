@@ -48,10 +48,6 @@ class Player extends Phaser.Sprite {
     }
   }
 
-  hit (damage = 1) {
-    return this.health.damage(damage);
-  }
-
   mineTile (block, tile, toolEfficiency, onDone) {
     this.state.set("mining", {
       onMined: onDone,
@@ -60,7 +56,7 @@ class Player extends Phaser.Sprite {
     });
   }
 
-  stopWalking () {
+  stop () {
     this.state.set("idle");
   }
 
