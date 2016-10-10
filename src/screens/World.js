@@ -118,11 +118,11 @@ class World extends Phaser.State {
 
       const tool = this.inventory.holding();
       const toolEfficiency = Items[tool.item].efficiency || 1;
-      if (Items[tool.item].damage) {
+      /*if (Items[tool.item].damage) {
         // Can't mine with a weapon.
         player.stop();
         return;
-      }
+      }*/
       // TODO: handle nicer: player -> tool -> target block
       player.mineTile(block, tile, toolEfficiency, () => {
         world.grid[yt][xt] = 0;
