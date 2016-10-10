@@ -18,7 +18,7 @@ class Zombie extends Phaser.Sprite {
   }
 
   setPath (path, onDone) {
-    this.path = path.slice(1);
+    this.path = path.length < 2 ? path: path.length > 2 ? path.slice(2) : path.slice(1);
     this.onDone = onDone;
   }
 

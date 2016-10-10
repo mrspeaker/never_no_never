@@ -160,6 +160,10 @@ class World extends Phaser.State {
     // Collision detect
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
+      if (dist < 200) {
+        this.world.makePath(m, player.x, player.y);
+      }
+
       if (dist < 60) {
         const holding = this.inventory.holding();
         const damage = Items[holding.item].damage;
