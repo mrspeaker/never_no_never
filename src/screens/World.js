@@ -187,8 +187,10 @@ class World extends Phaser.State {
             // kill zombie
             const {x, y} = this.world.findEmptySpot();
             m.reset(x, y);
+            this.world.makePath(m, m.x, m.y);
             player.state.set("idle");
             holding.addItem(-1);
+            return;
           }
           else {
             player.health.damage(1);
@@ -230,11 +232,11 @@ class World extends Phaser.State {
 
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
-      if (y > bottomOfTouchable) {
-        if (x < game.width - 45) {
-          if (x < 50) {
-            this.setMode("crafting");
-          }
+      if (y < 70) {
+        if (x > game.width - 70) {
+          //if (x < 50) {
+          this.setMode("crafting");
+          //}
           return;
         }
       }

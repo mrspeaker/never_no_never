@@ -82,7 +82,7 @@ class Inventory extends Phaser.Group {
       })
       .map(s => this.add(s));
 
-    const pda = this.create(4, box.y + 6, "icons");
+    const pda = this.create(game.width - 64, 30, "icons");
     pda.fixedToCamera = true;
     pda.frame = 22;
 
