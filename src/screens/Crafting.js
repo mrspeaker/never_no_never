@@ -1,25 +1,6 @@
 import Items from "../Items";
 import Title from "../Title";
-
-const recipes = [{
-  source: [{
-    item: "wood",
-    amount: 2
-  }],
-  yields: [{
-    item: "wood_sword",
-    amount: 4
-  }]
-}, {
-  source: [{
-    item: "wood",
-    amount: 2
-  }],
-  yields: [{
-    item: "wood_pick",
-    amount: 4
-  }]
-}];
+import recipes from "../Recipes";
 
 class Crafting {
 
@@ -70,7 +51,6 @@ class Crafting {
       arrow.fixedToCamera = true;
       xo += 32;
       yields.forEach(({item, amount}) => {
-
         const icon = g.create(xo, yo, "icons");
         icon.frame = Items[item].icon;
         icon.fixedToCamera = true;
@@ -121,6 +101,7 @@ class Crafting {
             const slot = inventory.addItem(item, amount);
             inventory.selectItem(slot.idx, true);
           });
+          source.forEach(({item, amount}) => inventory.useItem(item, amount));
         }
         this.visible = true;
       }
