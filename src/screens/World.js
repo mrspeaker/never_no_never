@@ -38,6 +38,8 @@ class World extends Phaser.State {
     this.world = new Map(game);
     const {x, y} = this.world.findEmptySpot();
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+    this.cameraTarget = game.add.sprite(0, 0, "peeps");
+    this.cameraTarget.alpha = 0;
 
     this.controls = new Controls(game);
     this.inventory = new Inventory(game, ::this.player.switchTool);
@@ -80,7 +82,7 @@ class World extends Phaser.State {
       subtitle,
     };
 
-    game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+    game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
 
   playerHurt (health, maxHealth) {
@@ -118,11 +120,7 @@ class World extends Phaser.State {
 
       const tool = this.inventory.holding();
       const toolEfficiency = Items[tool.item].efficiency || 1;
-      /*if (Items[tool.item].damage) {
-        // Can't mine with a weapon.
-        player.stop();
-        return;
-      }*/
+
       // TODO: handle nicer: player -> tool -> target block
       player.mineTile(block, tile, toolEfficiency, () => {
         world.grid[yt][xt] = 0;
@@ -146,7 +144,11 @@ class World extends Phaser.State {
   }
 
   update (game) {
-    const {mode, player, mobs, controls} = this;
+    const {mode, player, cameraTarget, mobs, controls} = this;
+
+    cameraTarget.x = player.x + 10;
+    cameraTarget.y = player.y + 50;
+
     controls.update();
     switch (mode) {
     case "exploring":
