@@ -11,6 +11,7 @@ import Crafting from "./Crafting";
 class World extends Phaser.State {
 
   mode = "exploring";
+  _cheat = false;
 
   preload (game) {
     //game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
@@ -101,6 +102,11 @@ class World extends Phaser.State {
 
   playerDied () {
     this.reset();
+  }
+
+  toggleCheat () {
+    this._cheat = !this._cheat;
+    return this._cheat;
   }
 
   onPathWalked (xt, yt) {

@@ -4,9 +4,9 @@ import recipes from "../Recipes";
 
 class Crafting {
 
-  recipeXo = 40;
-  recipeYo = 70;
-  recipeLineSpacing = 42;
+  recipeXo = 120;
+  recipeYo = 170;
+  recipeLineSpacing = 75;
 
   constructor (game, world) {
     this.world = world;
@@ -15,16 +15,25 @@ class Crafting {
     group.create(0, 0, "crafting").fixedToCamera = true;
 
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;
-    const craft = group.create(4, bottomOfTouchable + 6, "icons");
+    const craft = group.create(game.width - 64, 30, "icons");
     craft.fixedToCamera = true;
     craft.frame = 21;
 
-    const tmpReset = this.tmpReset = group.create(game.width - 120, 10, "craft-tmp");
+    const tmpReset = this.tmpReset = group.create(game.width - 140, game.height - 60, "craft-tmp");
     tmpReset.frame = 2;
     tmpReset.fixedToCamera = true;
     tmpReset.inputEnabled = true;
     tmpReset.events.onInputDown.add(() => {
       this.world.reset();
+    }, this);
+
+    const cheat = this.cheat = group.create(0, game.height - 60, "craft-tmp");
+    cheat.frame = 0;
+    cheat.fixedToCamera = true;
+    cheat.inputEnabled = true;
+    cheat.events.onInputDown.add(() => {
+      const isCheat = this.world.toggleCheat();
+      cheat.frame = isCheat ? 1 : 0;
     }, this);
 
     recipes.forEach(({source, yields}, i) => {
@@ -84,24 +93,21 @@ class Crafting {
     const {justPressed, x, y} = controls;
 
     if (justPressed) {
-      const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
-      if (y > bottomOfTouchable) {
-        if (x < 50) {
-          world.setMode("exploring");
-          return;
-        }
+      if (y < 70) {
+        world.setMode("exploring");
       }
 
       if (y >= recipeYo && y <= recipeYo + recipes.length * recipeLineSpacing) {
         const idx = (y - recipeYo) / recipeLineSpacing | 0;
         const {source, yields} = recipes[idx];
-        const hasSources = source.every(({item, amount}) => inventory.hasItem(item, amount));
+        const isCheat = this.world._cheat;
+        const hasSources = isCheat || source.every(({item, amount}) => inventory.hasItem(item, amount));
         if (hasSources) {
           yields.forEach(({item, amount}) => {
             const slot = inventory.addItem(item, amount);
             inventory.selectItem(slot.idx, true);
           });
-          source.forEach(({item, amount}) => inventory.useItem(item, amount));
+          !isCheat && source.forEach(({item, amount}) => inventory.useItem(item, amount));
         }
         this.visible = true;
       }
