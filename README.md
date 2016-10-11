@@ -1,16 +1,15 @@
 # bmax
 
-* show un-obtained resources in crafting.
 * knock back
 * find a recipe, unlock
 * store progress/stats/unlocks
 * reset unlocks for testing
-* placeable blocks (dirt)
 * stats on splash
 * death anim
 * fire towards baddies (auto, or click to fire?)
 * Move blocks and items from flyweight to actual objects
   * cellular autonoma ability
+  * show un-obtained resources in crafting.
 * system for player -> tool -> target block
 * system for crafting: res -> more res
 

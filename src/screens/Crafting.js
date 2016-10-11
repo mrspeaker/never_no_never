@@ -14,7 +14,13 @@ class Crafting {
     this.game = game;
     const group = this.group = game.add.group();
 
-    group.create(0, 0, "crafting").fixedToCamera = true;
+    const bg = group.create(0, 0, "crafting");
+    bg.fixedToCamera = true;
+    //const mask = game.add.graphics(0, 0);
+    //mask.fixedToCamera = true;
+    //mask.beginFill(0xffffff);
+    //mask.drawCircle(100, 100, 100);
+    //bg.mask = mask;
 
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;
     const craft = group.create(game.width - 64, 30, "icons");
@@ -37,6 +43,8 @@ class Crafting {
       const isCheat = this.world.toggleCheat();
       cheat.frame = isCheat ? 1 : 0;
     }, this);
+
+    //cheat.blendMode = window.PIXI.blendModes.DIFFERENCE;
 
     this.recipes = recipes.map(({source, yields}, i) => {
 
@@ -125,6 +133,9 @@ class Crafting {
             inventory.selectItem(slot.idx, true);
           });
           !isCheat && source.forEach(({item, amount}) => inventory.useItem(item, amount));
+        }
+        else {
+          game.camera.shake(0.01, 200);
         }
         this.visible = true;
       }

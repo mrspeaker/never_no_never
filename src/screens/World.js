@@ -37,6 +37,8 @@ class World extends Phaser.State {
     game.stage.backgroundColor = "#343436";
 
     this.world = new Map(game);
+    this.perma = game.add.group();
+
     const {x, y} = this.world.findEmptySpot();
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
@@ -182,6 +184,8 @@ class World extends Phaser.State {
           player.animations.play("attack");
         }
         if (dist < 32) {
+          const oldX = m.x;
+          const oldY = m.y;
           m.y -= 64; // "knockback"
           if (damage) {
             // kill zombie
@@ -190,6 +194,8 @@ class World extends Phaser.State {
             this.world.makePath(m, m.x, m.y);
             player.state.set("idle");
             holding.addItem(-1);
+            const corpse = this.perma.create(oldX, oldY, "peeps");
+            corpse.frame = Math.random() < 0.5 ? 30 : 31;
             return;
           }
           else {
