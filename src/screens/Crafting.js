@@ -1,3 +1,4 @@
+const Phaser = window.Phaser;
 import Items from "../Items";
 import Title from "../Title";
 import recipes from "../Recipes";
@@ -10,6 +11,7 @@ class Crafting {
 
   constructor (game, world) {
     this.world = world;
+    this.game = game;
     const group = this.group = game.add.group();
 
     group.create(0, 0, "crafting").fixedToCamera = true;
@@ -36,7 +38,7 @@ class Crafting {
       cheat.frame = isCheat ? 1 : 0;
     }, this);
 
-    recipes.forEach(({source, yields}, i) => {
+    this.recipes = recipes.map(({source, yields}, i) => {
 
       const g = game.add.group();
       group.add(g);
@@ -68,6 +70,8 @@ class Crafting {
         xo += 32;
 
       });
+
+      return g;
     });
 
     this.visible = false;
@@ -87,10 +91,22 @@ class Crafting {
     }
   }
 
+  fadeChoice (idx) {
+    // properties, duration, ease, autoStart, delay, repeat, yoyo
+    this.game.add.tween(this.recipes[idx]).to(
+      {alpha: 0.2},
+      100,
+      Phaser.Easing.Linear.None,
+      true,
+      0,
+      0,
+      true);
+  }
+
   update (game) {
-    const {world, recipeYo, recipeXo, recipeLineSpacing} = this;
+    const {world, recipeYo, recipeLineSpacing} = this;
     const {controls, inventory} = world;
-    const {justPressed, x, y} = controls;
+    const {justPressed, y} = controls;
 
     if (justPressed) {
       if (y < 70) {
@@ -103,6 +119,7 @@ class Crafting {
         const isCheat = this.world._cheat;
         const hasSources = isCheat || source.every(({item, amount}) => inventory.hasItem(item, amount));
         if (hasSources) {
+          this.fadeChoice(idx);
           yields.forEach(({item, amount}) => {
             const slot = inventory.addItem(item, amount);
             inventory.selectItem(slot.idx, true);

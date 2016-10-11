@@ -30,7 +30,7 @@ class World extends Phaser.State {
 
   reset () {
     this.mode = "exploring";
-    this.game.state.start("World");
+    this.game.state.start("Splash");
   }
 
   create (game) {
