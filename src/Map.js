@@ -45,25 +45,58 @@ class Map {
       grid[x] = [];
       gridMid[x] = [];
       for (let y = 0; y < w; y++) {
-        grid[x][y] = noiseBase.in2D(x, y) > 0.62 ? 2 : 1;
+        grid[x][y] = noiseBase.in2D(x, y) > 0.62 ? Blocks.water.tile : Blocks.sand.tile;
         gridMid[x][y] = 0;
 
-        if (grid[x][y] !== 1) {
+        if (grid[x][y] !== Blocks.sand.tile) {
           continue;
         }
         const v = noiseTrees.in2D(x, y);
         min = Math.min(min, v);
         max = Math.max(max, v);
         if (v > 0.5 && v < 0.52) {
-          gridMid[x][y] = 257;
+          gridMid[x][y] = Blocks.tree.tile;
         }
 
         const o = noiseOres.in2D(x, y);
         if (o > 0.5 && o < 0.504) {
-          gridMid[x][y] = 258;
+          gridMid[x][y] = Blocks.coal_ore.tile;
         }
-        else if (o > 0.6 && o < 0.601) {
-          gridMid[x][y] = 259;
+        else if (o > 0.6 && o < 0.602) {
+          gridMid[x][y] = Blocks.stone_ore.tile;
+        }
+      }
+    }
+
+    const getNeighbours = (x, y) => {
+      const l = x == 0 ? Blocks.clear.tile : grid[y][x - 1];
+      const r = x >= grid[0].length - 1 ? Blocks.clear.tile : grid[y][x + 1];
+      const t = y <= 0 ? Blocks.clear.tile : grid[y - 1][x];
+      const b = y >= grid.length - 1 ? Blocks.clear.tile : grid[y + 1][x];
+      return {
+        l, r, t, b
+      };
+    };
+
+    for (let y = 0; y < h; y++) {
+      const row = grid[y];
+      for (let x = 0; x < row.length; x++) {
+        const cell = grid[y][x];
+        if (cell !== Blocks.water.tile) {
+          continue;
+        }
+        const {l, r, t, b} = getNeighbours(x, y);
+        if (l === Blocks.sand.tile && t === Blocks.sand.tile) {
+          grid[y][x] = Blocks.water_tl.tile;
+        }
+        if (r === Blocks.sand.tile && t === Blocks.sand.tile) {
+          grid[y][x] = Blocks.water_tr.tile;
+        }
+        if (l === Blocks.sand.tile && b === Blocks.sand.tile) {
+          grid[y][x] = Blocks.water_bl.tile;
+        }
+        if (r === Blocks.sand.tile && b === Blocks.sand.tile) {
+          grid[y][x] = Blocks.water_br.tile;
         }
       }
     }
