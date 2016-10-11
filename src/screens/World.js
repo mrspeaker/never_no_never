@@ -232,6 +232,7 @@ class World extends Phaser.State {
 
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
+      if (y > bottomOfTouchable - 5) return;
       if (y < 70) {
         if (x > game.width - 70) {
           //if (x < 50) {
