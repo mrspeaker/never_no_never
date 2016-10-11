@@ -28,19 +28,22 @@ class Player extends Phaser.Sprite {
 
     this.health = new Health(3, 5);
     this.health.onHurt = (...args) => {
+      this.onHurt(game);
       onHurt(...args);
-      game.add.tween(this).to(
-        {alpha: 0},
-        100,
-        Phaser.Easing.Linear.None,
-        true,
-        0,
-        2,
-        true);
     };
     this.health.onDie = onDie;
-
     this.pathWalker = new PathWalker();
+  }
+
+  onHurt (game) {
+    game.add.tween(this).to(
+      {alpha: 0},
+      100,
+      Phaser.Easing.Linear.None,
+      true,
+      0,
+      2,
+      true);
   }
 
   setPath (path, onDone) {

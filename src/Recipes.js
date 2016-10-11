@@ -1,6 +1,6 @@
 const Recipes = [{
   source: [{ item: "wood", amount: 2 }],
-  yields: [{ item: "wood_sword", amount: 5 }]
+  yields: [{ item: "wood_sword", amount: 10 }]
 },{
   source: [{ item: "wood", amount: 2 }],
   yields: [{ item: "wood_pick", amount: 5 }]

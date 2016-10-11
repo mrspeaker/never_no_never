@@ -51,7 +51,7 @@ class World extends Phaser.State {
     // this.inventory.addItem("brick", 10);
 
     const mobs = this.mobs = game.add.group();
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const {x, y} = this.world.findEmptySpot();
       mobs.add(new Zombie(game, x, y));
     }
@@ -186,16 +186,25 @@ class World extends Phaser.State {
         if (dist < 32) {
           const oldX = m.x;
           const oldY = m.y;
-          m.y -= 64; // "knockback"
+          const xd = player.x - m.x;
+          const yd = player.y - m.y;
+          if (Math.abs(xd) > Math.abs(yd)) {
+            m.x += Math.sign(xd) * -64;
+          } else {
+            m.y += Math.sign(yd) * -64;
+          }
           if (damage) {
             // kill zombie
-            const {x, y} = this.world.findEmptySpot();
-            m.reset(x, y);
-            this.world.makePath(m, m.x, m.y);
-            player.state.set("idle");
-            holding.addItem(-1);
-            const corpse = this.perma.create(oldX, oldY, "peeps");
-            corpse.frame = Math.random() < 0.5 ? 30 : 31;
+            const health = m.health.damage(damage);
+            if (health <= 0) {
+              const {x, y} = this.world.findEmptySpot();
+              m.reset(x, y);
+              this.world.makePath(m, m.x, m.y);
+              player.state.set("idle");
+              holding.addItem(-1);
+              const corpse = this.perma.create(oldX, oldY, "peeps");
+              corpse.frame = Math.random() < 0.5 ? 30 : 31;
+            }
             return;
           }
           else {
