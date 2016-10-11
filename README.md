@@ -12,7 +12,6 @@
   * show un-obtained resources in crafting.
 * system for player -> tool -> target block
 * system for crafting: res -> more res
-* move health comp to zombie
 * move pathWalk to zombie
 * move fonts to Title
 
