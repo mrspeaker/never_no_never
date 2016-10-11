@@ -6,7 +6,7 @@ export default {
   "stone_ore": { name: "stone_ore", tile: 259, mine: true, hardness: 50, yields: [{name: "stone", amount: 1}]},
   "water": { name: "water", tile: 2, mine: false },
   "sand": { name: "sand", tile: 1, mine: false, walk: true },
-  "brick": { name: "brick", tile: 3, mine: true, hardness: 10, yields: [{name: "stone", amount: 1}] },
+  "brick": { name: "brick", tile: 260, mine: true, hardness: 10, yields: [{name: "stone", amount: 1}] },
 
   getByTileId: function (id) {
     for (let e in this) {

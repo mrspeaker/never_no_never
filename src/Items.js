@@ -5,6 +5,7 @@ export default {
   "stone": { name: "stone", carry: true, icon: 3 },
   "brick": { name: "brick", carry: true, icon: 13, placeable: true },
   "wood_sword": { name: "wood_sword", carry: true, icon: 10, damage: 1 },
+  "stone_sword": { name: "stone_sword", carry: true, icon: 14, damage: 2 },
   "wood_pick": { name: "wood_pick", carry: true, icon: 11, efficiency: 5 },
   "wood_axe": { name: "wood_pick", carry: true, icon: 12 },
 };
