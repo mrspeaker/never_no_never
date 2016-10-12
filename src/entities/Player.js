@@ -117,7 +117,7 @@ class Player extends Phaser.Sprite {
       animations.stop();
       this.angle = 90;
       this.alpha -= 0.01;
-      if (Date.now() - this.died.time > 2000) {
+      if (Date.now() - this.died.time > 2500) {
         this.died.onDead();
       }
       return;

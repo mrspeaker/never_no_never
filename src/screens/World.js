@@ -193,10 +193,13 @@ class World extends Phaser.State {
           const oldY = m.y;
           const xd = player.x - m.x;
           const yd = player.y - m.y;
-          if (Math.abs(xd) > Math.abs(yd)) {
-            m.x += Math.sign(xd) * -64;
-          } else {
-            m.y += Math.sign(yd) * -64;
+          const knockH = Math.abs(xd) > Math.abs(yd);
+          if (!player.died) {
+            if (knockH) {
+              m.x += Math.sign(xd) * -64;
+            } else {
+              m.y += Math.sign(yd) * -64;
+            }
           }
           if (damage) {
             // kill zombie
@@ -214,6 +217,17 @@ class World extends Phaser.State {
           }
           else {
             player.health.damage(1);
+            if (!player.died) {
+              if (knockH) {
+                player.x += Math.sign(xd) * 16;
+              } else {
+                player.y += Math.sign(yd) * 16;
+              }
+              if (player.state.get() === "mining") {
+                player.state.set("idle");
+              }
+            }
+
           }
         }
       }

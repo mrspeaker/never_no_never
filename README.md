@@ -1,5 +1,8 @@
 # bmax
 
+* on died, "surived for" time.
+* drops from mining
+* drops from zombie kills
 * knock back
 * find a recipe, unlock
 * store progress/stats/unlocks
