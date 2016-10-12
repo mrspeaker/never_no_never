@@ -24,6 +24,9 @@ class Player extends Phaser.Sprite {
 
   constructor (game, xtile, ytile, onHurt, onDie) {
     super(game, xtile * 32, ytile * 32, "peeps");
+
+    this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
+    this.shadow.frame = 40;
     game.add.existing(this);
 
     this.state = new State("idle");
@@ -115,7 +118,7 @@ class Player extends Phaser.Sprite {
 
     if (this.died) {
       animations.stop();
-      this.angle = 90;
+      this.frame = 14;
       this.alpha -= 0.01;
       if (Date.now() - this.died.time > 2500) {
         this.died.onDead();
@@ -160,6 +163,9 @@ class Player extends Phaser.Sprite {
         animations.play("mine");
       }
     }
+
+    this.shadow.x = this.x;
+    this.shadow.y = this.y + 8;
   }
 
   updateMining () {

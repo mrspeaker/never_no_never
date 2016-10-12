@@ -6,6 +6,9 @@ class Zombie extends Phaser.Sprite {
   constructor (game, xtile, ytile) {
     super(game, xtile * 32, ytile * 32, "peeps");
 
+    this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
+    this.shadow.frame = 40;
+
     const walkSpeed = 5;
     this.animations.add("walk_right", [20, 21, 22, 21], walkSpeed, true);
     this.animations.add("walk_left", [23, 24, 25, 24], walkSpeed, true);
@@ -84,6 +87,8 @@ class Zombie extends Phaser.Sprite {
         }
       }
     }
+    this.shadow.x = this.x;
+    this.shadow.y = this.y + 8
   }
 }
 
