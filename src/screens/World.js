@@ -51,7 +51,7 @@ class World extends Phaser.State {
     // this.inventory.addItem("brick", 10);
 
     const mobs = this.mobs = game.add.group();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 7; i++) {
       const {x, y} = this.world.findEmptySpot();
       mobs.add(new Zombie(game, x, y));
     }
@@ -103,7 +103,12 @@ class World extends Phaser.State {
   }
 
   playerDied () {
-    this.reset();
+    if (!this.player.died) {
+      this.player.died = {
+        time: Date.now(),
+        onDead: ::this.reset
+      };
+    }
   }
 
   toggleCheat () {

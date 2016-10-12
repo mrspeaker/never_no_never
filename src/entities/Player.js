@@ -11,6 +11,17 @@ class Player extends Phaser.Sprite {
   armour = 0;
   maxArmour = 3;
 
+  died = null;
+
+  states = {
+    idle: "idle",
+    walking: "walking",
+    building: "building",
+    mining: "mining",
+    dying: "dying",
+    dead: "dead"
+  };
+
   constructor (game, xtile, ytile, onHurt, onDie) {
     super(game, xtile * 32, ytile * 32, "peeps");
     game.add.existing(this);
@@ -36,6 +47,9 @@ class Player extends Phaser.Sprite {
   }
 
   onHurt (game) {
+    if (this.died) {
+      return;
+    }
     game.add.tween(this).to(
       {alpha: 0},
       100,
@@ -99,6 +113,16 @@ class Player extends Phaser.Sprite {
   update () {
     const {animations} = this;
 
+    if (this.died) {
+      animations.stop();
+      this.angle = 90;
+      this.alpha -= 0.01;
+      if (Date.now() - this.died.time > 2000) {
+        this.died.onDead();
+      }
+      return;
+    }
+
     const current = this.state.get();
     switch (current) {
     case "walking":
@@ -109,6 +133,17 @@ class Player extends Phaser.Sprite {
       break;
     case "building":
       this.updateBuilding();
+      break;
+    case "dying":
+      if (Date.now() - this.state.time > 3000) {
+        //this.state.set("dead");
+        this.state.data();
+      }
+      this.x += Math.random() * 5 - 2;
+      break;
+    case "dead":
+
+      break;
     }
 
     if (this.state.isFirst()) {
