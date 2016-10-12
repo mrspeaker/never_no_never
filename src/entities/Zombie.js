@@ -17,7 +17,7 @@ class Zombie extends Phaser.Sprite {
 
     this.animations.play("walk_right");
 
-    this.health = new Health(3, 3);
+    this.health = new Health(3, 3, 50);
     this.health.onHurt = this.onHurt.bind(this);
     this.health.onDie = this.onDie.bind(this);
 

@@ -5,10 +5,10 @@ class Health {
 
   lastHurt = Date.now();
 
-  constructor (health, maxHealth) {
+  constructor (health, maxHealth, minHurtTime = 1000) {
     this.health = health;
     this.maxHealth = maxHealth;
-    this.minHurtTime = 1000;
+    this.minHurtTime = minHurtTime;
   }
 
   damage (amount = 1) {
