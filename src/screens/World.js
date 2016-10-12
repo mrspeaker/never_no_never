@@ -139,12 +139,15 @@ class World extends Phaser.State {
           tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile :
           Blocks.clear.tile
           , xt, yt);
+
         block.yields.forEach(({name, amount}) => {
           this.inventory.addItem(name, amount);
         });
+
         if (toolEfficiency > 1) {
           tool.addItem(-1);
         }
+
       });
     } else {
       player.stop();

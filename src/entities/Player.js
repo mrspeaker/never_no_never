@@ -37,7 +37,7 @@ class Player extends Phaser.Sprite {
     this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
     this.animations.add("walk_up", [6, 7], animSpeed, true);
     this.animations.add("walk_down", [8, 9], animSpeed, true);
-    this.animations.add("mine", [10, 11], animSpeed * 2, true);
+    this.animations.add("mine", [60, 61], animSpeed * 2, true);
     this.animations.add("attack", [12, 13], animSpeed * 2, true);
 
     this.health = new Health(3, 5);
