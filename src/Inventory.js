@@ -1,5 +1,6 @@
 const Phaser = window.Phaser;
 import Items from "./Items";
+import Title from "./Title";
 
 class Slot extends Phaser.Group {
 
@@ -14,13 +15,12 @@ class Slot extends Phaser.Group {
     icon.fixedToCamera = true;
     icon.frame = Items.empty.icon;
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
-    const amount = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
-    this.create(24, 24, amount).fixedToCamera = true;
+    const {img, font} = Title(game, "", 9, 24, 24, true);
+    this.add(img);
 
     this.ui = {
       icon,
-      amount
+      amount: font
     };
 
   }

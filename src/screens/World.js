@@ -40,6 +40,9 @@ class World extends Phaser.State {
 
     const {x, y} = this.world.findEmptySpot();
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+
+    this.world.setTile(Blocks.manhole.tile, x, y);
+
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
     this.cameraTarget.alpha = 0;
 
@@ -131,8 +134,11 @@ class World extends Phaser.State {
 
       // TODO: handle nicer: player -> tool -> target block
       player.mineTile(block, tile, toolEfficiency, () => {
-        world.grid[yt][xt] = 0;
-        world.map.putTile(Blocks.clear.tile, xt, yt, 1);
+
+        world.setTile(
+          tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile :
+          Blocks.clear.tile
+          , xt, yt);
         block.yields.forEach(({name, amount}) => {
           this.inventory.addItem(name, amount);
         });
