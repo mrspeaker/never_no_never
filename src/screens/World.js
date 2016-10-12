@@ -109,6 +109,7 @@ class World extends Phaser.State {
 
   playerDied () {
     if (!this.player.died) {
+      this.world.setTileXY(Blocks.tombstone.tile, this.player.x, this.player.y);
       this.player.died = {
         time: Date.now(),
         onDead: ::this.reset
