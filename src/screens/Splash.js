@@ -26,21 +26,28 @@ class Splash extends Phaser.State {
   create (game) {
     game.stage.backgroundColor = "#0095E9";
 
-    const title = Title(game, "bmax!", 36, 12, 12).font;
-    const start = Title(game, "Start with?", 9, 130, 136, true).font;
+    const title = Title(game, "bmax!", 36, 100, 112).font;
+    const start = Title(game, "Start with?", 9, 130, 210, true).font;
 
     startWiths.forEach(([item], i) => {
+      const xo = 50;
+      const yo = 280;
+      const space = 80;
+
       if (item.question) {
-        Title(game, "?", 36, i * 64 + 44, 200);
-        return;
+        const {img} = Title(game, "?", 36, i * space + xo - 6, yo);
+        img.tint = Math.random() * 0xffffff;
       }
-      const icon = game.add.sprite(i * 64 + 40, 200, "icons");
-      icon.frame = Items[item.item].icon;
+      else {
+        const icon = game.add.sprite(i * space + xo, yo, "icons");
+        icon.frame = Items[item.item].icon;
+      }
 
       if (item.unlocked) {
-        Title(game, item.amount, 9, i * 64 + 44, 200 + 24);
-      } else {
-        Title(game, "locked", 9, i * 64 + 34, 200 + 12);
+        Title(game, item.amount, 9, i * space + xo + 4, yo + 24);
+      }
+      else {
+        Title(game, "locked", 9, i * space + xo - 16, yo + 12);
       }
     });
 
