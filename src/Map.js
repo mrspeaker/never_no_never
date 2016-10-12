@@ -212,8 +212,19 @@ class Map {
   }
 
   getTile (x, y) {
-    const base = this.map.layers[0].data[y][x].index;
-    const mid = this.map.layers[1].data[y][x].index;
+    const layers = this.map.layers;
+    const baseLayer = layers[0].data;
+    const midLayer = layers[1].data;
+    if (x < 0 || x > baseLayer[0].length ||
+        y < 0 || y > baseLayer.length) {
+      return {
+        base: Blocks.clear,
+        mid: Blocks.clear
+      };
+    }
+
+    const base = baseLayer[y][x].index;
+    const mid = midLayer[y][x].index;
     return {
       base: Blocks.getByTileId(base),
       mid: Blocks.getByTileId(mid)
@@ -228,6 +239,18 @@ class Map {
     this.map.putTile(tile, xt, yt, 1);
     const block = Blocks.getByTileId(tile);
     this.grid[yt][xt] = block.walk ? BLOCK_TYPE.walkable : BLOCK_TYPE.solid;
+  }
+
+  getNeighbours (x, y)  {
+    // nope... need to think it out... base vs mid.
+    const grid = this.map;
+    const l = x == 0 ? Blocks.clear.tile : grid[y][x - 1];
+    const r = x >= grid[0].length - 1 ? Blocks.clear.tile : grid[y][x + 1];
+    const t = y <= 0 ? Blocks.clear.tile : grid[y - 1][x];
+    const b = y >= grid.length - 1 ? Blocks.clear.tile : grid[y + 1][x];
+    return {
+      l, r, t, b
+    };
   }
 
   makePath (e, tx, ty, onWalked) {

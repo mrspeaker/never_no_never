@@ -38,11 +38,21 @@ class World extends Phaser.State {
     this.world = new Map(game);
     this.perma = game.add.group();
 
-    const {x, y} = this.world.findEmptySpot();
-    this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
-
+    // Position the player and manhole
+    let {x, y} = this.world.findEmptySpot();
     this.world.setTile(Blocks.manhole.tile, x, y);
+    const above = this.world.getTile(x, y - 1);
+    const right = this.world.getTile(x + 1, y);
+    if (above.base.name === "sand" && above.mid.name === "clear") {
+      y -= 1;
+    }
+    else if (right.base.name === "sand" && right.mid.name === "clear") {
+      x += 1;
+    }
+    this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+    if (this.player.y > 0) { this.player.y -= 1; } // 1px above the manhole.
 
+    // Focus camera slightly off center, to make up for bottom non-touch area
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
     this.cameraTarget.alpha = 0;
 
