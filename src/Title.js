@@ -1,9 +1,6 @@
-// Returns the image - to get the
-
 function Title (game, text, size, x, y, fixed) {
 
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
-
   const fontName = size === 9 ? "bmaxFont9" : "bmaxFont9x4";
   const fontSize = size === 9 ? 9 : 36;
 

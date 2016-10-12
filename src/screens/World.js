@@ -7,14 +7,14 @@ import Zombie from "../entities/Zombie";
 import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
+import Title from "../Title";
 
 class World extends Phaser.State {
 
-  mode = "exploring";
+  mode = "getready";
   _cheat = false;
 
   preload (game) {
-    //game.load.tilemap("world", "res/world.json", null, Phaser.Tilemap.TILED_JSON);
     game.load.image("tiles", "res/tiles.png");
     game.load.image("mid", "res/mid.png");
     game.load.image("inventory", "res/inventory.png");
@@ -29,7 +29,6 @@ class World extends Phaser.State {
   }
 
   reset () {
-    this.mode = "exploring";
     this.game.state.start("Splash");
   }
 
@@ -56,17 +55,10 @@ class World extends Phaser.State {
       mobs.add(new Zombie(game, x, y));
     }
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
-    const title = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
-    title.text = "bmax!";
-    game.add.image(10, 10, title);//.fixedToCamera = true;
-
-    const subtitle = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
-    subtitle.text = "0123456789!? You bet.";
-    game.add.image(4, 36, subtitle).fixedToCamera = true;
+    const title = Title(game, "bmax!", 36, 12, 12).font;
+    const subtitle = Title(game, "0123456789!? You bet.", 9, 4, 36, true).font;
 
     const hearts = this.hearts = game.add.group();
-
     for (let i = 0; i <= 10; i++) {
       const h = hearts.create(i * 14 + 4, 4, "icons4x4");
       if (i >= 3 && i < 5) h.frame = 1;
@@ -167,6 +159,9 @@ class World extends Phaser.State {
 
     controls.update();
     switch (mode) {
+    case "getready":
+      this.mode = "exploring";
+      break;
     case "exploring":
       this.updateExploring(game);
       break;
@@ -269,9 +264,7 @@ class World extends Phaser.State {
       if (y > bottomOfTouchable - 5) return;
       if (y < 70) {
         if (x > game.width - 70) {
-          //if (x < 50) {
           this.setMode("crafting");
-          //}
           return;
         }
       }
