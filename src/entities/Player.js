@@ -141,29 +141,28 @@ class Player extends Phaser.Sprite {
       break;
     case "dying":
       if (Date.now() - this.state.time > 3000) {
-        //this.state.set("dead");
         this.state.data();
       }
       this.x += Math.random() * 5 - 2;
       break;
     case "dead":
-
       break;
     }
 
+    const mode = this.state.get();
+    const dir = this.direction.get();
     if (this.state.isFirst()) {
-      const state = this.state.get();
-      const dir = this.direction.get();
-      if (state === "idle") {
+      if (mode === "idle") {
         this.frame = 0;
         animations.stop();
       }
-      else if (state === "walking") {
-        animations.play(`walk_${dir}`);
-      }
-      else if (state === "mining") {
-        animations.play(`mine_${dir}`);
-      }
+    }
+    if (mode === "walking") {
+      animations.play(`walk_${dir}`);
+    }
+
+    if (mode === "mining") {
+      animations.play(`mine_${dir}`);
     }
 
     this.shadow.x = this.x;
@@ -187,14 +186,13 @@ class Player extends Phaser.Sprite {
     const {walkSpeed, pathWalker} = this;
 
     pathWalker.update((c, lastPath) => {
-      if (lastPath) {
-        if (c.y !== lastPath.y) {
-          this.direction.set(c.y < lastPath.y ? "up" : "down");
-        }
-        else if (c.x !== lastPath.x) {
-          this.direction.set(c.x < lastPath.x ? "left" : "right");
-        }
+      if (c.y !== lastPath.y) {
+        this.direction.set(c.y < lastPath.y ? "up" : "down");
       }
+      else if (c.x !== lastPath.x) {
+        this.direction.set(c.x < lastPath.x ? "left" : "right");
+      }
+
       const xo = c.x * 32 - this.x;
       const yo = c.y * 32 - this.y;
 

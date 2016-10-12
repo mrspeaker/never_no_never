@@ -12,6 +12,7 @@ class PathWalker {
       this.onDone = onDone;
     }
     this.getCurrent();
+    this.last = this.current;
   }
 
   getCurrent () {
@@ -29,7 +30,6 @@ class PathWalker {
     this.current = this.path[0];
     this.path = this.path.slice(1);
     return this.current;
-
   }
 
   update (atCurrent) {
