@@ -1,5 +1,14 @@
 const Phaser = window.Phaser;
 import Controls from "../Controls";
+import Title from "../Title";
+import Items from "../Items";
+
+const startWiths = [
+  [{item: "wood", amount: 2, unlocked: false, question: false}],
+  [{item: "wood_sword", amount: 4, unlocked: false, question: false}],
+  [{item: "stone_sword", amount: 4, unlocked: false, question: true}],
+  [{item: "stone_pick", amount: 4, unlocked: false, question: true}],
+];
 
 class Splash extends Phaser.State {
 
@@ -15,22 +24,32 @@ class Splash extends Phaser.State {
   }
 
   create (game) {
-    game.stage.backgroundColor = "#4B962A";
+    game.stage.backgroundColor = "#0095E9";
 
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
-    const title = game.add.retroFont("bmaxFont9x4", 36, 36, chars, 13, 0, 0, 0, 0);
-    title.text = "bmax!";
-    game.add.image(10, 10, title);
+    const title = Title(game, "bmax!", 36, 12, 12).font;
+    const start = Title(game, "Start with?", 9, 130, 136, true).font;
 
-    const subtitle = game.add.retroFont("bmaxFont9", 9, 9, chars, 13, 0, 0, 0, 0);
-    subtitle.text = "0123456789!? You bet.";
-    game.add.image(12, 56, subtitle);
+    startWiths.forEach(([item], i) => {
+      if (item.question) {
+        Title(game, "?", 36, i * 64 + 44, 200);
+        return;
+      }
+      const icon = game.add.sprite(i * 64 + 40, 200, "icons");
+      icon.frame = Items[item.item].icon;
+
+      if (item.unlocked) {
+        Title(game, item.amount, 9, i * 64 + 44, 200 + 24);
+      } else {
+        Title(game, "locked", 9, i * 64 + 34, 200 + 12);
+      }
+    });
+
 
     this.controls = new Controls(game);
 
     this.ui = {
       title,
-      subtitle,
+      start,
     };
   }
 
