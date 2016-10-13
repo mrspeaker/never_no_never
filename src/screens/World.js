@@ -211,16 +211,44 @@ class World extends Phaser.State {
           const knockH = Math.abs(xd) > Math.abs(yd);
           if (!player.died) {
             if (knockH) {
-              m.x += Math.sign(xd) * -64;
+              const xo = Math.sign(xd) * -64;
+              // properties, duration, ease, autoStart, delay, repeat, yoyo
+              this.game.add.tween(m).to(
+                {x: m.x + xo},
+                150,
+                Phaser.Easing.Linear.None,
+                true,
+                0,
+                0,
+                false);
             } else {
-              m.y += Math.sign(yd) * -64;
+              const yo = Math.sign(yd) * -64;
+              this.game.add.tween(m).to(
+                {y: m.y + yo},
+                150,
+                Phaser.Easing.Linear.None,
+                true,
+                0,
+                0,
+                false);
             }
           }
           if (damage) {
             // kill zombie
             const health = m.health.damage(damage);
             if (health <= 0) {
-              const {x, y} = this.world.findEmptySpot();
+              let close = true;
+              let x = -1;
+              let y = -1;
+              while (close) {
+                const spot = this.world.findEmptySpot();
+                x = spot.x;
+                y = spot.y;
+                const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
+                if (dist > 200) {
+                  close = false;
+                }
+              }
               m.reset(x, y);
               this.world.makePath(m, m.x, m.y);
               player.state.set("idle");

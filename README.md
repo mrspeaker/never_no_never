@@ -5,7 +5,6 @@
 * a gun (auto, or click to fire?)
 * drops from mining
 * drops from zombie kills
-* knock back
 * find a recipe, unlock
 * store progress/stats/unlocks
   * on died, show progress hp
