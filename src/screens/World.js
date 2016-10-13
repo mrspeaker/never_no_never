@@ -51,7 +51,7 @@ class World extends Phaser.State {
     this.inventory = new Inventory(game, ::this.player.switchTool);
     // this.inventory.addItem("wood_pick", 10);
     // this.inventory.addItem("wood_sword", 10);
-    // this.inventory.addItem("brick", 10);
+    // this.inventory.addItem("sand", 10);
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 7; i++) {
@@ -277,8 +277,13 @@ class World extends Phaser.State {
 
   placeBlockAt (block, worldX, worldY) {
     const {base, mid} = this.world.getTileXY(worldX, worldY);
-    if (mid.name === "clear" && base.name === "sand") {
-      this.world.setTileXY(block, worldX, worldY);
+    if (mid.name === "clear") {
+      if (block === Blocks.sand.tile) {
+        this.world.setTileXY(block, worldX, worldY, 0);
+      }
+      else if (base.name === "sand") {
+        this.world.setTileXY(block, worldX, worldY);
+      }
     }
   }
 
@@ -298,7 +303,7 @@ class World extends Phaser.State {
 
       this.player.handleClick(
         this.walkToThenAct.bind(this, worldX, worldY),
-        this.placeBlockAt.bind(this, Blocks.brick.tile, worldX, worldY)
+        (block) => this.placeBlockAt(block, worldX, worldY)
       );
 
     }

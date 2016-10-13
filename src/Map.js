@@ -231,12 +231,12 @@ class Map {
     };
   }
 
-  setTileXY (tile, x, y) {
-    this.setTile(tile, x / 32 | 0, y / 32 | 0);
+  setTileXY (tile, x, y, layer = 1) {
+    this.setTile(tile, x / 32 | 0, y / 32 | 0, layer);
   }
 
-  setTile (tile, xt, yt) {
-    this.map.putTile(tile, xt, yt, 1);
+  setTile (tile, xt, yt, layer = 1) {
+    this.map.putTile(tile, xt, yt, layer);
     const block = Blocks.getByTileId(tile);
     this.grid[yt][xt] = block.walk ? BLOCK_TYPE.walkable : BLOCK_TYPE.solid;
   }

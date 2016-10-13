@@ -5,6 +5,7 @@ import Health from "../components/Health";
 import PathWalker from "../components/PathWalker";
 import Items from "../Items";
 import Tween from "../Tween";
+import Blocks from "../Blocks";
 
 class Player extends Phaser.Sprite {
 
@@ -94,7 +95,7 @@ class Player extends Phaser.Sprite {
 
   handleClick(walk, place) {
     if (this.state.get() === "building") {
-      place();
+      place(Blocks.sand.tile);
     } else {
       walk();
     }

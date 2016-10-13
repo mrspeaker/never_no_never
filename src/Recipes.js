@@ -10,6 +10,9 @@ const Recipes = [{
 },{
   source: [{item: "wood", amount: 1}, {item: "stone", amount: 1}],
   yields: [{item: "stone_sword", amount: 6}]
+},{
+  source: [{item: "coal", amount: 1}],
+  yields: [{item: "sand", amount: 5}]
 }];
 
 export default Recipes;
