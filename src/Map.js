@@ -59,10 +59,10 @@ class Map {
         }
 
         const o = noiseOres.in2D(x, y);
-        if (o > 0.5 && o < 0.504) {
+        if (o > 0.5 && o < 0.503) {
           gridMid[x][y] = Blocks.coal_ore.tile;
         }
-        else if (o > 0.6 && o < 0.602) {
+        else if (o > 0.6 && o < 0.603) {
           gridMid[x][y] = Blocks.stone_ore.tile;
         }
       }

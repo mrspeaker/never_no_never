@@ -29,18 +29,22 @@ class Splash extends Phaser.State {
     const title = Title(game, "bmax!", 36, 100, 112).font;
     const start = Title(game, "Start with?", 9, 130, 210, true).font;
 
-    startWiths.forEach(([item], i) => {
+    this.starts = startWiths.map(([item], i) => {
       const xo = 50;
       const yo = 280;
       const space = 80;
 
+      let t = null;
+
       if (item.question) {
         const {img} = Title(game, "?", 36, i * space + xo - 6, yo);
         img.tint = Math.random() * 0xffffff;
+        t = img;
       }
       else {
         const icon = game.add.sprite(i * space + xo, yo, "icons");
         icon.frame = Items[item.item].icon;
+        t = icon;
       }
 
       if (item.unlocked) {
@@ -49,6 +53,7 @@ class Splash extends Phaser.State {
       else {
         Title(game, "locked", 9, i * space + xo - 16, yo + 12);
       }
+      return t;
     });
 
 
@@ -65,6 +70,10 @@ class Splash extends Phaser.State {
     const {justPressed} = controls;
 
     controls.update();
+
+    this.starts.forEach((s, i) => {
+      s.y += Math.sin(i + Date.now() / 500) * 0.1;
+    });
 
     if (justPressed) {
       game.state.start("World");
