@@ -66,7 +66,7 @@ class Player extends Phaser.Sprite {
 
   setPath (path, onDone) {
     if (this.state.get() === "building") {
-      // Set end of path to thingl.
+      // if building mode, place a brick: don't set a path.
       return;
     }
     this.pathWalker.setPath(path.slice(1), () => {

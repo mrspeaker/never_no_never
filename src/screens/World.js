@@ -61,7 +61,7 @@ class World extends Phaser.State {
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 7; i++) {
-      const {x, y} = this.world.findEmptySpot();
+      const {x, y} = this.getMobSpawnPoint();
       mobs.add(new Zombie(game, x, y));
     }
 
@@ -80,6 +80,25 @@ class World extends Phaser.State {
     game.camera.focusOn(this.player);
     game.camera.y += 300;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+  }
+
+  getMobSpawnPoint () {
+    const {world, player} = this;
+    const CLOSE_PIXELS = 400;
+    let close = true;
+    let x = -1;
+    let y = -1;
+    while (close) {
+      const spot = world.findEmptySpot();
+      x = spot.x;
+      y = spot.y;
+      const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
+      if (dist > CLOSE_PIXELS) {
+        close = false;
+      }
+    }
+
+    return {x, y};
   }
 
   playerHurt (health, maxHealth) {
@@ -157,18 +176,7 @@ class World extends Phaser.State {
     const oldX = m.x;
     const oldY = m.y;
 
-    let close = true;
-    let x = -1;
-    let y = -1;
-    while (close) {
-      const spot = this.world.findEmptySpot();
-      x = spot.x;
-      y = spot.y;
-      const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
-      if (dist > 400) {
-        close = false;
-      }
-    }
+    const {x, y} = this.getMobSpawnPoint();
     m.reset(x, y);
     this.world.makePath(m, m.x, m.y);
     player.state.set("idle");
