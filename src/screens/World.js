@@ -23,6 +23,7 @@ class World extends Phaser.State {
 
   create (game) {
     game.stage.backgroundColor = "#343436";
+    this.camera.flash(0x0095E9, 500);
 
     Tween.game = game;
 
