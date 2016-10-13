@@ -1,8 +1,8 @@
 # bmax
 
-* move back (not jump knockback)
-* don't spawn close to player
 * a gun (auto, or click to fire?)
+* zombie roaming state
+* roam on player death
 * drops from mining
 * drops from zombie kills
 * find a recipe, unlock
@@ -24,3 +24,5 @@
 * minimap in pda screen
 * when you die, tomb with your stuff in it in vaguely the same place.
 * permanent markers (how to stop it messing up pathfinding?) - walkable, offset sprite?
+* pan around
+* fix state machine: don't allow bad states

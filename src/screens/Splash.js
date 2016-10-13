@@ -1,4 +1,5 @@
 const Phaser = window.Phaser;
+
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
@@ -11,17 +12,6 @@ const startWiths = [
 ];
 
 class Splash extends Phaser.State {
-
-  preload (game) {
-    game.load.image("tiles", "res/tiles.png");
-    game.load.image("mid", "res/mid.png");
-    game.load.image("bmaxFont9", "res/bmax9.png");
-    game.load.image("bmaxFont9x4", "res/bmax9x4.png");
-    game.load.spritesheet("craft-tmp", "res/craft-tmp.png", 34 * 4, 40);
-    game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
-    game.load.spritesheet("icons", "res/icons.png", 32, 32);
-    game.load.spritesheet("icons4x4", "res/icons4x4.png", 16, 16);
-  }
 
   create (game) {
     game.stage.backgroundColor = "#0095E9";
@@ -39,11 +29,24 @@ class Splash extends Phaser.State {
       if (item.question) {
         const {img} = Title(game, "?", 36, i * space + xo - 6, yo);
         img.tint = Math.random() * 0xffffff;
+
+        const {img:shadow} = Title(game, "?", 36, i * space + xo - 6, yo + 50);
+        shadow.scale.y = 0.4;
+        shadow.tint = 0;
+        shadow.alpha = 0.2;
+
         t = img;
       }
       else {
         const icon = game.add.sprite(i * space + xo, yo, "icons");
         icon.frame = Items[item.item].icon;
+
+        const shadow = game.add.sprite(i * space + xo, yo + 50, "icons");
+        shadow.frame = Items[item.item].icon;
+        shadow.scale.y = 0.4;
+        shadow.tint = 0;
+        shadow.alpha = 0.2;
+
         t = icon;
       }
 

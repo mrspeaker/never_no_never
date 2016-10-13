@@ -1,8 +1,10 @@
 const Phaser = window.Phaser;
+
 import State from "../State";
 import Health from "../components/Health";
 import PathWalker from "../components/PathWalker";
 import Items from "../Items";
+import Tween from "../Tween";
 
 class Player extends Phaser.Sprite {
 
@@ -45,25 +47,20 @@ class Player extends Phaser.Sprite {
 
     this.health = new Health(3, 5);
     this.health.onHurt = (...args) => {
-      this.onHurt(game);
+      if (this.died) return;
+      this.onHurt();
       onHurt(...args);
     };
     this.health.onDie = onDie;
     this.pathWalker = new PathWalker();
   }
 
-  onHurt (game) {
-    if (this.died) {
-      return;
+  onHurt () {
+    Tween.flash(this, {alpha: 0});
+    // Don't stop walking.
+    if (this.state.get() === "mining") {
+      this.state.set("idle");
     }
-    game.add.tween(this).to(
-      {alpha: 0},
-      100,
-      Phaser.Easing.Linear.None,
-      true,
-      0,
-      2,
-      true);
   }
 
   setPath (path, onDone) {

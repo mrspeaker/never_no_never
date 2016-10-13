@@ -1,4 +1,5 @@
 const Phaser = window.Phaser;
+
 import Map from "../Map";
 import Controls from "../Controls";
 import Player from "../entities/Player";
@@ -8,25 +9,13 @@ import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
 import Title from "../Title";
+import HUD from "../HUD";
+import Tween from "../Tween";
 
 class World extends Phaser.State {
 
   mode = "getready";
   _cheat = false;
-
-  preload (game) {
-    game.load.image("tiles", "res/tiles.png");
-    game.load.image("mid", "res/mid.png");
-    game.load.image("inventory", "res/inventory.png");
-    game.load.image("bmaxFont9", "res/bmax9.png");
-    game.load.image("bmaxFont9x4", "res/bmax9x4.png");
-    game.load.image("crafting", "res/crafting-back.png");
-    game.load.spritesheet("craft-tmp", "res/craft-tmp.png", 34 * 4, 40);
-    game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
-    game.load.spritesheet("icons", "res/icons.png", 32, 32);
-    game.load.spritesheet("icons4x4", "res/icons4x4.png", 16, 16);
-    game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 48);
-  }
 
   reset () {
     this.game.state.start("Splash");
@@ -34,6 +23,8 @@ class World extends Phaser.State {
 
   create (game) {
     game.stage.backgroundColor = "#343436";
+
+    Tween.game = game;
 
     this.world = new Map(game);
     this.perma = game.add.group();
@@ -71,20 +62,7 @@ class World extends Phaser.State {
     const title = Title(game, "bmax!", 36, 12, 12).font;
     const subtitle = Title(game, "0123456789!? You bet.", 9, 4, 36, true).font;
 
-    const hearts = this.hearts = game.add.group();
-    for (let i = 0; i <= 10; i++) {
-      const h = hearts.create(i * 14 + 4, 4, "icons4x4");
-      if (i >= 3 && i < 5) h.frame = 1;
-      if (i >= 5) h.frame = 2;
-      h.fixedToCamera = true;
-    }
-
-    for (let i = 0; i <= 10; i++) {
-      const h = hearts.create(i * 14 + 4, 20, "icons4x4");
-      if (i <= 2) h.frame = 17;
-      if (i > 2) h.frame = 18;
-      h.fixedToCamera = true;
-    }
+    this.HUD = new HUD(game);
 
     this.craftingScreen = new Crafting(game, this);
 
@@ -93,28 +71,24 @@ class World extends Phaser.State {
       subtitle,
     };
 
+    game.camera.focusOn(this.player);
+    game.camera.y += 300;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
   }
 
   playerHurt (health, maxHealth) {
-    // Update player health ui
-    let i = 0;
-    this.hearts.forEach(h => {
-      if (i < health) h.frame = 0;
-      else if (i < maxHealth) h.frame = 1;
-      else if (i < 10) h.frame = 2;
-      i++;
-    });
+    this.HUD.setHealth(health, maxHealth);
   }
 
   playerDied () {
-    if (!this.player.died) {
-      this.world.setTileXY(Blocks.tombstone.tile, this.player.x, this.player.y);
-      this.player.died = {
-        time: Date.now(),
-        onDead: ::this.reset
-      };
+    if (this.player.died) {
+      return;
     }
+    this.world.setTileXY(Blocks.tombstone.tile, this.player.x, this.player.y);
+    this.player.died = {
+      time: Date.now(),
+      onDead: ::this.reset
+    };
   }
 
   toggleCheat () {
@@ -171,13 +145,41 @@ class World extends Phaser.State {
     this.craftingScreen.visible = isCrafting;
   }
 
+  killZombie (m) {
+    const {player} = this;
+    const holding = this.inventory.holding();
+    const oldX = m.x;
+    const oldY = m.y;
+
+    let close = true;
+    let x = -1;
+    let y = -1;
+    while (close) {
+      const spot = this.world.findEmptySpot();
+      x = spot.x;
+      y = spot.y;
+      const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
+      if (dist > 200) {
+        close = false;
+      }
+    }
+    m.reset(x, y);
+    this.world.makePath(m, m.x, m.y);
+    player.state.set("idle");
+    holding.addItem(-1);
+    const corpse = this.perma.create(oldX, oldY, "peeps");
+    corpse.frame = Math.random() < 0.5 ? 30 : 31;
+  }
+
+
   update (game) {
-    const {mode, player, cameraTarget, mobs, controls} = this;
+    const {mode, player, cameraTarget, controls} = this;
+
+    controls.update();
 
     cameraTarget.x = player.x + 10;
     cameraTarget.y = player.y + 50;
 
-    controls.update();
     switch (mode) {
     case "getready":
       this.mode = "exploring";
@@ -190,9 +192,26 @@ class World extends Phaser.State {
       break;
     }
 
-    // Collision detect
+    this.doMobStrategy();
+    this.detectMobCollisions();
+
+  }
+
+  doMobStrategy () {
+    // Randomly run towards player
+    if (Math.random() < 0.005) {
+      const {mobs, player} = this;
+      const mob = mobs.getRandom();
+      this.world.makePath(mob, player.x, player.y);
+    }
+  }
+
+  detectMobCollisions () {
+    const {mobs, player} = this;
+
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
+
       if (dist < 200) {
         this.world.makePath(m, player.x, player.y);
       }
@@ -203,84 +222,44 @@ class World extends Phaser.State {
         if (damage) {
           player.animations.play("attack");
         }
-        if (dist < 32) {
-          const oldX = m.x;
-          const oldY = m.y;
-          const xd = player.x - m.x;
-          const yd = player.y - m.y;
-          const knockH = Math.abs(xd) > Math.abs(yd);
-          if (!player.died) {
-            if (knockH) {
-              const xo = Math.sign(xd) * -64;
-              // properties, duration, ease, autoStart, delay, repeat, yoyo
-              this.game.add.tween(m).to(
-                {x: m.x + xo},
-                150,
-                Phaser.Easing.Linear.None,
-                true,
-                0,
-                0,
-                false);
-            } else {
-              const yo = Math.sign(yd) * -64;
-              this.game.add.tween(m).to(
-                {y: m.y + yo},
-                150,
-                Phaser.Easing.Linear.None,
-                true,
-                0,
-                0,
-                false);
-            }
-          }
-          if (damage) {
-            // kill zombie
-            const health = m.health.damage(damage);
-            if (health <= 0) {
-              let close = true;
-              let x = -1;
-              let y = -1;
-              while (close) {
-                const spot = this.world.findEmptySpot();
-                x = spot.x;
-                y = spot.y;
-                const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
-                if (dist > 200) {
-                  close = false;
-                }
-              }
-              m.reset(x, y);
-              this.world.makePath(m, m.x, m.y);
-              player.state.set("idle");
-              holding.addItem(-1);
-              const corpse = this.perma.create(oldX, oldY, "peeps");
-              corpse.frame = Math.random() < 0.5 ? 30 : 31;
-            }
-            return;
-          }
-          else {
-            player.health.damage(1);
-            if (!player.died) {
-              if (knockH) {
-                player.x += Math.sign(xd) * 16;
-              } else {
-                player.y += Math.sign(yd) * 16;
-              }
-              if (player.state.get() === "mining") {
-                player.state.set("idle");
-              }
-            }
 
-          }
+        if (dist < 32) {
+          this.collideWithMob(m);
+        }
+      }
+    });
+  }
+
+  collideWithMob (m) {
+    const {player} = this;
+    const holding = this.inventory.holding();
+    const damage = Items[holding.item].damage;
+
+    const xd = player.x - m.x;
+    const yd = player.y - m.y;
+    const knockH = Math.abs(xd) > Math.abs(yd);
+    if (damage) {
+      // hit zombie
+      if (m.health.damage(damage) <= 0) {
+        this.killZombie(m);
+      }
+      else {
+        const tweenH = {x: m.x + Math.sign(xd) * -64};
+        const tweenV = {y: m.y + Math.sign(yd) * -64};
+        Tween.to(m, knockH ? tweenH : tweenV, 150);
+      }
+      return;
+    }
+    else {
+      if (player.health.damage(1) > 0) {
+        // Player knockback
+        if (knockH) {
+          player.x += Math.sign(xd) * 16;
+        } else {
+          player.y += Math.sign(yd) * 16;
         }
       }
 
-    });
-
-    // Randomly run towards player
-    if (Math.random() < 0.005) {
-      const mob = mobs.getRandom();
-      this.world.makePath(mob, player.x, player.y);
     }
   }
 
