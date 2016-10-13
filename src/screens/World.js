@@ -27,6 +27,12 @@ class World extends Phaser.State {
     Tween.game = game;
 
     this.world = new Map(game);
+
+    this.groundTarget = game.add.sprite(0, 0, "icons");
+    this.groundTarget.frame = 21;
+    //this.groundTarget.blendMode = window.PIXI.blendModes.DARKEN;
+    this.groundTarget.alpha = 0.5;
+
     this.perma = game.add.group();
 
     // Position the player and manhole
@@ -264,6 +270,10 @@ class World extends Phaser.State {
   }
 
   walkToThenAct (worldX, worldY) {
+
+    this.groundTarget.x = (worldX / 32 | 0) * 32;
+    this.groundTarget.y = (worldY / 32 | 0) * 32;
+
     // Walk to spot
     this.world.makePath(
       this.player,
@@ -302,6 +312,7 @@ class World extends Phaser.State {
       }
 
       this.player.handleClick(
+        inventory.holding(),
         this.walkToThenAct.bind(this, worldX, worldY),
         (block) => this.placeBlockAt(block, worldX, worldY)
       );

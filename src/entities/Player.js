@@ -93,9 +93,10 @@ class Player extends Phaser.Sprite {
     }
   }
 
-  handleClick(walk, place) {
+  handleClick(tool, walk, place) {
     if (this.state.get() === "building") {
-      place(Blocks.sand.tile);
+      // NOTE: assuming an Item is the same as a Block for placeables.
+      place(Blocks[tool.item].tile);
     } else {
       walk();
     }
