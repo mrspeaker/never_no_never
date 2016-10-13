@@ -159,7 +159,7 @@ class World extends Phaser.State {
       x = spot.x;
       y = spot.y;
       const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
-      if (dist > 200) {
+      if (dist > 400) {
         close = false;
       }
     }
@@ -220,6 +220,8 @@ class World extends Phaser.State {
         const holding = this.inventory.holding();
         const damage = Items[holding.item].damage;
         if (damage) {
+          // Hmm, ok... attacking needs to be a state.
+          // else the mining/walking anim will quickly override this
           player.animations.play("attack");
         }
 
@@ -232,14 +234,13 @@ class World extends Phaser.State {
 
   collideWithMob (m) {
     const {player} = this;
-    const holding = this.inventory.holding();
-    const damage = Items[holding.item].damage;
-
     const xd = player.x - m.x;
     const yd = player.y - m.y;
     const knockH = Math.abs(xd) > Math.abs(yd);
+
+    const holding = this.inventory.holding();
+    const damage = Items[holding.item].damage;
     if (damage) {
-      // hit zombie
       if (m.health.damage(damage) <= 0) {
         this.killZombie(m);
       }
@@ -250,17 +251,16 @@ class World extends Phaser.State {
       }
       return;
     }
-    else {
-      if (player.health.damage(1) > 0) {
-        // Player knockback
-        if (knockH) {
-          player.x += Math.sign(xd) * 16;
-        } else {
-          player.y += Math.sign(yd) * 16;
-        }
-      }
 
+    // Zombie got the player
+    if (player.health.damage(1) > 0) {
+      if (knockH) {
+        player.x += Math.sign(xd) * 16;
+      } else {
+        player.y += Math.sign(yd) * 16;
+      }
     }
+
   }
 
   walkToThenAct (worldX, worldY) {
@@ -289,11 +289,11 @@ class World extends Phaser.State {
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable - 5) return;
-      if (y < 70) {
-        if (x > game.width - 70) {
-          this.setMode("crafting");
-          return;
-        }
+
+      // Crafting button - TODO: factorize it.
+      if (y < 70 && x > game.width - 70) {
+        this.setMode("crafting");
+        return;
       }
 
       this.player.handleClick(
