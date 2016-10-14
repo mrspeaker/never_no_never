@@ -1,41 +1,38 @@
 class PathWalker {
 
   onDone = null;
-
-  path = [];
+  path = null;
   current = null;
   last = null;
 
   setPath (path, onDone) {
+    if (!path.length) {
+      onDone();
+      return;
+    }
     this.path = path;
-    if (onDone) {
-      this.onDone = onDone;
-    }
-    this.getCurrent();
-    this.last = this.current;
-  }
-
-  getCurrent () {
-    if (this.current) {
-      return this.current;
-    }
-    return this.next();
+    this.onDone = onDone;
+    this.current = path[0];
+    this.last = this.current; // hmm, really?
   }
 
   next () {
     this.last = this.current;
     if (!this.path.length) {
-      return null;
+      this.current = null;
     }
-    this.current = this.path[0];
-    this.path = this.path.slice(1);
+    else {
+      this.current = this.path[0];
+      this.path = this.path.slice(1);
+    }
     return this.current;
   }
 
   update (atCurrent) {
-    if (atCurrent(this.current, this.last)) {
+    const {current, last} = this;
+    if (atCurrent(current, last)) {
       if (!this.next()) {
-        this.onDone();
+        this.onDone(current);
       }
     }
   }

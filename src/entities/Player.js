@@ -69,18 +69,23 @@ class Player extends Phaser.Sprite {
       // if building mode, place a brick: don't set a path.
       return;
     }
-    const cx = Math.round(this.x / 32);
-    const cy = Math.round(this.y / 32);
+    const cx = Math.floor(this.x / 32);
+    const cy = Math.floor(this.y / 32);
     if (path.length && cx === path[0].x && cy === path[1].y) {
-      console.log("ddddd");
+      console.log("same player pos. slice it.");
       path = path.slice(1);
     }
-    this.pathWalker.setPath(path, () => {
-      this.x = Math.round(this.x / 32) * 32;
-      this.y = Math.round(this.y / 32) * 32;
+
+    path.length && this.state.set("walking");
+
+    this.pathWalker.setPath(path, (last) => {
+      if (last) {
+        this.x = last.x * 32;
+        this.y = last.y * 32;
+      }
+      this.state.set("idle");
       onDone();
     });
-    this.state.set("walking");
   }
 
   switchTool (tool) {
