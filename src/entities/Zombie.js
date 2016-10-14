@@ -1,8 +1,11 @@
 const Phaser = window.Phaser;
 
 import Health from "../components/Health";
+import State from "../State";
 
 class Zombie extends Phaser.Sprite {
+
+  walkSpeed = 1.5;
 
   constructor (game, xtile, ytile) {
     super(game, xtile * 32, ytile * 32, "peeps");
@@ -22,6 +25,10 @@ class Zombie extends Phaser.Sprite {
     this.health.onHurt = this.onHurt.bind(this);
     this.health.onDie = this.onDie.bind(this);
 
+    this.state = new State("idle");
+    this.direction = new State("right");
+
+
     this.path = [];
     this.current = null;
   }
@@ -37,10 +44,10 @@ class Zombie extends Phaser.Sprite {
   setPath (path, onDone) {
     this.path = path.length < 2 ? path: path.length > 2 ? path.slice(2) : path.slice(1);
     this.onDone = onDone;
+    this.state.set("walking");
   }
 
   reset (x, y) {
-    //this.onDone && this.onDone();
     this.x = x * 32;
     this.y = y * 32;
     this.current = null;
@@ -49,28 +56,44 @@ class Zombie extends Phaser.Sprite {
   }
 
   update () {
+    const {animations} = this;
+    const current = this.state.get();
+    switch (current) {
+    case "idle":
+      if (this.state.isFirst()) {
+        this.frame = 0;
+        animations.stop();
+      }
+      break;
+    case "walking":
+      this.updateWalking();
+      break;
+    }
+
+    this.shadow.x = this.x;
+    this.shadow.y = this.y + 8;
+  }
+
+  updateWalking () {
     let {current, path} = this;
     const {animations} = this;
 
-    if (!path.length) {
-      animations.stop();
-    }
     if (!current && path.length) {
       animations.play("walk_down");
       this.current = path[0];
       this.path = path.slice(1);
     }
-    const walkSpeed = 1.5;
+
     if (current) {
       const xo = current.x * 32 - this.x;
       const yo = current.y * 32 - this.y;
       let xx = 0;
       let yy = 0;
-      if (Math.abs(xo) >= walkSpeed * 0.65) {
-        xx += walkSpeed * Math.sign(xo);
+      if (Math.abs(xo) >= this.walkSpeed * 0.65) {
+        xx += this.walkSpeed * Math.sign(xo);
       }
-      if (Math.abs(yo) >= walkSpeed * 0.65) {
-        yy += walkSpeed * Math.sign(yo);
+      if (Math.abs(yo) >= this.walkSpeed * 0.65) {
+        yy += this.walkSpeed * Math.sign(yo);
       }
       if (xx !== 0 && yy !== 0) {
         xx = xx / Math.sqrt(2);
@@ -79,17 +102,16 @@ class Zombie extends Phaser.Sprite {
       this.x += xx;
       this.y += yy;
 
-      if (Phaser.Math.distance(this.x, this.y, current.x * 32, current.y * 32) < walkSpeed) {
+      if (Phaser.Math.distance(this.x, this.y, current.x * 32, current.y * 32) < this.walkSpeed) {
         this.current = null;
         if (!this.path.length) {
           this.onDone();
           this.x = current.x * 32;
           this.y = current.y * 32;
+          this.state.set("idle");
         }
       }
     }
-    this.shadow.x = this.x;
-    this.shadow.y = this.y + 8
   }
 }
 

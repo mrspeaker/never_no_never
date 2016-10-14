@@ -138,12 +138,6 @@ class Player extends Phaser.Sprite {
     case "building":
       this.updateBuilding();
       break;
-    case "dying":
-      if (Date.now() - this.state.time > 3000) {
-        this.state.data();
-      }
-      this.x += Math.random() * 5 - 2;
-      break;
     case "dead":
       break;
     }
