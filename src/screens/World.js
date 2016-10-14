@@ -63,7 +63,7 @@ class World extends Phaser.State {
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 7; i++) {
       const {x, y} = this.getMobSpawnPoint();
-      mobs.add(new Zombie(game, x, y));
+      mobs.add(new Zombie(game, x, y, this));
     }
 
     const title = Title(game, "bmax!", 36, 12, 12).font;
@@ -171,21 +171,12 @@ class World extends Phaser.State {
     this.craftingScreen.visible = isCrafting;
   }
 
-  killZombie (m) {
+  killZombie () {
     const {player} = this;
     const holding = this.inventory.holding();
-    const oldX = m.x;
-    const oldY = m.y;
-
-    const {x, y} = this.getMobSpawnPoint();
-    m.reset(x, y);
-    this.world.makePath(m, m.x, m.y);
     player.state.set("idle");
     holding.addItem(-1);
-    const corpse = this.perma.create(oldX, oldY, "peeps");
-    corpse.frame = Math.random() < 0.5 ? 30 : 31;
   }
-
 
   update (game) {
     const {mode, player, cameraTarget, controls} = this;

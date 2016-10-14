@@ -7,13 +7,16 @@ class Zombie extends Phaser.Sprite {
 
   walkSpeed = 1.5;
 
-  constructor (game, xtile, ytile) {
+  constructor (game, xtile, ytile, bmax) {
     super(game, xtile * 32, ytile * 32, "peeps");
+
+    this.bmax = bmax;
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
     this.shadow.frame = 40;
 
     const walkSpeed = 5;
+    this.animations.add("idle", [20], walkSpeed, true);
     this.animations.add("walk_right", [20, 21, 22, 21], walkSpeed, true);
     this.animations.add("walk_left", [23, 24, 25, 24], walkSpeed, true);
     this.animations.add("walk_up", [26, 27], walkSpeed, true);
@@ -28,7 +31,6 @@ class Zombie extends Phaser.Sprite {
     this.state = new State("idle");
     this.direction = new State("right");
 
-
     this.path = [];
     this.current = null;
   }
@@ -38,7 +40,16 @@ class Zombie extends Phaser.Sprite {
   }
 
   onDie () {
-    //console.log("die");
+    this.state.set("dying");
+  }
+  dead () {
+    const {bmax:world} = this;
+    const corpse = world.perma.create(this.x, this.y, "peeps");
+    corpse.frame = Math.random() < 0.5 ? 30 : 31;
+
+    const {x, y} = world.getMobSpawnPoint();
+    world.world.makePath(this, x, y);
+    this.reset(x, y);
   }
 
   setPath (path, onDone) {
@@ -53,6 +64,7 @@ class Zombie extends Phaser.Sprite {
     this.current = null;
     this.health.health = this.health.maxHealth;
     this.path = [];
+    this.state.set("idle");
   }
 
   update () {
@@ -61,12 +73,14 @@ class Zombie extends Phaser.Sprite {
     switch (current) {
     case "idle":
       if (this.state.isFirst()) {
-        this.frame = 0;
-        animations.stop();
+        animations.play("idle");
       }
       break;
     case "walking":
       this.updateWalking();
+      break;
+    case "dying":
+      this.dead();
       break;
     }
 
