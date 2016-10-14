@@ -2,6 +2,7 @@ const Phaser = window.Phaser;
 
 import Health from "../components/Health";
 import State from "../State";
+import PathWalker from "../components/PathWalker";
 
 class Zombie extends Phaser.Sprite {
 
@@ -31,8 +32,7 @@ class Zombie extends Phaser.Sprite {
     this.state = new State("idle");
     this.direction = new State("right");
 
-    this.path = [];
-    this.current = null;
+    this.pathWalker = new PathWalker();
   }
 
   onHurt () {
@@ -53,17 +53,29 @@ class Zombie extends Phaser.Sprite {
   }
 
   setPath (path, onDone) {
-    this.path = path.length < 2 ? path: path.length > 2 ? path.slice(2) : path.slice(1);
-    this.onDone = onDone;
-    this.state.set("walking");
+    if (this.state.get() !== "dying") {
+      path = path.length < 2 ? path: path.length > 2 ? path.slice(2) : path.slice(1);
+      //const cx = Math.floor(this.x / 32);
+      //const cy = Math.floor(this.y / 32);
+      //console.log(cx, path[0].x, cy, path[1].y)
+      //if (path.length && cx === path[0].x && cy === path[1].y) {
+        // I don't think it ever gets here...
+      //  console.log("hererer");
+//        path = path.slice(1);
+    //  }
+      this.pathWalker.setPath(path, () => {
+        this.x = Math.floor(this.x / 32) * 32;
+        this.y = Math.floor(this.y / 32) * 32;
+        onDone();
+      });
+      this.state.set("walking");
+    }
   }
 
   reset (x, y) {
     this.x = x * 32;
     this.y = y * 32;
-    this.current = null;
     this.health.health = this.health.maxHealth;
-    this.path = [];
     this.state.set("idle");
   }
 
@@ -89,25 +101,30 @@ class Zombie extends Phaser.Sprite {
   }
 
   updateWalking () {
-    let {current, path} = this;
-    const {animations} = this;
+    const walkSpeed = this.walkSpeed;
 
-    if (!current && path.length) {
-      animations.play("walk_down");
-      this.current = path[0];
-      this.path = path.slice(1);
-    }
+    const dir = this.direction.get();
+    this.animations.play(`walk_${dir}`);
 
-    if (current) {
-      const xo = current.x * 32 - this.x;
-      const yo = current.y * 32 - this.y;
+    this.pathWalker.update((c, lastPath) => {
+      if (c.y !== lastPath.y) {
+        this.direction.set(c.y < lastPath.y ? "up" : "down");
+      }
+      else if (c.x !== lastPath.x) {
+        this.direction.set(c.x < lastPath.x ? "left" : "right");
+      }
+
+      const xo = c.x * 32 - this.x;
+      const yo = c.y * 32 - this.y;
+
+      // TODO: replace this "jittery" path follower with current vs lastPath
       let xx = 0;
       let yy = 0;
-      if (Math.abs(xo) >= this.walkSpeed * 0.65) {
-        xx += this.walkSpeed * Math.sign(xo);
+      if (Math.abs(xo) >= walkSpeed * 0.65) {
+        xx += walkSpeed * Math.sign(xo);
       }
-      if (Math.abs(yo) >= this.walkSpeed * 0.65) {
-        yy += this.walkSpeed * Math.sign(yo);
+      if (Math.abs(yo) >= walkSpeed * 0.65) {
+        yy += walkSpeed * Math.sign(yo);
       }
       if (xx !== 0 && yy !== 0) {
         xx = xx / Math.sqrt(2);
@@ -116,16 +133,8 @@ class Zombie extends Phaser.Sprite {
       this.x += xx;
       this.y += yy;
 
-      if (Phaser.Math.distance(this.x, this.y, current.x * 32, current.y * 32) < this.walkSpeed) {
-        this.current = null;
-        if (!this.path.length) {
-          this.onDone();
-          this.x = current.x * 32;
-          this.y = current.y * 32;
-          this.state.set("idle");
-        }
-      }
-    }
+      return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
+    });
   }
 }
 

@@ -69,7 +69,13 @@ class Player extends Phaser.Sprite {
       // if building mode, place a brick: don't set a path.
       return;
     }
-    this.pathWalker.setPath(path.slice(1), () => {
+    const cx = Math.round(this.x / 32);
+    const cy = Math.round(this.y / 32);
+    if (path.length && cx === path[0].x && cy === path[1].y) {
+      console.log("ddddd");
+      path = path.slice(1);
+    }
+    this.pathWalker.setPath(path, () => {
       this.x = Math.round(this.x / 32) * 32;
       this.y = Math.round(this.y / 32) * 32;
       onDone();
