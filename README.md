@@ -1,9 +1,8 @@
 # bmax
 
-* shake on hit
 * use items when placed
+* auto-switch tools when mining/attacked
 * fix flipping screens on reset
-* a gun (auto, or click to fire?)
 * zombie roaming state
 * roam on player death
 * drops from mining

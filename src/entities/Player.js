@@ -61,6 +61,7 @@ class Player extends Phaser.Sprite {
 
   onHurt () {
     Tween.flash(this, {alpha: 0});
+    this.game.camera.shake(0.01, 200);
     // Don't stop walking.
     if (this.state.get() === "mining") {
       this.state.set("idle");

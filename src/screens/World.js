@@ -56,7 +56,7 @@ class World extends Phaser.State {
 
     this.controls = new Controls(game);
     this.inventory = new Inventory(game, ::this.player.switchTool);
-    this.inventory.addItem("coal", 20);
+    // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
     // this.inventory.addItem("sand", 10);
 
