@@ -76,7 +76,7 @@ class Bullet extends Phaser.Sprite {
       }, 5000);
       this.destroy();
       game.camera.shake(0.01, 200);
-      target.health && target.health.damage(2);
+      target.health && target.health.damage(2, this);
     }
   }
 

@@ -104,7 +104,6 @@ class World extends Phaser.State {
         close = false;
       }
     }
-
     return {x, y};
   }
 
@@ -241,8 +240,6 @@ class World extends Phaser.State {
             // Hmm, ok... attacking needs to be a state.
             // else the mining/walking anim will quickly override this
             player.animations.play("attack");
-
-
           }
 
           if (dist < 32) {
@@ -258,31 +255,17 @@ class World extends Phaser.State {
 
   collideWithMob (m) {
     const {player} = this;
-    const xd = player.x - m.x;
-    const yd = player.y - m.y;
-    const knockH = Math.abs(xd) > Math.abs(yd);
 
     const holding = this.inventory.holding();
     const damage = Items[holding.item].damage;
+
     if (damage) {
-      if (m.health.damage(damage) <= 0) {
+      if (m.health.damage(damage, player) <= 0) {
         this.killZombie(m);
       }
-      else {
-        const tweenH = {x: m.x + Math.sign(xd) * -64};
-        const tweenV = {y: m.y + Math.sign(yd) * -64};
-        Tween.to(m, knockH ? tweenH : tweenV, 150);
-      }
-      return;
     }
-
-    // Zombie got the player
-    if (player.health.damage(1) > 0) {
-      if (knockH) {
-        player.x += Math.sign(xd) * 16;
-      } else {
-        player.y += Math.sign(yd) * 16;
-      }
+    else {
+      player.health.damage(1, m);
     }
 
   }
@@ -321,8 +304,6 @@ class World extends Phaser.State {
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable - 5) return;
-
-      console.log(inventory.projectiles())
 
       // Crafting button - TODO: factorize it.
       if (y < 70 && x > game.width - 70) {

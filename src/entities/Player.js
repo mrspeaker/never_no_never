@@ -52,20 +52,28 @@ class Player extends Phaser.Sprite {
     this.health = new Health(3, 5);
     this.health.onHurt = (...args) => {
       if (this.died) return;
-      this.onHurt();
+      this.onHurt(...args);
       onHurt(...args);
     };
     this.health.onDie = onDie;
     this.pathWalker = new PathWalker();
   }
 
-  onHurt () {
+  onHurt (h, max, by) {
     Tween.flash(this, {alpha: 0});
     this.game.camera.shake(0.01, 200);
     // Don't stop walking.
     if (this.state.get() === "mining") {
       this.state.set("idle");
     }
+
+    const angle = this.game.math.angleBetween(
+      this.x, this.y,
+      by.x, by.y
+    ) + Math.PI;
+    const xo = Math.cos(angle) * 30;
+    const yo = Math.sin(angle) * 30;
+    Tween.to(this, {x: this.x + xo, y: this.y + yo}, 150);
   }
 
   setPath (path, onDone) {

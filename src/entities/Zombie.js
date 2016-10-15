@@ -3,6 +3,7 @@ const Phaser = window.Phaser;
 import Health from "../components/Health";
 import State from "../State";
 import PathWalker from "../components/PathWalker";
+import Tween from "../Tween";
 
 class Zombie extends Phaser.Sprite {
 
@@ -39,9 +40,15 @@ class Zombie extends Phaser.Sprite {
 
   }
 
-  onHurt () {
-    //console.log("hurt");
+  onHurt (h, max, by) {
     this.hurtPause = 50;
+    const angle = this.game.math.angleBetween(
+      this.x, this.y,
+      by.x, by.y
+    ) + Math.PI;
+    const xo = Math.sin(angle) * 40;
+    const yo = Math.cos(angle) * 40;
+    Tween.to(this, {x: this.x + xo, y: this.y + yo}, 150);
   }
 
   onDie () {
@@ -112,6 +119,7 @@ class Zombie extends Phaser.Sprite {
       break;
     case "dying":
       if (this.state.isFirst()) {
+        console.log("oh died")
         this.dead();
       }
       if (Math.random() < 0.1) {

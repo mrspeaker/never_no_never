@@ -11,16 +11,18 @@ class Health {
     this.minHurtTime = minHurtTime;
   }
 
-  damage (amount = 1) {
+  damage (amount = 1, e) {
     const now = Date.now();
     if (now - this.lastHurt < this.minHurtTime) {
       return this.health;
     }
     this.lastHurt = now;
     this.health = Math.max(0, this.health - amount);
-    this.onHurt && this.onHurt(this.health, this.maxHealth);
     if (this.health <= 0) {
-      this.onDie && this.onDie();
+      this.onDie && this.onDie(e);
+    }
+    else {
+      this.onHurt && this.onHurt(this.health, this.maxHealth, e);
     }
     return this.health;
   }
