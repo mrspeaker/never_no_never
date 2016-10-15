@@ -48,7 +48,6 @@ class World extends Phaser.State {
       x += 1;
     }
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
-    if (this.player.y > 0) { this.player.y -= 1; } // 1px above the manhole.
 
     // Focus camera slightly off center, to make up for bottom non-touch area
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
@@ -61,7 +60,7 @@ class World extends Phaser.State {
     // this.inventory.addItem("sand", 10);
 
     const mobs = this.mobs = game.add.group();
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 6; i++) {
       const {x, y} = this.getMobSpawnPoint();
       mobs.add(new Zombie(game, x, y, this));
     }
@@ -128,6 +127,7 @@ class World extends Phaser.State {
 
     const tile = world.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
+
     if (block.mine) {
       // Closest zombie chase player
       let done = false;
@@ -160,8 +160,6 @@ class World extends Phaser.State {
         }
 
       });
-    } else {
-      player.stop();
     }
   }
 
@@ -219,7 +217,10 @@ class World extends Phaser.State {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
 
       if (dist < 200) {
+        m.isClose = true;
         this.world.makePath(m, player.x, player.y);
+      } else {
+        m.isClose = false;
       }
 
       if (dist < 60) {
@@ -270,7 +271,6 @@ class World extends Phaser.State {
   }
 
   walkToThenAct (worldX, worldY) {
-
     this.groundTarget.x = (worldX / 32 | 0) * 32;
     this.groundTarget.y = (worldY / 32 | 0) * 32;
 

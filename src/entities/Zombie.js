@@ -12,6 +12,7 @@ class Zombie extends Phaser.Sprite {
     super(game, xtile * 32, ytile * 32, "peeps");
 
     this.bmax = bmax;
+    this.lastPathSet = Date.now();
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
     this.shadow.frame = 40;
@@ -33,6 +34,7 @@ class Zombie extends Phaser.Sprite {
     this.direction = new State("right");
 
     this.pathWalker = new PathWalker();
+
   }
 
   onHurt () {
@@ -48,35 +50,52 @@ class Zombie extends Phaser.Sprite {
     corpse.frame = Math.random() < 0.5 ? 30 : 31;
 
     const {x, y} = world.getMobSpawnPoint();
-    world.world.makePath(this, x, y);
     this.reset(x, y);
+    world.world.makePath(this, x, y);
   }
 
   setPath (path, onDone) {
-    if (this.state.get() !== "dying") {
-      path = path.length < 2 ? path: path.length > 2 ? path.slice(2) : path.slice(1);
-      //const cx = Math.floor(this.x / 32);
-      //const cy = Math.floor(this.y / 32);
-      //console.log(cx, path[0].x, cy, path[1].y)
-      //if (path.length && cx === path[0].x && cy === path[1].y) {
-        // I don't think it ever gets here...
-      //  console.log("hererer");
-//        path = path.slice(1);
-    //  }
-      this.pathWalker.setPath(path, () => {
-        this.x = Math.floor(this.x / 32) * 32;
-        this.y = Math.floor(this.y / 32) * 32;
-        onDone();
-      });
-      this.state.set("walking");
+    if (this.state.get() === "dying") {
+      return;
     }
+    // FIXME: if want this, move to pathwalker.
+    const now = Date.now();
+    if (now - this.lastPathSet < 400) {
+      return;
+    }
+    this.lastPathSet = now;
+
+    // FIXME: hack for chasing player at close range
+    if (this.isClose && path.length > 1) {
+      path = path.slice(1);
+    }
+    //const ppath = this.pathWalker.path;
+    //console.log("path", path.map(({x, y}) => `${x}:${y}`).join(", "));
+    //console.log("ppath", ppath && ppath.map(({x, y}) => `${x}:${y}`).join(", "));
+    const cx = Math.floor(this.x / 32);
+    const cy = Math.floor(this.y / 32);
+    if (path.length && cx === path[0].x && cy === path[0].y) {
+      // console.log("same zombie pos. slice it.");
+      path = path.slice(1);
+    }
+
+    this.state.set("walking");
+    this.pathWalker.setPath(path, (last) => {
+      if (last) {
+        this.x = last.x * 32;
+        this.y = last.y * 32;
+      }
+      this.state.set("idle");
+      onDone();
+    });
+
   }
 
   reset (x, y) {
+    // FIXME: handle death properly.
     this.x = x * 32;
     this.y = y * 32;
     this.health.health = this.health.maxHealth;
-    this.state.set("idle");
   }
 
   update () {
@@ -92,7 +111,12 @@ class Zombie extends Phaser.Sprite {
       this.updateWalking();
       break;
     case "dying":
-      this.dead();
+      if (this.state.isFirst()) {
+        this.dead();
+      }
+      if (Math.random() < 0.1) {
+        this.state.set("idle");
+      }
       break;
     }
 
@@ -132,8 +156,8 @@ class Zombie extends Phaser.Sprite {
       }
       this.x += xx;
       this.y += yy;
-
-      return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
+      const dist = Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32);
+      return dist <= walkSpeed;
     });
   }
 }
