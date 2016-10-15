@@ -5,6 +5,7 @@ import Controls from "../Controls";
 import Player from "../entities/Player";
 import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
+import Floppy from "../entities/Floppy";
 import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
@@ -49,6 +50,11 @@ class World extends Phaser.State {
       x += 1;
     }
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+
+    Array.from(new Array(10), () => {
+      const spot = this.world.findEmptySpot();
+      new Floppy(game, spot.x * 32, spot.y * 32);
+    });
 
     // Focus camera slightly off center, to make up for bottom non-touch area
     this.cameraTarget = game.add.sprite(0, 0, "peeps");

@@ -28,3 +28,4 @@
 * permanent markers (how to stop it messing up pathfinding?) - walkable, offset sprite?
 * pan around
 * fix state machine: don't allow bad states
+* clouds float overhead
