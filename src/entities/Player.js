@@ -6,6 +6,7 @@ import PathWalker from "../components/PathWalker";
 import Items from "../Items";
 import Tween from "../Tween";
 import Blocks from "../Blocks";
+import Bullet from "./Bullet";
 
 class Player extends Phaser.Sprite {
 
@@ -34,6 +35,8 @@ class Player extends Phaser.Sprite {
 
     this.state = new State("idle");
     this.direction = new State("right");
+
+    this.lastShootTime = Date.now();
 
     const animSpeed = this.walkSpeed * 1.5;
     this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
@@ -86,6 +89,17 @@ class Player extends Phaser.Sprite {
       this.state.set("idle");
       onDone();
     });
+  }
+
+  shoot (e) {
+    const now = Date.now();
+    if (now - this.lastShootTime < 800) {
+      return false;
+    }
+    this.lastShootTime = now;
+    const b = new Bullet(this.game, this.x + 16, this.y + 16, e);
+    this.game.add.existing(b);
+    return true;
   }
 
   switchTool (tool) {

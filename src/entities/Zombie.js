@@ -35,10 +35,13 @@ class Zombie extends Phaser.Sprite {
 
     this.pathWalker = new PathWalker();
 
+    this.hurtPause = 0;
+
   }
 
   onHurt () {
     //console.log("hurt");
+    this.hurtPause = 50;
   }
 
   onDie () {
@@ -50,8 +53,10 @@ class Zombie extends Phaser.Sprite {
     corpse.frame = Math.random() < 0.5 ? 30 : 31;
 
     const {x, y} = world.getMobSpawnPoint();
-    this.reset(x, y);
-    world.world.makePath(this, x, y);
+    this.x = x * 32;
+    this.y = y * 32;
+    this.health.health = this.health.maxHealth;
+    world.world.makePath(this, x, y); // lol... damn it.
   }
 
   setPath (path, onDone) {
@@ -91,13 +96,6 @@ class Zombie extends Phaser.Sprite {
 
   }
 
-  reset (x, y) {
-    // FIXME: handle death properly.
-    this.x = x * 32;
-    this.y = y * 32;
-    this.health.health = this.health.maxHealth;
-  }
-
   update () {
     const {animations} = this;
     const current = this.state.get();
@@ -108,7 +106,9 @@ class Zombie extends Phaser.Sprite {
       }
       break;
     case "walking":
-      this.updateWalking();
+      if (this.hurtPause-- < 0) {
+        this.updateWalking();
+      }
       break;
     case "dying":
       if (this.state.isFirst()) {

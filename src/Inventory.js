@@ -48,6 +48,10 @@ class Slot extends Phaser.Group {
     return this;
   }
 
+  is (prop) {
+    return this.item && Items[this.item][prop];
+  }
+
 }
 
 class Inventory extends Phaser.Group {
@@ -117,6 +121,11 @@ class Inventory extends Phaser.Group {
     this.ui.selected.cameraOffset.y = this.ui.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
 
     this.onItemSwitch(this.holding());
+  }
+
+  projectiles () {
+    const proj = this.slots.filter(s => s.is("fireable"));
+    return proj && proj[0];
   }
 
   holding () {

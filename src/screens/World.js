@@ -23,6 +23,7 @@ class World extends Phaser.State {
 
   create (game) {
     game.stage.backgroundColor = "#343436";
+    // game.stage.disableVisibilityChange = true;
     this.camera.flash(0x0095E9, 500);
 
     Tween.game = game;
@@ -55,7 +56,7 @@ class World extends Phaser.State {
 
     this.controls = new Controls(game);
     this.inventory = new Inventory(game, ::this.player.switchTool);
-    // this.inventory.addItem("wood_pick", 10);
+    this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
     // this.inventory.addItem("sand", 10);
 
@@ -217,25 +218,35 @@ class World extends Phaser.State {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
 
       if (dist < 200) {
+        const holding = this.inventory.holding();
+        const damage = Items[holding.item].damage;
+
         m.isClose = true;
         this.world.makePath(m, player.x, player.y);
+
+        const proj = this.inventory.projectiles();
+        if (proj && this.player.shoot(m)) {
+          this.inventory.useItem(proj.item, 1);
+        }
+
+        if (dist < 60) {
+
+          if (damage) {
+            // Hmm, ok... attacking needs to be a state.
+            // else the mining/walking anim will quickly override this
+            player.animations.play("attack");
+
+
+          }
+
+          if (dist < 32) {
+            this.collideWithMob(m);
+          }
+        }
       } else {
         m.isClose = false;
       }
 
-      if (dist < 60) {
-        const holding = this.inventory.holding();
-        const damage = Items[holding.item].damage;
-        if (damage) {
-          // Hmm, ok... attacking needs to be a state.
-          // else the mining/walking anim will quickly override this
-          player.animations.play("attack");
-        }
-
-        if (dist < 32) {
-          this.collideWithMob(m);
-        }
-      }
     });
   }
 
@@ -304,6 +315,8 @@ class World extends Phaser.State {
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable - 5) return;
+
+      console.log(inventory.projectiles())
 
       // Crafting button - TODO: factorize it.
       if (y < 70 && x > game.width - 70) {
