@@ -21,7 +21,6 @@ class Crafting {
     //mask.beginFill(0xffffff);
     //mask.drawCircle(100, 100, 100);
     //bg.mask = mask;
-
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;
     const craft = group.create(game.width - 64, 30, "icons");
     craft.fixedToCamera = true;
@@ -32,11 +31,12 @@ class Crafting {
     tmpReset.fixedToCamera = true;
     tmpReset.inputEnabled = true;
     tmpReset.events.onInputDown.add(() => {
+      this.visible = false;
       this.world.reset();
     }, this);
 
     const cheat = this.cheat = group.create(0, game.height - 60, "craft-tmp");
-    cheat.frame = 0;
+    cheat.frame = this.world._cheat ? 1 : 0;
     cheat.fixedToCamera = true;
     cheat.inputEnabled = true;
     cheat.events.onInputDown.add(() => {

@@ -87,6 +87,8 @@ class World extends Phaser.State {
     game.camera.focusOn(this.player);
     game.camera.y += 300;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+
+    this.setMode("exploring");
   }
 
   getMobSpawnPoint () {
