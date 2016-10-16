@@ -89,6 +89,12 @@ class World extends Phaser.State {
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
     this.setMode("exploring");
+
+    this.night = this.game.add.bitmapData(this.game.width, this.game.height);
+    const light = this.game.add.image(0, 0, this.night);
+    light.blendMode = Phaser.blendModes.MULTIPLY;
+    light.fixedToCamera = true;
+
   }
 
   getMobSpawnPoint () {
@@ -207,6 +213,28 @@ class World extends Phaser.State {
     this.doMobStrategy();
     this.detectMobCollisions();
 
+    this.updateNight();
+  }
+
+  updateNight () {
+    const {night} = this;
+
+    const dark = ((Math.sin(Date.now() / 10000) + 1) / 2) * 255 | 0;
+    const dark2 = dark > 100 ? dark : Math.min(255, dark + 60);
+
+    night.context.fillStyle = `rgb(${dark}, ${dark}, ${dark})`;
+    night.context.fillRect(0, 0, this.game.width, this.game.height);
+
+    night.context.beginPath();
+    night.context.fillStyle = `rgb(${dark2}, ${dark2}, ${dark2})`;
+    night.context.arc(
+      this.player.x - this.camera.x + 16,
+      this.player.y - this.camera.y + 16,
+      45,
+      100, 0, Math.PI*2);
+    night.context.fill();
+
+    night.dirty = true;
   }
 
   doMobStrategy () {

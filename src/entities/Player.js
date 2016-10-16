@@ -43,8 +43,8 @@ class Player extends Phaser.Sprite {
     this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
     this.animations.add("walk_up", [6, 7], animSpeed, true);
     this.animations.add("walk_down", [8, 9], animSpeed, true);
-    this.animations.add("mine_right", [80, 81, 82, 83, 84, 85], animSpeed * 2, true);
-    this.animations.add("mine_left", [86, 87, 88, 89, 90, 91], animSpeed * 2, true);
+    this.animations.add("mine_right", [80, 81, 82, 83, 84, 85], 20, true);
+    this.animations.add("mine_left", [86, 87, 88, 89, 90, 91], 20, true);
     this.animations.add("mine_up", [64, 65], animSpeed * 2, true);
     this.animations.add("mine_down", [66, 67], animSpeed * 2, true);
     this.animations.add("attack", [12, 13], animSpeed * 2, true);

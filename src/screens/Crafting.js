@@ -16,11 +16,30 @@ class Crafting {
 
     const bg = group.create(0, 0, "crafting");
     bg.fixedToCamera = true;
-    //const mask = game.add.graphics(0, 0);
-    //mask.fixedToCamera = true;
-    //mask.beginFill(0xffffff);
-    //mask.drawCircle(100, 100, 100);
-    //bg.mask = mask;
+
+    // const mask = game.add.graphics(0, 0);
+    // mask.fixedToCamera = true;
+    // mask.beginFill(200, 100, 0 , 0);
+    // mask.drawCircle(100, 100, 200);
+    // //mask.alpha = 0.5;
+    //
+    // //const mask2 = game.add.graphics(0, 0);
+    // //mask2.fixedToCamera = true;
+    // mask.beginFill(0x000000);
+    // mask.drawCircle(100, 100, 50);
+    //
+    // //mask.blendSourceAtop();
+    //
+    // mask.beginFill(0xf0ff55);
+    // mask.drawCircle(190, 100, 50);
+    //
+    // //mask2.alpha = 0.5;
+    // //mask2.blendMode = window.PIXI.blendModes.MULTIPLY;
+    // //mask2.blendMode = window.PIXI.blendModes. LUMINOSITY;
+    //
+    // //mask2.mask = mask;
+    // bg.mask = mask;
+
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;
     const craft = group.create(game.width - 64, 30, "icons");
     craft.fixedToCamera = true;
