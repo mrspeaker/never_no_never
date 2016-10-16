@@ -72,6 +72,7 @@ class Bullet extends Phaser.Sprite {
 
     if (Phaser.Math.distance(x, y, target.x + 16, target.y + 16) < 5) {
       setTimeout(() => {
+        // FIXME: if reset game this will "particles of null..."
         this.smoke.destroy();
       }, 5000);
       this.destroy();

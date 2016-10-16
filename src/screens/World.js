@@ -33,7 +33,6 @@ class World extends Phaser.State {
 
     this.groundTarget = game.add.sprite(0, 0, "icons");
     this.groundTarget.frame = 21;
-    //this.groundTarget.blendMode = window.PIXI.blendModes.DARKEN;
     this.groundTarget.alpha = 0.5;
 
     this.perma = game.add.group();
@@ -61,16 +60,22 @@ class World extends Phaser.State {
     this.cameraTarget.alpha = 0;
 
     this.controls = new Controls(game);
-    this.inventory = new Inventory(game, ::this.player.switchTool);
-    // this.inventory.addItem("coal", 20);
-    // this.inventory.addItem("wood_sword", 10);
-    // this.inventory.addItem("sand", 10);
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 6; i++) {
       const {x, y} = this.getMobSpawnPoint();
       mobs.add(new Zombie(game, x, y, this));
     }
+
+    this.night = this.game.add.bitmapData(this.game.width, this.game.height);
+    const light = this.game.add.image(0, 0, this.night);
+    light.blendMode = Phaser.blendModes.MULTIPLY;
+    light.fixedToCamera = true;
+
+    this.inventory = new Inventory(game, ::this.player.switchTool);
+    // this.inventory.addItem("coal", 20);
+    // this.inventory.addItem("wood_sword", 10);
+    // this.inventory.addItem("sand", 10);
 
     const title = Title(game, "bmax!", 36, 12, 12).font;
     const subtitle = Title(game, "0123456789!? You bet.", 9, 4, 36, true).font;
@@ -89,11 +94,6 @@ class World extends Phaser.State {
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
     this.setMode("exploring");
-
-    this.night = this.game.add.bitmapData(this.game.width, this.game.height);
-    const light = this.game.add.image(0, 0, this.night);
-    light.blendMode = Phaser.blendModes.MULTIPLY;
-    light.fixedToCamera = true;
 
   }
 
@@ -230,7 +230,7 @@ class World extends Phaser.State {
     night.context.arc(
       this.player.x - this.camera.x + 16,
       this.player.y - this.camera.y + 16,
-      45,
+      55,
       100, 0, Math.PI*2);
     night.context.fill();
 
