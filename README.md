@@ -1,6 +1,7 @@
 # bmax
 
 * fix directions
+* convert World "mode" to state
 * use up items when placed
 * auto-switch tools when mining/attacked
 * zombie roaming state
@@ -24,3 +25,5 @@
 * pan around
 * fix state machine: don't allow bad states
 * clouds float overhead
+* invalidate/recalc paths on build, destroy.
+* carried in dreams...

@@ -12,6 +12,9 @@ import Crafting from "./Crafting";
 import Title from "../Title";
 import HUD from "../HUD";
 import Tween from "../Tween";
+import DayTime from "../DayTime";
+
+import data from "../data";
 
 class World extends Phaser.State {
 
@@ -26,6 +29,8 @@ class World extends Phaser.State {
     game.stage.backgroundColor = "#343436";
     // game.stage.disableVisibilityChange = true;
     this.camera.flash(0x0095E9, 500);
+
+    DayTime.wakeUp();
 
     Tween.game = game;
 
@@ -50,9 +55,10 @@ class World extends Phaser.State {
     }
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
 
+    this.floppies = game.add.group();
     Array.from(new Array(10), () => {
       const spot = this.world.findEmptySpot();
-      new Floppy(game, spot.x * 32, spot.y * 32);
+      this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
 
     // Focus camera slightly off center, to make up for bottom non-touch area
@@ -73,6 +79,15 @@ class World extends Phaser.State {
     light.fixedToCamera = true;
 
     this.inventory = new Inventory(game, ::this.player.switchTool);
+
+    if (DayTime.firstDayOnTheJob) {
+      DayTime.addDayOverListener(() => {
+        this.mode = "dayOver";
+      });
+    }
+    else {
+      this.deserialize();
+    }
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
     // this.inventory.addItem("sand", 10);
@@ -195,8 +210,12 @@ class World extends Phaser.State {
 
     controls.update();
 
+    DayTime.update(game.time.elapsedMS / 1000);
+
     cameraTarget.x = player.x + 10;
     cameraTarget.y = player.y + 50;
+
+    let updateDay = false;
 
     switch (mode) {
     case "getready":
@@ -204,23 +223,33 @@ class World extends Phaser.State {
       break;
     case "exploring":
       this.updateExploring(game);
+      updateDay = true;
       break;
     case "crafting":
       this.craftingScreen.update(game);
+      updateDay = true;
+      break;
+    case "dayOver":
+      this.serialize();
+      this.state.start("DayOver");
       break;
     }
 
-    this.doMobStrategy();
-    this.detectMobCollisions();
-
-    this.updateNight();
+    if (updateDay) {
+      this.doMobStrategy();
+      this.collisionsMob();
+      this.collisionsPickup();
+      this.updateNight();
+    }
   }
 
   updateNight () {
     const {night} = this;
 
-    const dark = ((Math.sin(Date.now() / 10000) + 1) / 2) * 255 | 0;
+    const dark = ((Math.sin(DayTime.time / (DayTime.DAY_LENGTH * 220) * 1000) + 1) / 2) * 255 | 0;
     const dark2 = dark > 100 ? dark : Math.min(255, dark + 60);
+
+    this.ui.subtitle.text = "Day " + DayTime.day + " (" + (DayTime.percent).toFixed(1) + ")";
 
     night.context.fillStyle = `rgb(${dark}, ${dark}, ${dark})`;
     night.context.fillRect(0, 0, this.game.width, this.game.height);
@@ -246,7 +275,7 @@ class World extends Phaser.State {
     }
   }
 
-  detectMobCollisions () {
+  collisionsMob () {
     const {mobs, player} = this;
 
     mobs.forEach(m => {
@@ -300,6 +329,18 @@ class World extends Phaser.State {
 
   }
 
+  collisionsPickup () {
+    const {floppies, player} = this;
+
+    floppies.forEach(f => {
+      const dist = Phaser.Math.distance(f.x, f.y, player.x, player.y);
+
+      if (dist <= 32) {
+        f.destroy();
+      }
+    });
+  }
+
   walkToThenAct (worldX, worldY) {
     this.groundTarget.x = (worldX / 32 | 0) * 32;
     this.groundTarget.y = (worldY / 32 | 0) * 32;
@@ -347,6 +388,16 @@ class World extends Phaser.State {
         (block) => this.placeBlockAt(block, worldX, worldY)
       );
 
+    }
+  }
+
+  serialize () {
+    data.inventory = this.inventory.serialize();
+  }
+
+  deserialize () {
+    if (data.inventory) {
+      this.inventory.deserialize(data.inventory);
     }
   }
 

@@ -18,6 +18,9 @@ class State {
   get () {
     return this.state;
   }
+  in (...states) {
+    return states.includes(this.state);
+  }
 }
 
 export default State;

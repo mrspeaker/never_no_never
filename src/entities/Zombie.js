@@ -72,7 +72,7 @@ class Zombie extends Phaser.Sprite {
     }
     // FIXME: if want this, move to pathwalker.
     const now = Date.now();
-    if (now - this.lastPathSet < 400) {
+    if (now - this.lastPathSet < 700) {
       return;
     }
     this.lastPathSet = now;

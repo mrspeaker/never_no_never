@@ -52,6 +52,17 @@ class Slot extends Phaser.Group {
     return this.item && Items[this.item][prop];
   }
 
+  serialize () {
+    return {
+      item: this.item,
+      amount: this.amount
+    };
+  }
+
+  deserialize ({item, amount}) {
+    this.setItem(item, amount);
+  }
+
 }
 
 class Inventory extends Phaser.Group {
@@ -172,6 +183,21 @@ class Inventory extends Phaser.Group {
       return true;
     }
     return false;
+  }
+
+  serialize () {
+    return {
+      slots: this.slots.map(s => s.serialize()),
+      selected: this.selected
+    };
+  }
+  deserialize (inv) {
+    inv.slots && inv.slots.forEach((s, i) => {
+      this.slots[i].deserialize(s);
+    });
+    if (inv.selected && inv.selected > -1) {
+      this.selectItem(inv.selected);
+    }
   }
 
 }

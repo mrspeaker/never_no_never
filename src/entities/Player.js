@@ -8,6 +8,8 @@ import Tween from "../Tween";
 import Blocks from "../Blocks";
 import Bullet from "./Bullet";
 
+import DayTime from "../DayTime";
+
 class Player extends Phaser.Sprite {
 
   walkSpeed = 3;
@@ -236,8 +238,8 @@ class Player extends Phaser.Sprite {
         xx = xx / Math.sqrt(2);
         yy = yy / Math.sqrt(2);
       }
-      this.x += xx;
-      this.y += yy;
+      this.x += xx * (1 - DayTime.percent);
+      this.y += yy * (1 - DayTime.percent);
 
       return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
     });

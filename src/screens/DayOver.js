@@ -3,7 +3,6 @@ const Phaser = window.Phaser;
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
-import DayTime from "../DayTime";
 
 const startWiths = [
   [{item: "wood", amount: 2, unlocked: false, question: false}],
@@ -12,13 +11,14 @@ const startWiths = [
   [{item: "stone_pick", amount: 4, unlocked: false, question: true}],
 ];
 
-class Splash extends Phaser.State {
+class DayOver extends Phaser.State {
 
   create (game) {
-    game.stage.backgroundColor = "#0095E9";
 
-    const title = Title(game, "bmax!", 36, 100, 112).font;
-    const start = Title(game, "Start with?", 9, 130, 210, true).font;
+    game.stage.backgroundColor = "#001111";
+
+    const title = Title(game, "Sleep", 26, 100, 112).font;
+    const start = Title(game, "stats", 9, 130, 210, true).font;
 
     this.starts = startWiths.map(([item], i) => {
       const xo = 50;
@@ -80,7 +80,6 @@ class Splash extends Phaser.State {
     });
 
     if (justPressed) {
-      DayTime.reset();
       game.state.start("World");
     }
 
@@ -89,4 +88,4 @@ class Splash extends Phaser.State {
 
 }
 
-export default Splash;
+export default DayOver;
