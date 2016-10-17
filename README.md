@@ -1,9 +1,12 @@
 # bmax
 
-* fix directions
-* convert World "mode" to state
-* use up items when placed
+* [bug] fix directions
+* [ref] convert World "mode" to state
+* [bug] use up items when placed
 * auto-switch tools when mining/attacked
+* one-up on floppy get
+* store floppies
+* floppies per day
 * zombie roaming state
 * roam on player death
 * drops from mining
@@ -18,12 +21,12 @@
   * cellular autonoma ability
   * show un-obtained resources in crafting.
 * system for player -> tool -> target block
-* day-over screen
 * minimap in pda screen
 * when you die, tomb with your stuff in it in vaguely the same place.
 * permanent markers (how to stop it messing up pathfinding?) - walkable, offset sprite?
-* pan around
-* fix state machine: don't allow bad states
+* [ref] fix state machine: don't allow bad states
 * clouds float overhead
-* invalidate/recalc paths on build, destroy.
+* [bug] invalidate/recalc paths on build, destroy.
 * carried in dreams...
+* [bug] Can get errors on map gen.
+* [bug] Errors when destroying particle emitters after screen swap

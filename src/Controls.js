@@ -2,6 +2,10 @@ class Controls {
 
   isDown = false;
   justPressed = false;
+  lastX = 0;
+  lastY = 0;
+
+  _angle = 0;
 
   constructor (game) {
     this.game = game;
@@ -10,6 +14,13 @@ class Controls {
     setTimeout(() => {
       this.setActive();
     }, 2000);
+  }
+
+  get angle () {
+    return this._angle;
+  }
+  set angle (v) {
+    this._angle = v;
   }
 
   setActive () {
@@ -24,13 +35,19 @@ class Controls {
     if (pointer.isDown && !this.isDown) {
       this.isDown = true;
       this.justPressed = true;
+      this._angle = 0;
     }
     else if (pointer.isDown) {
       this.justPressed = false;
+      this._angle += pointer.x - this.lastX;
     }
     else {
       this.isDown = false;
+      this._angle = 0;
     }
+
+    this.lastX = pointer.x;
+    this.lastY = pointer.y;
   }
 
   get x () {

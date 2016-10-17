@@ -1,7 +1,6 @@
 const Phaser = window.Phaser;
 import Blocks from "./Blocks";
 import BLOCK_TYPE from "./BLOCK_TYPE";
-//import Items from "../Items";
 import EasyStar from "easystarjs";
 import Player from "./entities/Player";
 

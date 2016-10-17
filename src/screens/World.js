@@ -6,6 +6,7 @@ import Player from "../entities/Player";
 import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
 import Floppy from "../entities/Floppy";
+import Car from "../entities/Car";
 import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
@@ -54,6 +55,8 @@ class World extends Phaser.State {
       x += 1;
     }
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+    this.car = new Car(game, this.player.x, this.player.y);
+    this.car.visible = false;
 
     this.floppies = game.add.group();
     Array.from(new Array(10), () => {
@@ -147,6 +150,20 @@ class World extends Phaser.State {
 
   toggleCheat () {
     this._cheat = !this._cheat;
+
+    if (this._cheat) {
+      this.car.x = this.player.x;
+      this.car.y = this.player.y;
+    }
+    else {
+      this.player.x = this.car.x;
+      this.player.y = this.car.y;
+      this.walkToThenAct(this.player.x, this.player.y);
+    }
+
+    this.car.visible = this._cheat;
+    this.player.visible = !this._cheat;
+
     return this._cheat;
   }
 
@@ -212,8 +229,8 @@ class World extends Phaser.State {
 
     DayTime.update(game.time.elapsedMS / 1000);
 
-    cameraTarget.x = player.x + 10;
-    cameraTarget.y = player.y + 50;
+    cameraTarget.x = (this._cheat ? this.car.x : player.x) + 10;
+    cameraTarget.y = (this._cheat ? this.car.y : player.y) + 50;
 
     let updateDay = false;
 
@@ -235,6 +252,11 @@ class World extends Phaser.State {
       break;
     }
 
+    this.car.angle += controls.angle * 0.06;
+    controls.angle *= 0.92;
+
+    this.ui.subtitle.text = controls.angle.toFixed(2);
+
     if (updateDay) {
       this.doMobStrategy();
       this.collisionsMob();
@@ -249,7 +271,7 @@ class World extends Phaser.State {
     const dark = ((Math.sin(DayTime.time / (DayTime.DAY_LENGTH * 220) * 1000) + 1) / 2) * 255 | 0;
     const dark2 = dark > 100 ? dark : Math.min(255, dark + 60);
 
-    this.ui.subtitle.text = "Day " + DayTime.day + " (" + (DayTime.percent).toFixed(1) + ")";
+    // this.ui.subtitle.text = "Day " + DayTime.day + " (" + (DayTime.percent).toFixed(1) + ")";
 
     night.context.fillStyle = `rgb(${dark}, ${dark}, ${dark})`;
     night.context.fillRect(0, 0, this.game.width, this.game.height);
@@ -277,6 +299,10 @@ class World extends Phaser.State {
 
   collisionsMob () {
     const {mobs, player} = this;
+
+    if (this._cheat) {
+      return;
+    }
 
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
@@ -389,6 +415,8 @@ class World extends Phaser.State {
       );
 
     }
+
+    this.car.running = controls.isDown;
   }
 
   serialize () {
