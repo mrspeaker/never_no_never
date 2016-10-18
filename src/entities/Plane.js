@@ -15,12 +15,26 @@ class Plane extends Phaser.Sprite {
   topFlyingSpeed = 3;
 
   constructor (game, x, y, controls) {
-    super(game, x, y, "icons");
-    this.frame = 25;
+    super(game, x, y, "mediums");
+
+    this.frame = 0;
     this.anchor.setTo(0.5, 0.5);
     game.add.existing(this);
     this.controls = controls;
     this.state = new State("stopped");
+    game.physics.enable(this);
+    this.body.bounce.y = 0.2;
+
+    const shadow = game.add.sprite(0, 0, "mediums");
+    this.addChild(shadow);
+
+    shadow.frame = 0;
+    shadow.scale.set(0.6);
+    shadow.tint = 0x000000;
+    shadow.alpha = 0.4;
+    //shadow.sendToBack();
+
+    this.shadow = shadow;
   }
 
   update () {
@@ -32,6 +46,7 @@ class Plane extends Phaser.Sprite {
       if (controls.justPressed) {
         this.state.set("taxiing");
       }
+      this.shadow.visible = false;
       break;
 
     case "taxiing":
@@ -56,6 +71,8 @@ class Plane extends Phaser.Sprite {
     case "flying":
       this.angle += this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
+      this.shadow.visible = true;
+      // this.body.angularVelocity = this.turn
       if (Math.abs(controls.pitch) > 40) {
         this.alt += controls.pitch * 0.0002;
         this.alt = Math.min(1, Math.max(0, this.alt));
@@ -64,13 +81,14 @@ class Plane extends Phaser.Sprite {
           //this.acc = 1;
         }
       }
-      this.scale.set(1 + this.alt);
+      this.scale.set(1 + this.alt / 2);
       speed = this.topFlyingSpeed * Math.max(0.4, this.alt);
       break;
 
     case "touchdown":
       this.angle += this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
+      this.shadow.visible = false;
 
       this.acc -= this.decAmount;
       this.acc = Math.max(0, this.acc);
@@ -80,7 +98,6 @@ class Plane extends Phaser.Sprite {
         this.state.set("stopped");
       }
       break;
-
 
     }
 
@@ -92,6 +109,16 @@ class Plane extends Phaser.Sprite {
 
     this.x += Math.cos(this.rotation - Math.PI / 2) * this.velX;
     this.y += Math.sin(this.rotation - Math.PI / 2) * this.velY;
+
+    this.shadow.x = Math.cos(-this.rotation) * this.alt;
+    this.shadow.y = Math.sin(-this.rotation) * this.alt;
+
+    //this.shadow =
+    //  0  -0.3   0.3
+    //  |   \     /
+    //   |   \     /
+
+    // 0 0.3
   }
 
 }

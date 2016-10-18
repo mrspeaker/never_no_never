@@ -30,6 +30,8 @@ class World extends Phaser.State {
   create (game) {
     game.stage.backgroundColor = "#343436";
     // game.stage.disableVisibilityChange = true;
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
     this.camera.flash(0x0095E9, 500);
 
     DayTime.wakeUp();
@@ -232,6 +234,8 @@ class World extends Phaser.State {
     const {mode, player, cameraTarget, controls} = this;
 
     controls.update();
+
+    game.physics.arcade.collide(this.car, this.world.map.layers[1]);
 
     DayTime.update(game.time.elapsedMS / 1000);
 

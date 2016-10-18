@@ -171,6 +171,9 @@ class Map {
     map.createLayer("mid");
     layer.resizeWorld();
 
+    //map.setCollisionBetween(257);
+    map.setCollisionBetween(250, 300);
+
     this.grid = this.mapToGrid(map);
 
     const estar = this.estar = new EasyStar.js();
