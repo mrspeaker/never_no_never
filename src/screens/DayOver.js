@@ -3,6 +3,7 @@ const Phaser = window.Phaser;
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
+import data from "../data";
 
 const startWiths = [
   [{item: "wood", amount: 2, unlocked: false, question: false}],
@@ -18,7 +19,7 @@ class DayOver extends Phaser.State {
     game.stage.backgroundColor = "#001111";
 
     const title = Title(game, "Sleep", 26, 100, 112).font;
-    const start = Title(game, "stats", 9, 130, 210, true).font;
+    const start = Title(game, "floppies: " + data.floppyGets, 9, 130, 210, true).font;
 
     this.starts = startWiths.map(([item], i) => {
       const xo = 50;

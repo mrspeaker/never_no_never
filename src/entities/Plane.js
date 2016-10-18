@@ -63,13 +63,13 @@ class Plane extends Phaser.Sprite {
         this.alt = 0;
         break;
       }
-      this.angle += this.controls.angle * this.turn;
+      this.angle -= this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
       speed = this.acc;
       break;
 
     case "flying":
-      this.angle += this.controls.angle * this.turn;
+      this.angle -= this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
       this.shadow.visible = true;
       // this.body.angularVelocity = this.turn

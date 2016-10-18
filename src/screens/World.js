@@ -22,6 +22,7 @@ class World extends Phaser.State {
 
   mode = "getready";
   _cheat = false;
+  floppyGets = 0;
 
   reset () {
     this.game.state.start("Splash");
@@ -71,7 +72,6 @@ class World extends Phaser.State {
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
     this.cameraTarget.alpha = 0;
 
-
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 6; i++) {
       const {x, y} = this.getMobSpawnPoint();
@@ -80,7 +80,6 @@ class World extends Phaser.State {
 
     this.car = new Plane(game, this.player.x, this.player.y, this.controls);
     this.car.visible = false;
-
 
     this.night = this.game.add.bitmapData(this.game.width, this.game.height);
     const light = this.game.add.image(0, 0, this.night);
@@ -93,6 +92,7 @@ class World extends Phaser.State {
       DayTime.addDayOverListener(() => {
         this.mode = "dayOver";
       });
+      this.floppyGets = 0;
     }
     else {
       this.deserialize();
@@ -372,6 +372,7 @@ class World extends Phaser.State {
       const dist = Phaser.Math.distance(f.x, f.y, player.x, player.y);
 
       if (dist <= 32) {
+        this.floppyGets++;
         f.destroy();
       }
     });
@@ -430,11 +431,15 @@ class World extends Phaser.State {
 
   serialize () {
     data.inventory = this.inventory.serialize();
+    data.floppyGets = this.floppyGets;
   }
 
   deserialize () {
     if (data.inventory) {
       this.inventory.deserialize(data.inventory);
+    }
+    if (data.floppyGets) {
+      this.floppyGets = data.floppyGets;
     }
   }
 

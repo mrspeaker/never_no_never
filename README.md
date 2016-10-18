@@ -27,6 +27,5 @@
 * [ref] fix state machine: don't allow bad states
 * clouds float overhead
 * [bug] invalidate/recalc paths on build, destroy.
-* carried in dreams...
 * [bug] Can get errors on map gen.
 * [bug] Errors when destroying particle emitters after screen swap
