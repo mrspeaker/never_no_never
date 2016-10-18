@@ -2,7 +2,7 @@ class DayTime {
 
   day = -1;
   time = 0;
-  DAY_LENGTH = 50;
+  DAY_LENGTH = 100;
   dayOver = false;
 
   _dayOvers = [];

@@ -6,6 +6,7 @@ class Controls {
   lastY = 0;
 
   _angle = 0;
+  _pitch = 0;
 
   constructor (game) {
     this.game = game;
@@ -22,6 +23,12 @@ class Controls {
   set angle (v) {
     this._angle = v;
   }
+  get pitch () {
+    return this._pitch;
+  }
+  set pitch (v) {
+    this._pitch = v;
+  }
 
   setActive () {
     this.pointer = this.game.input.activePointer;
@@ -36,14 +43,17 @@ class Controls {
       this.isDown = true;
       this.justPressed = true;
       this._angle = 0;
+      this._pitch = 0;
     }
     else if (pointer.isDown) {
       this.justPressed = false;
       this._angle += pointer.x - this.lastX;
+      this._pitch += pointer.y - this.lastY;
     }
     else {
       this.isDown = false;
       this._angle = 0;
+      this._pitch = 0;
     }
 
     this.lastX = pointer.x;

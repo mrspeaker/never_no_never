@@ -214,8 +214,8 @@ class Map {
     const layers = this.map.layers;
     const baseLayer = layers[0].data;
     const midLayer = layers[1].data;
-    if (x < 0 || x > baseLayer[0].length ||
-        y < 0 || y > baseLayer.length) {
+    if (x < 0 || x >= baseLayer[0].length ||
+        y < 0 || y >= baseLayer.length) {
       return {
         base: Blocks.clear,
         mid: Blocks.clear

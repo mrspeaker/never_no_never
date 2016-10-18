@@ -7,6 +7,7 @@ import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
 import Floppy from "../entities/Floppy";
 import Car from "../entities/Car";
+import Plane from "../entities/Plane";
 import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
@@ -54,9 +55,9 @@ class World extends Phaser.State {
     else if (right.base.name === "sand" && right.mid.name === "clear") {
       x += 1;
     }
+    this.controls = new Controls(game);
+
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
-    this.car = new Car(game, this.player.x, this.player.y);
-    this.car.visible = false;
 
     this.floppies = game.add.group();
     Array.from(new Array(10), () => {
@@ -68,13 +69,16 @@ class World extends Phaser.State {
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
     this.cameraTarget.alpha = 0;
 
-    this.controls = new Controls(game);
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 6; i++) {
       const {x, y} = this.getMobSpawnPoint();
       mobs.add(new Zombie(game, x, y, this));
     }
+
+    this.car = new Plane(game, this.player.x, this.player.y, this.controls);
+    this.car.visible = false;
+
 
     this.night = this.game.add.bitmapData(this.game.width, this.game.height);
     const light = this.game.add.image(0, 0, this.night);
@@ -110,6 +114,8 @@ class World extends Phaser.State {
     game.camera.focusOn(this.player);
     game.camera.y += 300;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
+
+    this._cheat = false;
 
     this.setMode("exploring");
 
@@ -252,10 +258,7 @@ class World extends Phaser.State {
       break;
     }
 
-    this.car.angle += controls.angle * 0.06;
-    controls.angle *= 0.92;
-
-    this.ui.subtitle.text = controls.angle.toFixed(2);
+    this.ui.subtitle.text = controls.pitch.toFixed(2);
 
     if (updateDay) {
       this.doMobStrategy();
@@ -268,6 +271,9 @@ class World extends Phaser.State {
   updateNight () {
     const {night} = this;
 
+    const tx = this._cheat ? this.car.x : this.player.x + 16;
+    const ty = this._cheat ? this.car.y : this.player.y + 16;
+
     const dark = ((Math.sin(DayTime.time / (DayTime.DAY_LENGTH * 220) * 1000) + 1) / 2) * 255 | 0;
     const dark2 = dark > 100 ? dark : Math.min(255, dark + 60);
 
@@ -279,8 +285,8 @@ class World extends Phaser.State {
     night.context.beginPath();
     night.context.fillStyle = `rgb(${dark2}, ${dark2}, ${dark2})`;
     night.context.arc(
-      this.player.x - this.camera.x + 16,
-      this.player.y - this.camera.y + 16,
+      tx - this.camera.x,
+      ty - this.camera.y,
       55,
       100, 0, Math.PI*2);
     night.context.fill();
@@ -416,7 +422,6 @@ class World extends Phaser.State {
 
     }
 
-    this.car.running = controls.isDown;
   }
 
   serialize () {
