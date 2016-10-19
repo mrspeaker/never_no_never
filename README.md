@@ -5,7 +5,6 @@
 * [bug] use up items when placed
 * auto-switch tools when mining/attacked
 * one-up on floppy get
-* store floppies
 * floppies per day
 * zombie roaming state
 * roam on player death

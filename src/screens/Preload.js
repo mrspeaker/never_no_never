@@ -17,7 +17,6 @@ class Preload extends Phaser.State {
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 48);
   }
 
-
   update (game) {
     game.state.start("Splash");
   }

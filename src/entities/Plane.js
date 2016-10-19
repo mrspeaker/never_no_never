@@ -23,7 +23,8 @@ class Plane extends Phaser.Sprite {
     this.controls = controls;
     this.state = new State("stopped");
     game.physics.enable(this);
-    this.body.bounce.y = 0.2;
+    //this.debug = true;
+    //this.body.bounce.y = 0.2;
 
     const shadow = game.add.sprite(0, 0, "mediums");
     this.addChild(shadow);
@@ -66,6 +67,11 @@ class Plane extends Phaser.Sprite {
       this.angle -= this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
       speed = this.acc;
+      if (controls.isDown) {
+        this.game.physics.arcade.accelerationFromRotation(this.rotation, 20, this.body.acceleration);
+      } else {
+        this.body.acceleration.set(0);
+      }
       break;
 
     case "flying":
@@ -80,6 +86,7 @@ class Plane extends Phaser.Sprite {
           this.state.set("touchdown");
           //this.acc = 1;
         }
+        this.game.physics.arcade.accelerationFromRotation(this.rotation, 20, this.body.acceleration);
       }
       this.scale.set(1 + this.alt / 2);
       speed = this.topFlyingSpeed * Math.max(0.4, this.alt);
@@ -107,8 +114,8 @@ class Plane extends Phaser.Sprite {
     this.velX *= 0.95;
     this.velY *= 0.95;
 
-    this.x += Math.cos(this.rotation - Math.PI / 2) * this.velX;
-    this.y += Math.sin(this.rotation - Math.PI / 2) * this.velY;
+    //this.x += Math.cos(this.rotation - Math.PI / 2) * this.velX;
+    //this.y += Math.sin(this.rotation - Math.PI / 2) * this.velY;
 
     this.shadow.x = Math.cos(-this.rotation) * this.alt;
     this.shadow.y = Math.sin(-this.rotation) * this.alt;

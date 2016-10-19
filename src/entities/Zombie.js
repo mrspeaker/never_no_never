@@ -119,7 +119,6 @@ class Zombie extends Phaser.Sprite {
       break;
     case "dying":
       if (this.state.isFirst()) {
-        console.log("oh died")
         this.dead();
       }
       if (Math.random() < 0.1) {

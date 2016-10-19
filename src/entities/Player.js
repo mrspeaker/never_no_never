@@ -49,7 +49,10 @@ class Player extends Phaser.Sprite {
     this.animations.add("mine_left", [86, 87, 88, 89, 90, 91], 20, true);
     this.animations.add("mine_up", [64, 65], animSpeed * 2, true);
     this.animations.add("mine_down", [66, 67], animSpeed * 2, true);
-    this.animations.add("attack", [12, 13], animSpeed * 2, true);
+    this.animations.add("attack_left", [12, 13, 14, 15, 16, 17], 24, true),
+    this.animations.add("attack_right", [32, 33, 34, 35, 36, 37], 24, true),
+    this.animations.add("attack_up", [12, 13, 14, 15, 16, 17], 24, true),
+    this.animations.add("attack_down", [32, 33, 34, 35, 36, 37], 24, true),
 
     this.health = new Health(3, 5);
     this.health.onHurt = (...args) => {
@@ -113,6 +116,11 @@ class Player extends Phaser.Sprite {
     return true;
   }
 
+  attack (e) {
+    const dir = e.x > this.x ? "left" : "right";
+    this.animations.play(`attack_${dir}`);
+  }
+
   switchTool (tool) {
     const item = Items[tool.item];
     const current = this.state.get();
@@ -155,7 +163,7 @@ class Player extends Phaser.Sprite {
 
     if (this.died) {
       animations.stop();
-      this.frame = 14;
+      this.frame = 19;
       this.alpha -= 0.01;
       if (Date.now() - this.died.time > 2500) {
         this.died.onDead();

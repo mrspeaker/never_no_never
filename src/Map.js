@@ -167,12 +167,14 @@ class Map {
     map.addTilesetImage("tiles", "tiles");
 
     const layer = this.layer = map.createLayer("base");
+    layer.debug = true;
     map.addTilesetImage("mid", "mid");
-    map.createLayer("mid");
+    const mid = map.createLayer("mid");
     layer.resizeWorld();
 
+    //game.physics.arcade.enable(mid);
     //map.setCollisionBetween(257);
-    map.setCollisionBetween(250, 300);
+    map.setCollisionBetween(2,8);
 
     this.grid = this.mapToGrid(map);
 

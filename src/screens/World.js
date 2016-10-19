@@ -62,6 +62,7 @@ class World extends Phaser.State {
 
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
 
+
     this.floppies = game.add.group();
     Array.from(new Array(10), () => {
       const spot = this.world.findEmptySpot();
@@ -235,7 +236,9 @@ class World extends Phaser.State {
 
     controls.update();
 
-    game.physics.arcade.collide(this.car, this.world.map.layers[1]);
+    game.physics.arcade.collide(this.car, this.world.map.layers[1], (a, b, c) => {
+      console.log("bank!", a, b, c);
+    });
 
     DayTime.update(game.time.elapsedMS / 1000);
 
@@ -334,7 +337,7 @@ class World extends Phaser.State {
           if (damage) {
             // Hmm, ok... attacking needs to be a state.
             // else the mining/walking anim will quickly override this
-            player.animations.play("attack");
+            player.attack(m);
           }
 
           if (dist < 32) {
@@ -441,6 +444,11 @@ class World extends Phaser.State {
     if (data.floppyGets) {
       this.floppyGets = data.floppyGets;
     }
+  }
+
+  render (game) {
+    //game.debug.spriteBounds(this.car);
+    game.debug.body(this.car)
   }
 
 }
