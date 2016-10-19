@@ -15,7 +15,10 @@ const startWiths = [
 class Splash extends Phaser.State {
 
   create (game) {
-    game.stage.backgroundColor = "#0095E9";
+    game.stage.backgroundColor = "#000000";
+
+    game.add.sprite(0, 0, "splash");
+
 
     const title = Title(game, "bmax!", 36, 100, 112).font;
     const start = Title(game, "Start with?", 9, 130, 210, true).font;

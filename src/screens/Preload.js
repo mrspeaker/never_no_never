@@ -9,6 +9,7 @@ class Preload extends Phaser.State {
     game.load.image("bmaxFont9", "res/bmax9.png");
     game.load.image("bmaxFont9x4", "res/bmax9x4.png");
     game.load.image("crafting", "res/crafting-back.png");
+    game.load.image("splash", "res/splash.png");
     game.load.spritesheet("craft-tmp", "res/craft-tmp.png", 34 * 4, 40);
     game.load.spritesheet("peeps", "res/peeps.png", 32, 32);
     game.load.spritesheet("icons", "res/icons.png", 32, 32);

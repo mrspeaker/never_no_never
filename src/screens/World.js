@@ -33,7 +33,7 @@ class World extends Phaser.State {
     // game.stage.disableVisibilityChange = true;
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.camera.flash(0x0095E9, 500);
+    this.camera.flash(0x000000, 2000);
 
     DayTime.wakeUp();
 
@@ -114,7 +114,7 @@ class World extends Phaser.State {
     };
 
     game.camera.focusOn(this.player);
-    game.camera.y += 300;
+    game.camera.y += 2000;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
     this._cheat = false;
