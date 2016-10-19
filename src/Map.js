@@ -166,15 +166,15 @@ class Map {
     const map = this.map = game.add.tilemap("world");
     map.addTilesetImage("tiles", "tiles");
 
-    const layer = this.layer = map.createLayer("base");
-    layer.debug = true;
+    this.layerz = {};
+    const base = this.layerz.base = map.createLayer("base");
+    base.resizeWorld();
     map.addTilesetImage("mid", "mid");
-    const mid = map.createLayer("mid");
-    layer.resizeWorld();
-
-    //game.physics.arcade.enable(mid);
-    //map.setCollisionBetween(257);
-    map.setCollisionBetween(2,8);
+    const mid = this.layerz.mid = map.createLayer("mid");
+    map.setCollisionBetween(2, 30, true, base);
+    map.setCollisionBetween(256, 260, true, mid);
+    //base.debug = true;
+    //mid.debug = true;
 
     this.grid = this.mapToGrid(map);
 
@@ -258,7 +258,7 @@ class Map {
   }
 
   makePath (e, tx, ty, onWalked) {
-    const layer = this.layer;
+    const layer = this.layerz.base;
     const xt = layer.getTileX(tx);
     const yt = layer.getTileY(ty);
     if (xt <= -1 || yt <= -1) return;

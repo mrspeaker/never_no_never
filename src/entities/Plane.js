@@ -3,16 +3,9 @@ import State from "../State";
 
 class Plane extends Phaser.Sprite {
 
-  velX = 0;
-  velY = 0;
-  acc = 0;
   alt = 0;
-
+  rotFriction = 0.95;
   turn = 0.045;
-  rotFriction = 0.92;
-  accAmount = 0.02;
-  decAmount = 0.04;
-  topFlyingSpeed = 3;
 
   constructor (game, x, y, controls) {
     super(game, x, y, "mediums");
@@ -23,8 +16,9 @@ class Plane extends Phaser.Sprite {
     this.controls = controls;
     this.state = new State("stopped");
     game.physics.enable(this);
-    //this.debug = true;
-    //this.body.bounce.y = 0.2;
+
+    this.body.drag.set(30);
+    this.body.maxVelocity.set(120);
 
     const shadow = game.add.sprite(0, 0, "mediums");
     this.addChild(shadow);
@@ -33,14 +27,18 @@ class Plane extends Phaser.Sprite {
     shadow.scale.set(0.6);
     shadow.tint = 0x000000;
     shadow.alpha = 0.4;
-    //shadow.sendToBack();
 
     this.shadow = shadow;
   }
 
+  get onTheGround () {
+    return this.state.is("taxiing", "stopped", "touchdown");
+  }
+
   update () {
-    const {controls} = this;
-    let speed = 0;
+    const {controls, body, game} = this;
+
+    let vel = body.velocity.getMagnitude();
 
     switch (this.state.get()) {
     case "stopped":
@@ -51,81 +49,59 @@ class Plane extends Phaser.Sprite {
       break;
 
     case "taxiing":
-      this.acc += controls.isDown ? this.accAmount : -this.decAmount;
-      this.acc = Math.min(this.topFlyingSpeed, Math.max(0, this.acc));
-      if (this.acc === this.topFlyingSpeed) {
+      if (vel > 100) {
         this.state.set("flying");
         this.alt = 0.8;
         controls.pitch = 0;
         break;
       }
-      if (this.acc === 0) {
-        this.state.set("stopped");
-        this.alt = 0;
-        break;
-      }
       this.angle -= this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
-      speed = this.acc;
       if (controls.isDown) {
-        this.game.physics.arcade.accelerationFromRotation(this.rotation, 20, this.body.acceleration);
+        game.physics.arcade.accelerationFromRotation(this.rotation - Math.PI / 2, 50, body.acceleration);
       } else {
-        this.body.acceleration.set(0);
+        body.acceleration.set(0);
       }
+      game.physics.arcade.velocityFromRotation(this.rotation - Math.PI / 2, vel, body.velocity);
+
       break;
 
     case "flying":
-      this.angle -= this.controls.angle * this.turn;
+      this.angle -= controls.angle * this.turn;
       controls.angle *= this.rotFriction;
       this.shadow.visible = true;
-      // this.body.angularVelocity = this.turn
-      if (Math.abs(controls.pitch) > 40) {
+
+      game.physics.arcade.velocityFromRotation(this.rotation - Math.PI / 2, 160, body.velocity);
+
+      if (Math.abs(controls.pitch) > 50) {
         this.alt += controls.pitch * 0.0002;
         this.alt = Math.min(1, Math.max(0, this.alt));
         if (this.alt === 0) {
           this.state.set("touchdown");
-          //this.acc = 1;
         }
-        this.game.physics.arcade.accelerationFromRotation(this.rotation, 20, this.body.acceleration);
       }
+
       this.scale.set(1 + this.alt / 2);
-      speed = this.topFlyingSpeed * Math.max(0.4, this.alt);
       break;
 
     case "touchdown":
+      body.acceleration.set(0);
       this.angle += this.controls.angle * this.turn;
       controls.angle *= this.rotFriction;
       this.shadow.visible = false;
 
-      this.acc -= this.decAmount;
-      this.acc = Math.max(0, this.acc);
-      speed = this.acc;
+      game.physics.arcade.velocityFromRotation(this.rotation - Math.PI / 2, vel, body.velocity);
 
-      if (this.velX < 0.0001 && this.velY < 0.0001 ) {
+      if (vel < 0.1) {
         this.state.set("stopped");
       }
       break;
 
     }
 
-    this.velX = speed;
-    this.velY = speed;
-
-    this.velX *= 0.95;
-    this.velY *= 0.95;
-
-    //this.x += Math.cos(this.rotation - Math.PI / 2) * this.velX;
-    //this.y += Math.sin(this.rotation - Math.PI / 2) * this.velY;
-
     this.shadow.x = Math.cos(-this.rotation) * this.alt;
     this.shadow.y = Math.sin(-this.rotation) * this.alt;
 
-    //this.shadow =
-    //  0  -0.3   0.3
-    //  |   \     /
-    //   |   \     /
-
-    // 0 0.3
   }
 
 }

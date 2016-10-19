@@ -18,7 +18,7 @@ class State {
   get () {
     return this.state;
   }
-  in (...states) {
+  is (...states) {
     return states.includes(this.state);
   }
 }

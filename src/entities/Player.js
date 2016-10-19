@@ -43,8 +43,8 @@ class Player extends Phaser.Sprite {
     const animSpeed = this.walkSpeed * 1.5;
     this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
     this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
-    this.animations.add("walk_up", [6, 7], animSpeed, true);
-    this.animations.add("walk_down", [8, 9], animSpeed, true);
+    this.animations.add("walk_up", [100, 101, 102, 101], animSpeed * 1.5, true);
+    this.animations.add("walk_down", [103, 104, 105, 104], animSpeed * 1.5, true);
     this.animations.add("mine_right", [80, 81, 82, 83, 84, 85], 20, true);
     this.animations.add("mine_left", [86, 87, 88, 89, 90, 91], 20, true);
     this.animations.add("mine_up", [64, 65], animSpeed * 2, true);

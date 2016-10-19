@@ -58,10 +58,9 @@ class World extends Phaser.State {
     else if (right.base.name === "sand" && right.mid.name === "clear") {
       x += 1;
     }
+
     this.controls = new Controls(game);
-
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
-
 
     this.floppies = game.add.group();
     Array.from(new Array(10), () => {
@@ -236,9 +235,17 @@ class World extends Phaser.State {
 
     controls.update();
 
-    game.physics.arcade.collide(this.car, this.world.map.layers[1], (a, b, c) => {
-      console.log("bank!", a, b, c);
-    });
+    game.physics.arcade.collide(this.car, this.world.layerz.base, (car, tilelayer) => {
+      car.body.velocity.x = 0;
+      car.body.velocity.y = 0;
+      car.body.acceleration.set(0);
+    }, () => this.car.onTheGround);
+
+    game.physics.arcade.collide(this.car, this.world.layerz.mid, (car, tilelayer) => {
+      car.body.velocity.x = 0;
+      car.body.velocity.y = 0;
+      car.body.acceleration.set(0);
+    }, () => this.car.onTheGround);
 
     DayTime.update(game.time.elapsedMS / 1000);
 
@@ -446,10 +453,10 @@ class World extends Phaser.State {
     }
   }
 
-  render (game) {
-    //game.debug.spriteBounds(this.car);
+  /*render (game) {
+    game.debug.spriteBounds(this.car);
     game.debug.body(this.car)
-  }
+  }*/
 
 }
 
