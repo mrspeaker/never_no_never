@@ -324,6 +324,8 @@ class World extends Phaser.State {
       return;
     }
 
+    let someoneClose = false;
+
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
 
@@ -340,6 +342,7 @@ class World extends Phaser.State {
         }
 
         if (dist < 60) {
+          someoneClose = true;
 
           if (damage) {
             // Hmm, ok... attacking needs to be a state.
@@ -356,6 +359,10 @@ class World extends Phaser.State {
       }
 
     });
+
+    if (!someoneClose) {
+      player.noAttack();
+    }
   }
 
   collideWithMob (m) {

@@ -3,6 +3,7 @@
 * [bug] fix directions
 * [ref] convert World "mode" to state
 * [bug] use up items when placed
+* [bug] attack animation stops as soon as you move.
 * auto-switch tools when mining/attacked
 * one-up on floppy get
 * floppies per day

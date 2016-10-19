@@ -18,6 +18,7 @@ class Player extends Phaser.Sprite {
   maxArmour = 3;
 
   died = null;
+  attacking = false;
 
   states = {
     idle: "idle",
@@ -117,8 +118,23 @@ class Player extends Phaser.Sprite {
   }
 
   attack (e) {
+    this.attacking = true;
     const dir = e.x > this.x ? "left" : "right";
-    this.animations.play(`attack_${dir}`);
+    this.doAnim(`attack_${dir}`, true);
+  }
+
+  noAttack () {
+    this.attacking = false;
+  }
+
+  doAnim (anim, force) {
+    if (!anim) {
+      this.animations.stop();
+    }
+    else {
+      if (this.attacking && !force) { return; }
+      this.animations.play(anim);
+    }
   }
 
   switchTool (tool) {
@@ -191,15 +207,15 @@ class Player extends Phaser.Sprite {
     if (this.state.isFirst()) {
       if (mode === "idle") {
         this.frame = 0;
-        animations.stop();
+        this.doAnim("");
       }
     }
     if (mode === "walking") {
-      animations.play(`walk_${dir}`);
+      this.doAnim(`walk_${dir}`);
     }
 
     if (mode === "mining") {
-      animations.play(`mine_${dir}`);
+      this.doAnim(`mine_${dir}`);
     }
 
     this.shadow.x = this.x;
