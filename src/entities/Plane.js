@@ -19,6 +19,7 @@ class Plane extends Phaser.Sprite {
 
     this.body.drag.set(30);
     this.body.maxVelocity.set(120);
+    this.body.bounce.setTo(0.9);
 
     const shadow = game.add.sprite(0, 0, "mediums");
     this.addChild(shadow);

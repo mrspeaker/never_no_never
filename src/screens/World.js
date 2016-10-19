@@ -235,17 +235,17 @@ class World extends Phaser.State {
 
     controls.update();
 
-    game.physics.arcade.collide(this.car, this.world.layerz.base, (car, tilelayer) => {
-      car.body.velocity.x = 0;
-      car.body.velocity.y = 0;
-      car.body.acceleration.set(0);
-    }, () => this.car.onTheGround);
+    game.physics.arcade.collide(
+      this.car,
+      this.world.layerz.base,
+      null,
+      () => this.car.onTheGround);
 
-    game.physics.arcade.collide(this.car, this.world.layerz.mid, (car, tilelayer) => {
-      car.body.velocity.x = 0;
-      car.body.velocity.y = 0;
-      car.body.acceleration.set(0);
-    }, () => this.car.onTheGround);
+    game.physics.arcade.collide(
+      this.car,
+      this.world.layerz.mid,
+      null,
+      () => this.car.onTheGround);
 
     DayTime.update(game.time.elapsedMS / 1000);
 
