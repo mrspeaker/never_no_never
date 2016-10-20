@@ -233,11 +233,11 @@ class World extends Phaser.State {
     this.craftingScreen.visible = isCrafting;
   }
 
-  killZombie (m) {
-    const {player} = this;
-    const holding = this.inventory.holding();
+  killZombie () {
+    const {player, inventory} = this;
+    const holding = inventory.holding();
+    inventory.useItem(holding.item);
     player.state.set("idle");
-    holding.addItem(-1);
   }
 
   update (game) {
@@ -341,7 +341,8 @@ class World extends Phaser.State {
 
       if (dist < 200) {
         const holding = this.inventory.holding();
-        const damage = Items[holding.item].damage;
+        const item = Items[holding.item];
+        let damage = item.damage;
 
         m.isClose = true;
         this.world.makePath(m, player.x, player.y);
@@ -353,6 +354,11 @@ class World extends Phaser.State {
 
         if (dist < 60) {
           someoneClose = true;
+          if (!damage && this.inventory.stabby) {
+            // Auto stab!
+            this.inventory.selectItem(this.inventory.stabby.idx);
+            damage = true;
+          }
 
           if (damage) {
             // Hmm, ok... attacking needs to be a state.

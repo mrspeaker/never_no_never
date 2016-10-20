@@ -72,6 +72,10 @@ class Inventory extends Phaser.Group {
   slotTileW = 48;
   slotTileH = 48;
 
+  stabby = null;
+  shooty = null;
+  diggy = null;
+
   constructor (game, onItemSwitch) {
     super(game);
     game.add.existing(this);
@@ -163,6 +167,14 @@ class Inventory extends Phaser.Group {
     else {
       // No room!
     }
+
+    if (slot) {
+      const i = Items[item];
+      if (i.fireable && !this.shooty) this.shooty = slot;
+      if (i.damage && !this.stabby) this.stabby = slot;
+      if (i.efficiency && !this.diggy) this.diggy = slot;
+    }
+
     return slot;
   }
 
@@ -176,10 +188,15 @@ class Inventory extends Phaser.Group {
     return match ? match.amount : 0;
   }
 
-  useItem (item, amount) {
+  useItem (item, amount = 1) {
     const match = this.slots.find(s => s.item === item);
     if (match && match.amount >= amount) {
       match.addItem(-amount);
+      if (match.amount === 0) {
+        if (this.stabby && match.idx === this.stabby.idx) this.stabby = null;
+        //if (match === this.shooty) this.shooty = null;
+        //if (match === this.diggy) this.diggy = null;
+      }
       return true;
     }
     return false;

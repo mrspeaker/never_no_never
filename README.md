@@ -10,8 +10,6 @@
 * less visible target cursor when on mineable block
 * auto-switch tools when mining/attacked
 * one-up on floppy get
-* mining particles
-* attack particles
 * floppies per day
 * zombie roaming state
 * roam on player death
