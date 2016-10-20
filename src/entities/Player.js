@@ -7,6 +7,7 @@ import Items from "../Items";
 import Tween from "../Tween";
 import Blocks from "../Blocks";
 import Bullet from "./Bullet";
+import Particles from "../Particles";
 
 import DayTime from "../DayTime";
 
@@ -40,6 +41,9 @@ class Player extends Phaser.Sprite {
     this.direction = new State("right");
 
     this.lastShootTime = Date.now();
+
+    this.bloods = new Particles(game, this.x, this.y, 0, "icons4x4", 1);
+    this.bloods.emitting = false;
 
     const animSpeed = this.walkSpeed * 1.5;
     this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
@@ -80,6 +84,15 @@ class Player extends Phaser.Sprite {
     const xo = Math.cos(angle) * 30;
     const yo = Math.sin(angle) * 30;
     Tween.to(this, {x: this.x + xo, y: this.y + yo}, 150);
+
+    this.bloods.emitting = true;
+    this.bloods.x = this.x + xo;
+    this.bloods.y = this.y + yo;
+    this.bloodsT && clearTimeout(this.bloodsT);
+    this.bloodsT = setTimeout(() => {
+      this.bloods.emitting = false;
+    }, 600);
+
   }
 
   setPath (path, onDone) {

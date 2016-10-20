@@ -56,7 +56,7 @@ class Zombie extends Phaser.Sprite {
 
     this.bloods.emitting = true;
     this.bloods.x = this.x + xo;
-    this.bloods.y = this.y + yo - 8;
+    this.bloods.y = this.y + yo;
     this.bloodsT && clearTimeout(this.bloodsT);
     this.bloodsT = setTimeout(() => {
       this.bloods.emitting = false;
