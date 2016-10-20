@@ -1,10 +1,10 @@
 const Phaser = window.Phaser;
 
 class Particle extends Phaser.Sprite {
-  constructor (game, x, y, col) {
-    super(game, x, y, "icons");
+  constructor (game, x, y, col, sheet = "icons", scale = 0.3) {
+    super(game, x, y, sheet);
     this.frame = col;
-    this.scale.set(0.3);
+    this.scale.set(scale);
     this.life = 0;
     this.visible = false;
   }
@@ -38,13 +38,13 @@ class Particles extends Phaser.Sprite {
   emitRate = 200;
   tile = 1;
 
-  constructor (game, x, y, tile) {
+  constructor (game, x, y, tile, sheet, scale) {
     super(game, x, y);
     this.tile = tile;
     game.add.existing(this);
 
     this.particles = Array
-      .from(new Array(15), () => new Particle(game, 0, 0, tile))
+      .from(new Array(15), () => new Particle(game, 0, 0, tile, sheet, scale))
       .map(p => this.addChild(p));
   }
 

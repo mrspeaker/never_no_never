@@ -233,7 +233,7 @@ class World extends Phaser.State {
     this.craftingScreen.visible = isCrafting;
   }
 
-  killZombie () {
+  killZombie (m) {
     const {player} = this;
     const holding = this.inventory.holding();
     player.state.set("idle");

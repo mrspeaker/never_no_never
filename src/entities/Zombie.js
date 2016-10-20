@@ -4,6 +4,7 @@ import Health from "../components/Health";
 import State from "../State";
 import PathWalker from "../components/PathWalker";
 import Tween from "../Tween";
+import Particles from "../Particles";
 
 class Zombie extends Phaser.Sprite {
 
@@ -17,6 +18,9 @@ class Zombie extends Phaser.Sprite {
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
     this.shadow.frame = 40;
+
+    this.bloods = new Particles(game, this.x, this.y, 0, "icons4x4", 1);
+    this.bloods.emitting = false;
 
     const walkSpeed = 5;
     this.animations.add("idle", [20], walkSpeed, true);
@@ -49,6 +53,14 @@ class Zombie extends Phaser.Sprite {
     const xo = Math.sin(angle) * 40;
     const yo = Math.cos(angle) * 40;
     Tween.to(this, {x: this.x + xo, y: this.y + yo}, 150);
+
+    this.bloods.emitting = true;
+    this.bloods.x = this.x + xo;
+    this.bloods.y = this.y + yo - 8;
+    this.bloodsT && clearTimeout(this.bloodsT);
+    this.bloodsT = setTimeout(() => {
+      this.bloods.emitting = false;
+    }, 600);
   }
 
   onDie () {
