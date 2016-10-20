@@ -19,7 +19,6 @@ class Splash extends Phaser.State {
 
     game.add.sprite(0, 0, "splash");
 
-
     const title = Title(game, "bmax!", 36, 100, 112).font;
     const start = Title(game, "Start with?", 9, 130, 210, true).font;
 

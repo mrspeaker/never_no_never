@@ -1,17 +1,24 @@
-# bmax
+# never, no never
 
 * [bug] fix directions
 * [ref] convert World "mode" to state
 * [bug] use up items when placed
-* [bug] attack animation stops as soon as you move.
+* [bug] places blocks while in the air
+* [bug] pathfinding recalc on player goes wrong way
+* [bug] baddies stuck
+* [bug] remove player shadow when flying
+* less visible target cursor when on mineable block
 * auto-switch tools when mining/attacked
 * one-up on floppy get
+* mining particles
+* attack particles
 * floppies per day
 * zombie roaming state
 * roam on player death
 * drops from mining
 * drops from zombie kills
 * find a recipe, unlock
+* add death screen (or modal)
 * store progress/stats/unlocks
   * on died, show progress hp
   * on died, "surived for" time.
@@ -21,11 +28,7 @@
   * cellular autonoma ability
   * show un-obtained resources in crafting.
 * system for player -> tool -> target block
-* minimap in pda screen
-* when you die, tomb with your stuff in it in vaguely the same place.
-* permanent markers (how to stop it messing up pathfinding?) - walkable, offset sprite?
 * [ref] fix state machine: don't allow bad states
 * clouds float overhead
 * [bug] invalidate/recalc paths on build, destroy.
-* [bug] Can get errors on map gen.
 * [bug] Errors when destroying particle emitters after screen swap

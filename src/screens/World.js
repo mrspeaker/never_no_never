@@ -15,6 +15,7 @@ import Title from "../Title";
 import HUD from "../HUD";
 import Tween from "../Tween";
 import DayTime from "../DayTime";
+import Particles from "../Particles";
 
 import data from "../data";
 
@@ -61,6 +62,9 @@ class World extends Phaser.State {
 
     this.controls = new Controls(game);
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+
+    this.particles = new Particles(game, this.player.x, this.player.y, 1);
+    this.particles.emitting = false;
 
     this.floppies = game.add.group();
     Array.from(new Array(10), () => {
@@ -198,8 +202,14 @@ class World extends Phaser.State {
       const toolEfficiency = Items[tool.item].efficiency || 1;
 
       // TODO: handle nicer: player -> tool -> target block
+      const p = this.particles;
+      p.tile = Items[block.yields[0].name].icon;
+      p.emitting = true;
+      p.x = xt * 32 + 16;
+      p.y = yt * 32 + 8;
       player.mineTile(block, tile, toolEfficiency, () => {
 
+        p.emitting = false;
         world.setTile(
           tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile :
           Blocks.clear.tile
@@ -396,6 +406,7 @@ class World extends Phaser.State {
   }
 
   walkToThenAct (worldX, worldY) {
+    this.particles.emitting = false;
     this.groundTarget.x = (worldX / 32 | 0) * 32;
     this.groundTarget.y = (worldY / 32 | 0) * 32;
 
