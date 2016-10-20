@@ -221,7 +221,7 @@ class World extends Phaser.State {
         });
 
         if (toolEfficiency > 1) {
-          tool.addItem(-1);
+          this.inventory.useItem(tool.item);
         }
 
       });
@@ -350,7 +350,7 @@ class World extends Phaser.State {
         // Should we shoot?
         const proj = this.inventory.projectiles();
         if (proj && this.player.shoot(m)) {
-          this.inventory.useItem(proj.item, 1);
+          this.inventory.useItem(proj.item);
         }
 
         if (dist < 60) {

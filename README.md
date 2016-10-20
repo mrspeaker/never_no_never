@@ -1,19 +1,20 @@
-# never, no never
+# Never, No Never,
 
 * [bug] fix directions
 * [ref] convert World "mode" to state
 * [bug] use up items when placed
 * [bug] places blocks while in the air
+* [bug] plane moves while in crafting
 * [bug] pathfinding recalc on player goes wrong way
 * [bug] baddies stuck
 * [bug] remove player shadow when flying
 * less visible target cursor when on mineable block
-* auto-switch tools when mining/attacked
 * one-up on floppy get
 * floppies per day
 * zombie roaming state
 * roam on player death
 * drops from mining
+* tween when auto-switch items
 * drops from zombie kills
 * find a recipe, unlock
 * add death screen (or modal)

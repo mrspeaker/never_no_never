@@ -220,8 +220,8 @@ class Inventory extends Phaser.Group {
       if (match.amount === 0) {
         // De-autoselect itme
         if (this.stabby && match.idx === this.stabby.idx) this.stabby = null;
-        if (this.shooty && match.dix === this.shooty.idx) this.shooty = null;
-        if (this.diggy && match.dix === this.diggy.idx) this.diggy = null;
+        if (this.shooty && match.idx === this.shooty.idx) this.shooty = null;
+        if (this.diggy && match.idx === this.diggy.idx) this.diggy = null;
       }
       return true;
     }
