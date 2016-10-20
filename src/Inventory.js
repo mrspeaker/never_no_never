@@ -82,6 +82,9 @@ class Inventory extends Phaser.Group {
 
     this.onItemSwitch = onItemSwitch;
 
+    this.emptySlot = new Slot(game, -1);
+    this.emptySlot.item = "empty";
+
     const box = this.create(
       game.width / 2 - 144,
       game.height - 100, "inventory");
@@ -112,6 +115,30 @@ class Inventory extends Phaser.Group {
 
     this.selectItem(-1);
 
+  }
+
+  autoStab () {
+    if (this.holding().is("damage")) {
+      return false;
+    }
+
+    if (this.stabby) {
+      this.selectItem(this.stabby.idx);
+      return true;
+    }
+    return false;
+  }
+
+  autoDig () {
+    if (this.holding().is("efficiency")) {
+      return false;
+    }
+
+    if (this.diggy) {
+      this.selectItem(this.diggy.idx);
+      return true;
+    }
+    return false;
   }
 
   onClick (box, click) {
@@ -145,10 +172,7 @@ class Inventory extends Phaser.Group {
 
   holding () {
     if (this.selected < 0 || !(this.slots[this.selected].item)) {
-      return {
-        item: "empty",
-        amount: 0
-      };
+      return this.emptySlot;
     }
     return this.slots[this.selected];
   }
@@ -169,6 +193,7 @@ class Inventory extends Phaser.Group {
     }
 
     if (slot) {
+      // Auto-select item
       const i = Items[item];
       if (i.fireable && !this.shooty) this.shooty = slot;
       if (i.damage && !this.stabby) this.stabby = slot;
@@ -193,9 +218,10 @@ class Inventory extends Phaser.Group {
     if (match && match.amount >= amount) {
       match.addItem(-amount);
       if (match.amount === 0) {
+        // De-autoselect itme
         if (this.stabby && match.idx === this.stabby.idx) this.stabby = null;
-        //if (match === this.shooty) this.shooty = null;
-        //if (match === this.diggy) this.diggy = null;
+        if (this.shooty && match.dix === this.shooty.idx) this.shooty = null;
+        if (this.diggy && match.dix === this.diggy.idx) this.diggy = null;
       }
       return true;
     }

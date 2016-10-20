@@ -198,6 +198,7 @@ class World extends Phaser.State {
         }
       });
 
+      this.inventory.autoDig();
       const tool = this.inventory.holding();
       const toolEfficiency = Items[tool.item].efficiency || 1;
 
@@ -328,7 +329,7 @@ class World extends Phaser.State {
   }
 
   collisionsMob () {
-    const {mobs, player} = this;
+    const {mobs, player, inventory} = this;
 
     if (this._cheat) {
       return;
@@ -340,13 +341,13 @@ class World extends Phaser.State {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
 
       if (dist < 200) {
-        const holding = this.inventory.holding();
-        const item = Items[holding.item];
-        let damage = item.damage;
-
         m.isClose = true;
+
+        const item = Items[inventory.holding().item];
+        const damage = item.damage;
         this.world.makePath(m, player.x, player.y);
 
+        // Should we shoot?
         const proj = this.inventory.projectiles();
         if (proj && this.player.shoot(m)) {
           this.inventory.useItem(proj.item, 1);
@@ -354,18 +355,10 @@ class World extends Phaser.State {
 
         if (dist < 60) {
           someoneClose = true;
-          if (!damage && this.inventory.stabby) {
-            // Auto stab!
-            this.inventory.selectItem(this.inventory.stabby.idx);
-            damage = true;
-          }
 
-          if (damage) {
-            // Hmm, ok... attacking needs to be a state.
-            // else the mining/walking anim will quickly override this
+          if (damage || this.inventory.autoStab()) {
             player.attack(m);
           }
-
           if (dist < 32) {
             this.collideWithMob(m);
           }
