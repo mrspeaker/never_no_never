@@ -46,7 +46,7 @@ class Player extends Phaser.Sprite {
     this.bloods.emitting = false;
 
     const animSpeed = this.walkSpeed * 1.5;
-    this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
+    //this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
     this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
     this.animations.add("walk_up", [100, 101, 102, 101], animSpeed * 1.5, true);
     this.animations.add("walk_down", [103, 104, 105, 104], animSpeed * 1.5, true);
@@ -54,10 +54,13 @@ class Player extends Phaser.Sprite {
     this.animations.add("mine_left", [86, 87, 88, 89, 90, 91], 20, true);
     this.animations.add("mine_up", [64, 65], animSpeed * 2, true);
     this.animations.add("mine_down", [66, 67], animSpeed * 2, true);
-    this.animations.add("attack_left", [12, 13, 14, 15, 16, 17], 24, true),
-    this.animations.add("attack_right", [32, 33, 34, 35, 36, 37], 24, true),
-    this.animations.add("attack_up", [12, 13, 14, 15, 16, 17], 24, true),
-    this.animations.add("attack_down", [32, 33, 34, 35, 36, 37], 24, true),
+    this.animations.add("attack_left", [12, 13, 14, 15, 16, 17], 24, true);
+    this.animations.add("attack_right", [32, 33, 34, 35, 36, 37], 24, true);
+    this.animations.add("attack_up", [12, 13, 14, 15, 16, 17], 24, true);
+    this.animations.add("attack_down", [32, 33, 34, 35, 36, 37], 24, true);
+
+    // this.animations.add("walk_right", [120, 121, 122, 123, 124, 125, 126], 15, true);
+    this.animations.add("walk_left", [127, 128, 129, 130, 131, 132, 133], 15, true);
 
     this.health = new Health(3, 5);
     this.health.onHurt = (...args) => {
@@ -224,6 +227,7 @@ class Player extends Phaser.Sprite {
       }
     }
     if (mode === "walking") {
+      //const walk = Math.random() < 0.2 ? "roll" : "walk";
       this.doAnim(`walk_${dir}`);
     }
 
@@ -275,8 +279,8 @@ class Player extends Phaser.Sprite {
         xx = xx / Math.sqrt(2);
         yy = yy / Math.sqrt(2);
       }
-      this.x += xx * (1 - DayTime.percent);
-      this.y += yy * (1 - DayTime.percent);
+      this.x += xx * (1 - (DayTime.percent * DayTime.percent));
+      this.y += yy * (1 - (DayTime.percent * DayTime.percent));
 
       return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
     });

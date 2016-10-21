@@ -8,6 +8,7 @@
 * [bug] pathfinding recalc on player goes wrong way
 * [bug] baddies stuck
 * [bug] remove player shadow when flying
+* [bug] mining particles stuck if... something.
 * less visible target cursor when on mineable block
 * one-up on floppy get
 * floppies per day
