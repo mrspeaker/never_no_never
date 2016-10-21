@@ -39,6 +39,7 @@ class Player extends Phaser.Sprite {
 
     this.state = new State("idle");
     this.direction = new State("right");
+    this.lastDir = "right";
 
     this.lastShootTime = Date.now();
 
@@ -46,8 +47,8 @@ class Player extends Phaser.Sprite {
     this.bloods.emitting = false;
 
     const animSpeed = this.walkSpeed * 1.5;
-    //this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
-    this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
+    this.animations.add("walk_right", [0, 1, 2, 1], animSpeed, true);
+    //this.animations.add("walk_left", [3, 4, 5, 4], animSpeed, true);
     this.animations.add("walk_up", [100, 101, 102, 101], animSpeed * 1.5, true);
     this.animations.add("walk_down", [103, 104, 105, 104], animSpeed * 1.5, true);
     this.animations.add("mine_right", [80, 81, 82, 83, 84, 85], 20, true);
@@ -136,6 +137,7 @@ class Player extends Phaser.Sprite {
   attack (e) {
     this.attacking = true;
     const dir = e.x > this.x ? "left" : "right";
+    this.direction.set(dir);
     this.doAnim(`attack_${dir}`, true);
   }
 
@@ -220,19 +222,20 @@ class Player extends Phaser.Sprite {
 
     const mode = this.state.get();
     const dir = this.direction.get();
-    if (this.state.isFirst()) {
+    const isFirst = this.state.isFirst();
+    if (isFirst || dir !== this.lastDir) {
       if (mode === "idle") {
         this.frame = 0;
         this.doAnim("");
       }
-    }
-    if (mode === "walking") {
-      //const walk = Math.random() < 0.2 ? "roll" : "walk";
-      this.doAnim(`walk_${dir}`);
-    }
-
-    if (mode === "mining") {
-      this.doAnim(`mine_${dir}`);
+      if (mode === "walking") {
+        //const walk = Math.random() < 0.2 ? "roll" : "walk";
+        this.doAnim(`walk_${dir}`);
+      }
+      if (mode === "mining") {
+        this.doAnim(`mine_${dir}`);
+      }
+      this.lastDir = dir;
     }
 
     this.shadow.x = this.x;
