@@ -4,12 +4,14 @@ class PathWalker {
   path = null;
   current = null;
   last = null;
+  isFirst = null;
 
   reset () {
     this.onDone = null;
     this.path = null;
     this.current = null;
     this.last = null;
+    this.isFirst = null;
   }
 
   show (game, max = 50, sprite = "peeps", frame = 20, alpha = 0.2) {
@@ -29,18 +31,18 @@ class PathWalker {
     this.path = path;
     this.onDone = onDone;
     this.current = path[0];
-    this.last = this.current; // hmm, really?
-
+    this.last = {x: null, y: null};//this.current; // hmm, really?
+    this.isFirst = true;
     this.markers &&
-    this.markers.forEach((m, i) => {
-      if (i < path.length) {
-        m.x = path[i].x * 32;
-        m.y = path[i].y * 32;
-      } else {
-        m.x = 0;
-        m.y = 0;
-      }
-    });
+      this.markers.forEach((m, i) => {
+        if (i < path.length) {
+          m.x = path[i].x * 32;
+          m.y = path[i].y * 32;
+        } else {
+          m.x = 0;
+          m.y = 0;
+        }
+      });
   }
 
   next () {
@@ -52,12 +54,13 @@ class PathWalker {
       this.current = this.path[0];
       this.path = this.path.slice(1);
     }
+    this.isFirst = false;
     return this.current;
   }
 
   update (atCurrent) {
     const {current, last} = this;
-    if (atCurrent(current, last)) {
+    if (atCurrent(current, last, this.isFirst)) {
       if (!this.next()) {
         this.onDone(current);
       }

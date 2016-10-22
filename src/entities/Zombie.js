@@ -103,7 +103,13 @@ class Zombie extends Phaser.Sprite {
       path = path.slice(1);
     }
 
-    this.state.set("walking");
+    if (path.length) {
+      if (cx > path[0].x) this.direction.set("left");
+      else if (cx < path[0].x) this.direction.set("right");
+      else if (cy > path[0].y) this.direction.set("down");
+      else if (cy < path[0].y) this.direction.set("up");
+      this.state.set("walking");
+    }
     this.pathWalker.setPath(path, (last) => {
       if (last) {
         this.x = last.x * 32;
@@ -149,12 +155,17 @@ class Zombie extends Phaser.Sprite {
     const dir = this.direction.get();
     this.animations.play(`walk_${dir}`);
 
-    this.pathWalker.update((c, lastPath) => {
-      if (c.y !== lastPath.y) {
-        this.direction.set(c.y < lastPath.y ? "up" : "down");
-      }
-      else if (c.x !== lastPath.x) {
-        this.direction.set(c.x < lastPath.x ? "left" : "right");
+    this.pathWalker.update((c, lastPath, isFirst) => {
+      const txo = c.x - lastPath.x;
+      const tyo = c.y - lastPath.y;
+
+      if (!isFirst && (txo || tyo)) {
+        if (Math.abs(txo) > Math.abs(tyo)) {
+          this.direction.set(c.x < lastPath.x ? "left" : "right");
+        }
+        else {
+          this.direction.set(c.y < lastPath.y ? "up" : "down");
+        }
       }
 
       const xo = c.x * 32 - this.x;
