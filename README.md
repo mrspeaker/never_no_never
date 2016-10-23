@@ -1,6 +1,5 @@
 # Never, No Never,
 
-* [bug] fix directions
 * [ref] convert World "mode" to state
 * [bug] use up items when placed
 * [bug] places blocks while in the air
@@ -8,8 +7,10 @@
 * [bug] pathfinding recalc on player goes wrong way
 * [bug] baddies stuck
 * [bug] remove player shadow when flying
-* [bug] mining particles stuck if... something.
+* [bug] mining particles stuck if switch mode
 * less visible target cursor when on mineable block
+* segway man
+* some way to switch vehicles
 * one-up on floppy get
 * floppies per day
 * zombie roaming state

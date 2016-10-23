@@ -15,6 +15,7 @@ class Preload extends Phaser.State {
     game.load.spritesheet("icons", "res/icons.png", 32, 32);
     game.load.spritesheet("icons4x4", "res/icons4x4.png", 16, 16);
     game.load.spritesheet("mediums", "res/mediums.png", 40, 40);
+    game.load.spritesheet("segway", "res/segway.png", 32, 48);
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 48);
   }
 

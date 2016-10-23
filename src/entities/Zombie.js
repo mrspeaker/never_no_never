@@ -24,8 +24,8 @@ class Zombie extends Phaser.Sprite {
 
     const walkSpeed = 5;
     this.animations.add("idle", [20], walkSpeed, true);
-    this.animations.add("walk_right", [20, 21, 22, 21], walkSpeed, true);
-    this.animations.add("walk_left", [23, 24, 25, 24], walkSpeed, true);
+    this.animations.add("walk_right", [21, 22, 21, 20], walkSpeed, true);
+    this.animations.add("walk_left", [24, 25, 24, 23], walkSpeed, true);
     this.animations.add("walk_up", [26, 27], walkSpeed, true);
     this.animations.add("walk_down", [28, 29], walkSpeed, true);
 

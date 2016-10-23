@@ -8,6 +8,7 @@ import Zombie from "../entities/Zombie";
 import Floppy from "../entities/Floppy";
 import Car from "../entities/Car";
 import Plane from "../entities/Plane";
+import Segway from "../entities/Segway";
 import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
@@ -82,7 +83,7 @@ class World extends Phaser.State {
       mobs.add(new Zombie(game, x, y, this));
     }
 
-    this.car = new Plane(game, this.player.x, this.player.y, this.controls);
+    this.car = new Segway(game, this.player.x, this.player.y, this.controls);
     this.car.visible = false;
 
     this.night = this.game.add.bitmapData(this.game.width, this.game.height);
