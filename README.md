@@ -10,7 +10,7 @@
 * [bug] mining particles stuck if switch mode
 * [bug] mining direction can be wrong
 * [bug] knockback direction always the same (up left or down right)
-* less visible target cursor when on mineable block
+* Add a "town"
 * some way to switch vehicles
 * one-up on floppy get
 * floppies per day

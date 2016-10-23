@@ -45,7 +45,7 @@ class World extends Phaser.State {
 
     this.groundTarget = game.add.sprite(0, 0, "icons");
     this.groundTarget.frame = 21;
-    this.groundTarget.alpha = 0.5;
+    //this.groundTarget.alpha = 0.5;
 
     this.perma = game.add.group();
 
@@ -406,9 +406,13 @@ class World extends Phaser.State {
   }
 
   walkToThenAct (worldX, worldY) {
+    const {groundTarget} = this;
     this.particles.emitting = false;
-    this.groundTarget.x = (worldX / 32 | 0) * 32;
-    this.groundTarget.y = (worldY / 32 | 0) * 32;
+    groundTarget.x = (worldX / 32 | 0) * 32;
+    groundTarget.y = (worldY / 32 | 0) * 32;
+
+    const tile = this.world.getTileXY(worldX, worldY);
+    groundTarget.frame = tile.mid.mine ? 31 : 21;
 
     // Walk to spot
     this.world.makePath(

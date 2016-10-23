@@ -59,18 +59,7 @@ class Segway extends Phaser.Sprite {
       animSpeed = 15;
       var idx = (this._angle / 360) * 8 | 0;
       this.animations.play(["up", "up_right", "right", "down_right", "down", "down_left", "left", "up_left"][idx], animSpeed);
-      /*if (this._angle > 325 || this._angle < 45) {
-        this.animations.play("up", animSpeed);
-      }
-      else if (this._angle < 135) {
-        this.animations.play("right", animSpeed);
-      }
-      else if (this._angle < 225){
-        this.animations.play("down", animSpeed);
-      }
-      else {
-        this.frame = this.animations.play("left", animSpeed);
-      }*/
+
       if (vel < 0.1) {
         this.animations.stop();
       }
