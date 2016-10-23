@@ -27,6 +27,10 @@ class Segway extends Phaser.Sprite {
     this.animations.add("down", [0, 1, 2], animSpeed, true);
     this.animations.add("left", [13, 14, 15], animSpeed, true);
     this.animations.add("right", [10, 11, 12], animSpeed, true);
+    this.animations.add("down_right", [20, 21, 22], animSpeed, true);
+    this.animations.add("down_left", [23, 24, 25], animSpeed, true);
+    this.animations.add("up_left", [30, 31, 32], animSpeed, true);
+    this.animations.add("up_right", [33, 34, 35], animSpeed, true);
 
     this._angle = 0;
   }
@@ -53,7 +57,9 @@ class Segway extends Phaser.Sprite {
       this._angle = (this._angle + 360) % 360;
 
       animSpeed = 15;
-      if (this._angle > 325 || this._angle < 45) {
+      var idx = (this._angle / 360) * 8 | 0;
+      this.animations.play(["up", "up_right", "right", "down_right", "down", "down_left", "left", "up_left"][idx], animSpeed);
+      /*if (this._angle > 325 || this._angle < 45) {
         this.animations.play("up", animSpeed);
       }
       else if (this._angle < 135) {
@@ -64,7 +70,7 @@ class Segway extends Phaser.Sprite {
       }
       else {
         this.frame = this.animations.play("left", animSpeed);
-      }
+      }*/
       if (vel < 0.1) {
         this.animations.stop();
       }
