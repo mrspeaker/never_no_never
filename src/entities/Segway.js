@@ -15,29 +15,20 @@ class Segway extends Phaser.Sprite {
     game.add.existing(this);
     this.controls = controls;
     this.state = new State("stopped");
-    game.physics.enable(this);
 
+    game.physics.enable(this);
     this.body.drag.set(90);
     this.body.maxVelocity.set(120);
     //this.body.bounce.setTo(0.3);
-
-    //const shadow = game.add.sprite(0, 0, "segway");
-    //this.addChild(shadow);
-
-    //shadow.anchor.setTo(0.5);
-
-    //  This adjusts the collision body size to be a 100x50 box.
-//  50, 25 is the X and Y offset of the newly sized box.
-
     this.body.setSize(30, 20, 1, 28);
 
-    //shadow.frame = 1;
-    this._angle = 0;
-    //shadow.scale.set(0.6);
-    //shadow.tint = 0x000000;
-    //shadow.alpha = 0.4;
+    const animSpeed = 10;
+    this.animations.add("up", [3, 4, 5], animSpeed, true);
+    this.animations.add("down", [0, 1, 2], animSpeed, true);
+    this.animations.add("left", [13, 14, 15], animSpeed, true);
+    this.animations.add("right", [10, 11, 12], animSpeed, true);
 
-    //this.shadow = shadow;
+    this._angle = 0;
   }
 
   get onTheGround () {
@@ -48,31 +39,34 @@ class Segway extends Phaser.Sprite {
     const {controls, body, game} = this;
 
     let vel = body.velocity.getMagnitude();
+    let animSpeed;
 
     switch (this.state.get()) {
     case "stopped":
       if (controls.justPressed) {
-        this.state.set("taxiing");
+        this.state.set("cruising");
       }
-      // this.shadow.visible = false;
       break;
 
-    case "taxiing":
+    case "cruising":
       this._angle -= this.controls.angle * this.turn;
       this._angle = (this._angle + 360) % 360;
 
-
+      animSpeed = 15;
       if (this._angle > 325 || this._angle < 45) {
-        this.frame = 3;
+        this.animations.play("up", animSpeed);
       }
       else if (this._angle < 135) {
-        this.frame = 10;
+        this.animations.play("right", animSpeed);
       }
       else if (this._angle < 225){
-        this.frame = 0;
+        this.animations.play("down", animSpeed);
       }
       else {
-        this.frame = 13;
+        this.frame = this.animations.play("left", animSpeed);
+      }
+      if (vel < 0.1) {
+        this.animations.stop();
       }
       controls.angle *= this.rotFriction;
       if (controls.isDown) {
@@ -81,12 +75,9 @@ class Segway extends Phaser.Sprite {
         body.acceleration.set(0);
       }
       game.physics.arcade.velocityFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, vel, body.velocity);
-
       break;
     }
 
-    // this.shadow.x = Math.cos(-this.rotation) * this.alt;
-    // this.shadow.y = Math.sin(-this.rotation) * this.alt;
 
   }
 
