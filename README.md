@@ -1,6 +1,5 @@
 # Never, No Never,
 
-* [ref] convert World "mode" to state
 * [bug] use up items when placed
 * [bug] can't switch to crafting in vehicle
 * [bug] pathfinding recalc on player goes wrong way for first block
@@ -33,3 +32,4 @@
 * clouds float overhead
 * [bug] invalidate/recalc paths on build, destroy.
 * [bug] Errors when destroying particle emitters after screen swap
+* [bug] dead in vehicle, vehicle still visible/usable

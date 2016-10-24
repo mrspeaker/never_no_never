@@ -137,7 +137,9 @@ class Crafting {
 
     if (justPressed) {
       if (y < 70) {
-        world.setMode("exploring");
+        // TODO: crafting shouldn't know about world state
+        this.visible = false;
+        this.world.state.set("exploring");
       }
 
       if (y >= recipeYo && y <= recipeYo + recipes.length * recipeLineSpacing) {

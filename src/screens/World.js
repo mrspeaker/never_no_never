@@ -17,12 +17,12 @@ import HUD from "../HUD";
 import Tween from "../Tween";
 import DayTime from "../DayTime";
 import Particles from "../Particles";
+import State from "../State";
 
 import data from "../data";
 
 class World extends Phaser.State {
 
-  mode = "getready";
   _cheat = false;
   floppyGets = 0;
 
@@ -31,6 +31,9 @@ class World extends Phaser.State {
   }
 
   create (game) {
+
+    this.state = new State("getready");
+
     game.stage.backgroundColor = "#343436";
 
     const fragmentSrc = `
@@ -135,7 +138,7 @@ void main(void) {
 
     if (DayTime.firstDayOnTheJob) {
       DayTime.addDayOverListener(() => {
-        this.mode = "dayOver";
+        this.state.set("dayOver");
       });
       this.floppyGets = 0;
     }
@@ -164,7 +167,7 @@ void main(void) {
 
     this._cheat = false;
 
-    this.setMode("exploring");
+    this.state.set("exploring");
 
     this.maingroup.filters = [filter];
 
@@ -271,7 +274,7 @@ void main(void) {
   }
 
   update (game) {
-    const {mode, protagonist, cameraTarget, controls} = this;
+    const {protagonist, cameraTarget, controls} = this;
 
     controls.update();
 
@@ -289,10 +292,11 @@ void main(void) {
     cameraTarget.y = protagonist.y + 50;
 
     let updateDay = false;
+    const isFirst = this.state.isFirst();
 
-    switch (mode) {
+    switch (this.state.get()) {
     case "getready":
-      this.mode = "exploring";
+      this.state.set("exploring");
       break;
     case "exploring":
       this.updateExploring(game);
@@ -303,6 +307,9 @@ void main(void) {
       updateDay = true;
       break;
     case "crafting":
+      if (isFirst) {
+        this.craftingScreen.visible = true;
+      }
       this.craftingScreen.update(game);
       updateDay = true;
       break;
@@ -480,7 +487,7 @@ void main(void) {
 
       // Crafting button - TODO: factorize it.
       if (y < 70 && x > game.width - 70) {
-        this.setMode("crafting");
+        this.state.set("crafting");
         return;
       }
 
@@ -495,8 +502,8 @@ void main(void) {
   }
 
   toggleDriving () {
-    if (this.mode === "driving") {
-      this.setMode("exploring");
+    if (this.state.get() === "driving") {
+      this.state.set("exploring");
       this.protagonist.visible = false;
 
       this.player.visible = true;
@@ -507,7 +514,7 @@ void main(void) {
       this.walkToThenAct(this.protagonist.x, this.protagonist.y);
     }
     else {
-      this.setMode("driving");
+      this.state.set("driving");
       const vehicle = Math.random() < 0.5 ? this.plane : this.car;
       this.player.visible = false;
       this.player.shadow.visible = false;
