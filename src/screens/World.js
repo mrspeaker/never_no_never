@@ -32,6 +32,33 @@ class World extends Phaser.State {
 
   create (game) {
     game.stage.backgroundColor = "#343436";
+
+    const fragmentSrc = `
+precision mediump float;
+
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform float time;
+uniform vec2 pos;
+
+void main(void) {
+
+  vec4 texColor = texture2D(uSampler, vTextureCoord);
+  texColor *= vec4(abs(sin(vTextureCoord.y + time / 30.0)), 1.0, abs(cos(pos.x / 1000.0)), 1.0);
+  // texColor *= vec4(1.0, 1.0, abs(cos(pos.x / 1000.0)), 1.0);
+  gl_FragColor = texColor;
+
+}
+`;
+
+    const customUniforms = {
+      pos: { type: "2f", value: null },
+    };
+
+    const filter = this.filter = new Phaser.Filter(game, customUniforms, fragmentSrc.split("\n"));
+
+//    game.stage.filters = [ filter ];
+
     // game.stage.disableVisibilityChange = true;
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -41,12 +68,17 @@ class World extends Phaser.State {
 
     Tween.game = game;
 
+    this.maingroup = game.add.group();
+
     this.world = new Map(game);
+    this.maingroup.add(this.world.layerz.base);
+    this.maingroup.add(this.world.layerz.mid);
 
     this.groundTarget = game.add.sprite(0, 0, "icons");
     this.groundTarget.frame = 31;
 
     this.perma = game.add.group();
+    this.maingroup.add(this.perma);
 
     // Position the player and manhole
     let {x, y} = this.world.findEmptySpot();
@@ -62,17 +94,19 @@ class World extends Phaser.State {
 
     this.controls = new Controls(game);
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
-
+    this.maingroup.add(this.player);
     this.protagonist = this.player;
 
     this.particles = new Particles(game, this.player.x, this.player.y, 1);
     this.particles.emitting = false;
+    this.maingroup.add(this.particles);
 
     this.floppies = game.add.group();
     Array.from(new Array(20), () => {
       const spot = this.world.findEmptySpot();
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
+    this.maingroup.add(this.floppies);
 
     // Focus camera slightly off center, to make up for bottom non-touch area
     this.cameraTarget = game.add.sprite(0, 0, "peeps");
@@ -83,14 +117,17 @@ class World extends Phaser.State {
       const {x, y} = this.getMobSpawnPoint();
       mobs.add(new Zombie(game, x, y, this));
     }
+    this.maingroup.add(this.mobs);
 
     // TODO: all vehicles updating, all the time.
     this.car = new Segway(game, this.protagonist.x, this.protagonist.y, this.controls);
     this.car.visible = false;
+    this.maingroup.add(this.car);
 
     // TODO: all vehicles updating, all the time.
     this.plane = new Plane(game, this.protagonist.x, this.protagonist.y, this.controls);
     this.plane.visible = false;
+    this.maingroup.add(this.plane);
 
     this.night = this.game.add.bitmapData(this.game.width, this.game.height);
     const light = this.game.add.image(0, 0, this.night);
@@ -131,6 +168,8 @@ class World extends Phaser.State {
     this._cheat = false;
 
     this.setMode("exploring");
+
+    this.maingroup.filters = [filter];
 
   }
 
@@ -240,6 +279,14 @@ class World extends Phaser.State {
     controls.update();
 
     DayTime.update(game.time.elapsedMS / 1000);
+
+  //  console.log(this.filter.uniforms);
+    //this.filter.uniforms.time = game.time.elapsedMS / 1000;
+    this.filter.uniforms.pos.value = {
+      x: protagonist.x,
+      y: protagonist.y
+    };
+    this.filter.update();
 
     cameraTarget.x = protagonist.x + 10;
     cameraTarget.y = protagonist.y + 50;
