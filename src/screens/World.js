@@ -260,12 +260,6 @@ void main(void) {
     }
   }
 
-  setMode (mode) {
-    this.mode = mode;
-    const isCrafting = this.mode == "crafting";
-    this.craftingScreen.visible = isCrafting;
-  }
-
   killZombie () {
     const {player, inventory} = this;
     const holding = inventory.holding();
@@ -526,10 +520,11 @@ void main(void) {
   }
 
   updateDriving (game) {
-    const vehicle = this.protagonist;
+    const {world, player, protagonist} = this;
+    const vehicle = protagonist;
     // TODO: just so shoots from correct pos.
-    this.player.x = vehicle.x;
-    this.player.y = vehicle.y;
+    player.x = vehicle.x;
+    player.y = vehicle.y;
 
 
     game.physics.arcade.collide(
@@ -541,7 +536,17 @@ void main(void) {
     game.physics.arcade.collide(
       vehicle,
       this.world.layerz.mid,
-      null,
+      (p, tile) => {
+        const block = Blocks.getByTileId(tile.index);
+
+        world.setTile(
+          tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile : Blocks.clear.tile,
+          tile.x, tile.y);
+
+        block.yields.forEach(({name, amount}) => {
+          this.inventory.addItem(name, amount);
+        });
+      },
       () => vehicle.onTheGround);
   }
 

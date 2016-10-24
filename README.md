@@ -7,6 +7,7 @@
 * [bug] mining particles stuck if switch mode
 * [bug] mining direction can be wrong
 * [bug] knockback direction always the same (up left or down right)
+* plow down resources on segway
 * Add a "town"
 * add skids
 * some way to switch vehicles
@@ -28,8 +29,9 @@
   * cellular autonoma ability
   * show un-obtained resources in crafting.
 * system for player -> tool -> target block
-* [ref] fix state machine: don't allow bad states
 * clouds float overhead
+* [ref] fix state machine: don't allow bad states
 * [bug] invalidate/recalc paths on build, destroy.
 * [bug] Errors when destroying particle emitters after screen swap
 * [bug] dead in vehicle, vehicle still visible/usable
+* [bug] not using damage tools when in vehicle
