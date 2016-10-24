@@ -11,6 +11,7 @@
 * Add a "town"
 * add skids
 * some way to switch vehicles
+* [bug] doesn't serialize on death
 * one-up on floppy get
 * floppies per day
 * zombie roaming state

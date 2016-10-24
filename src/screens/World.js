@@ -25,6 +25,7 @@ class World extends Phaser.State {
 
   _cheat = false;
   floppyGets = 0;
+  recipesUnlocked = [];
 
   reset () {
     this.game.state.start("Splash");
@@ -32,7 +33,7 @@ class World extends Phaser.State {
 
   create (game) {
 
-    this.state = new State("getready");
+    this.stayte = new State("getready");
 
     game.stage.backgroundColor = "#343436";
 
@@ -138,7 +139,7 @@ void main(void) {
 
     if (DayTime.firstDayOnTheJob) {
       DayTime.addDayOverListener(() => {
-        this.state.set("dayOver");
+        this.stayte.set("dayOver");
       });
       this.floppyGets = 0;
     }
@@ -167,7 +168,7 @@ void main(void) {
 
     this._cheat = false;
 
-    this.state.set("exploring");
+    this.stayte.set("exploring");
 
     this.maingroup.filters = [filter];
 
@@ -199,6 +200,7 @@ void main(void) {
     if (this.player.died) {
       return;
     }
+    this.serialize();
     this.world.setTileXY(Blocks.tombstone.tile, this.protagonist.x, this.protagonist.y);
     this.player.died = {
       time: Date.now(),
@@ -286,11 +288,11 @@ void main(void) {
     cameraTarget.y = protagonist.y + 50;
 
     let updateDay = false;
-    const isFirst = this.state.isFirst();
+    const isFirst = this.stayte.isFirst();
 
-    switch (this.state.get()) {
+    switch (this.stayte.get()) {
     case "getready":
-      this.state.set("exploring");
+      this.stayte.set("exploring");
       break;
     case "exploring":
       this.updateExploring(game);
@@ -435,6 +437,7 @@ void main(void) {
 
       if (dist <= 32) {
         this.floppyGets++;
+        this.recipesUnlocked[0] = true;
         f.destroy();
         this.toggleDriving();
       }
@@ -481,7 +484,7 @@ void main(void) {
 
       // Crafting button - TODO: factorize it.
       if (y < 70 && x > game.width - 70) {
-        this.state.set("crafting");
+        this.stayte.set("crafting");
         return;
       }
 
@@ -496,8 +499,8 @@ void main(void) {
   }
 
   toggleDriving () {
-    if (this.state.get() === "driving") {
-      this.state.set("exploring");
+    if (this.stayte.get() === "driving") {
+      this.stayte.set("exploring");
       this.protagonist.visible = false;
 
       this.player.visible = true;
@@ -508,7 +511,7 @@ void main(void) {
       this.walkToThenAct(this.protagonist.x, this.protagonist.y);
     }
     else {
-      this.state.set("driving");
+      this.stayte.set("driving");
       const vehicle = Math.random() < 0.5 ? this.plane : this.car;
       this.player.visible = false;
       this.player.shadow.visible = false;
@@ -553,6 +556,7 @@ void main(void) {
   serialize () {
     data.inventory = this.inventory.serialize();
     data.floppyGets = this.floppyGets;
+    data.recipesUnlocked = this.recipesUnlocked;
   }
 
   deserialize () {
@@ -561,6 +565,9 @@ void main(void) {
     }
     if (data.floppyGets) {
       this.floppyGets = data.floppyGets;
+    }
+    if (data.recipesUnlocked) {
+      this.recipesUnlocked = data.recipesUnlocked;
     }
   }
 

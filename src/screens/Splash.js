@@ -4,6 +4,7 @@ import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
 import DayTime from "../DayTime";
+import data from "../data";
 
 const startWiths = [
   [{item: "wood", amount: 2, unlocked: false, question: false}],
@@ -16,6 +17,12 @@ class Splash extends Phaser.State {
 
   create (game) {
     game.stage.backgroundColor = "#000000";
+
+    if (data.recipesUnlocked) {
+      if (data.recipesUnlocked[0]) {
+        startWiths[0][0].unlocked = true;
+      }
+    }
 
     game.add.sprite(0, 0, "splash");
 

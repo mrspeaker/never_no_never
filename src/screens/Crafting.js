@@ -139,7 +139,7 @@ class Crafting {
       if (y < 70) {
         // TODO: crafting shouldn't know about world state
         this.visible = false;
-        this.world.state.set("exploring");
+        this.world.stayte.set("exploring");
       }
 
       if (y >= recipeYo && y <= recipeYo + recipes.length * recipeLineSpacing) {
