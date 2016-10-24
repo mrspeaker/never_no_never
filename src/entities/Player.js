@@ -194,6 +194,15 @@ class Player extends Phaser.Sprite {
     });
   }
 
+  someoneClose () {
+    if (this.attacking) {
+      return;
+    }
+    if (this.state.is("mining")) {
+      this.stop();
+    }
+  }
+
   stop () {
     this.state.set("idle");
   }

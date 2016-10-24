@@ -2,15 +2,14 @@
 
 * [ref] convert World "mode" to state
 * [bug] use up items when placed
-* [bug] places blocks while in the air
-* [bug] vehicle moves while in crafting
-* [bug] pathfinding recalc on player goes wrong way
+* [bug] can't switch to crafting in vehicle
+* [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] baddies stuck when attacking
-* [bug] remove player shadow when flying
 * [bug] mining particles stuck if switch mode
 * [bug] mining direction can be wrong
 * [bug] knockback direction always the same (up left or down right)
 * Add a "town"
+* add skids
 * some way to switch vehicles
 * one-up on floppy get
 * floppies per day

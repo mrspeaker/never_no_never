@@ -45,7 +45,6 @@ void main(void) {
 
   vec4 texColor = texture2D(uSampler, vTextureCoord);
   texColor *= vec4(abs(sin(vTextureCoord.y + time / 30.0)), 1.0, abs(cos(pos.x / 1000.0)), 1.0);
-  // texColor *= vec4(1.0, 1.0, abs(cos(pos.x / 1000.0)), 1.0);
   gl_FragColor = texColor;
 
 }
@@ -56,8 +55,6 @@ void main(void) {
     };
 
     const filter = this.filter = new Phaser.Filter(game, customUniforms, fragmentSrc.split("\n"));
-
-//    game.stage.filters = [ filter ];
 
     // game.stage.disableVisibilityChange = true;
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -387,6 +384,10 @@ void main(void) {
         if (dist < 60) {
           someoneClose = true;
 
+          this.player.someoneClose(m);
+          // TODO: better "stop mining" check. Particles should be triggered by mining!
+          this.particles.emitting = false;
+
           if (damage || this.inventory.autoStab()) {
             player.attack && player.attack(m);
           }
@@ -495,7 +496,7 @@ void main(void) {
 
   toggleDriving () {
     if (this.mode === "driving") {
-      this.mode = "exploring";
+      this.setMode("exploring");
       this.protagonist.visible = false;
 
       this.player.visible = true;
@@ -506,7 +507,7 @@ void main(void) {
       this.walkToThenAct(this.protagonist.x, this.protagonist.y);
     }
     else {
-      this.mode = "driving";
+      this.setMode("driving");
       const vehicle = Math.random() < 0.5 ? this.plane : this.car;
       this.player.visible = false;
       this.player.shadow.visible = false;
@@ -518,21 +519,23 @@ void main(void) {
   }
 
   updateDriving (game) {
+    const vehicle = this.protagonist;
     // TODO: just so shoots from correct pos.
-    this.player.x = this.protagonist.x;
-    this.player.y = this.protagonist.y;
+    this.player.x = vehicle.x;
+    this.player.y = vehicle.y;
+
 
     game.physics.arcade.collide(
-      this.car,
+      vehicle,
       this.world.layerz.base,
       null,
-      () => this.car.onTheGround);
+      () => vehicle.onTheGround);
 
     game.physics.arcade.collide(
-      this.car,
+      vehicle,
       this.world.layerz.mid,
       null,
-      () => this.car.onTheGround);
+      () => vehicle.onTheGround);
   }
 
   serialize () {
