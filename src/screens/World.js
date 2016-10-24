@@ -44,8 +44,7 @@ class World extends Phaser.State {
     this.world = new Map(game);
 
     this.groundTarget = game.add.sprite(0, 0, "icons");
-    this.groundTarget.frame = 21;
-    //this.groundTarget.alpha = 0.5;
+    this.groundTarget.frame = 31;
 
     this.perma = game.add.group();
 
@@ -64,11 +63,13 @@ class World extends Phaser.State {
     this.controls = new Controls(game);
     this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
 
+    this.protagonist = this.player;
+
     this.particles = new Particles(game, this.player.x, this.player.y, 1);
     this.particles.emitting = false;
 
     this.floppies = game.add.group();
-    Array.from(new Array(10), () => {
+    Array.from(new Array(20), () => {
       const spot = this.world.findEmptySpot();
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
@@ -83,8 +84,13 @@ class World extends Phaser.State {
       mobs.add(new Zombie(game, x, y, this));
     }
 
-    this.car = new Segway(game, this.player.x, this.player.y, this.controls);
+    // TODO: all vehicles updating, all the time.
+    this.car = new Segway(game, this.protagonist.x, this.protagonist.y, this.controls);
     this.car.visible = false;
+
+    // TODO: all vehicles updating, all the time.
+    this.plane = new Plane(game, this.protagonist.x, this.protagonist.y, this.controls);
+    this.plane.visible = false;
 
     this.night = this.game.add.bitmapData(this.game.width, this.game.height);
     const light = this.game.add.image(0, 0, this.night);
@@ -118,7 +124,7 @@ class World extends Phaser.State {
       subtitle,
     };
 
-    game.camera.focusOn(this.player);
+    game.camera.focusOn(this.protagonist);
     game.camera.y += 2000;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
@@ -129,7 +135,7 @@ class World extends Phaser.State {
   }
 
   getMobSpawnPoint () {
-    const {world, player} = this;
+    const {world, protagonist} = this;
     const CLOSE_PIXELS = 400;
     let close = true;
     let x = -1;
@@ -138,7 +144,7 @@ class World extends Phaser.State {
       const spot = world.findEmptySpot();
       x = spot.x;
       y = spot.y;
-      const dist = Phaser.Math.distance(x * 32, y * 32, player.x, player.y);
+      const dist = Phaser.Math.distance(x * 32, y * 32, protagonist.x, protagonist.y);
       if (dist > CLOSE_PIXELS) {
         close = false;
       }
@@ -154,7 +160,7 @@ class World extends Phaser.State {
     if (this.player.died) {
       return;
     }
-    this.world.setTileXY(Blocks.tombstone.tile, this.player.x, this.player.y);
+    this.world.setTileXY(Blocks.tombstone.tile, this.protagonist.x, this.protagonist.y);
     this.player.died = {
       time: Date.now(),
       onDead: ::this.reset
@@ -163,20 +169,6 @@ class World extends Phaser.State {
 
   toggleCheat () {
     this._cheat = !this._cheat;
-
-    if (this._cheat) {
-      this.car.x = this.player.x;
-      this.car.y = this.player.y;
-    }
-    else {
-      this.player.x = this.car.x;
-      this.player.y = this.car.y;
-      this.walkToThenAct(this.player.x, this.player.y);
-    }
-
-    this.car.visible = this._cheat;
-    this.player.visible = !this._cheat;
-
     return this._cheat;
   }
 
@@ -243,26 +235,14 @@ class World extends Phaser.State {
   }
 
   update (game) {
-    const {mode, player, cameraTarget, controls} = this;
+    const {mode, protagonist, cameraTarget, controls} = this;
 
     controls.update();
 
-    game.physics.arcade.collide(
-      this.car,
-      this.world.layerz.base,
-      null,
-      () => this.car.onTheGround);
-
-    game.physics.arcade.collide(
-      this.car,
-      this.world.layerz.mid,
-      null,
-      () => this.car.onTheGround);
-
     DayTime.update(game.time.elapsedMS / 1000);
 
-    cameraTarget.x = (this._cheat ? this.car.x : player.x) + 10;
-    cameraTarget.y = (this._cheat ? this.car.y : player.y) + 50;
+    cameraTarget.x = protagonist.x + 10;
+    cameraTarget.y = protagonist.y + 50;
 
     let updateDay = false;
 
@@ -272,6 +252,10 @@ class World extends Phaser.State {
       break;
     case "exploring":
       this.updateExploring(game);
+      updateDay = true;
+      break;
+    case "driving":
+      this.updateDriving(game);
       updateDay = true;
       break;
     case "crafting":
@@ -284,8 +268,6 @@ class World extends Phaser.State {
       break;
     }
 
-    this.ui.subtitle.text = controls.pitch.toFixed(2);
-
     if (updateDay) {
       this.doMobStrategy();
       this.collisionsMob();
@@ -295,15 +277,13 @@ class World extends Phaser.State {
   }
 
   updateNight () {
-    const {night} = this;
+    const {night, protagonist} = this;
 
-    const tx = this._cheat ? this.car.x : this.player.x + 16;
-    const ty = this._cheat ? this.car.y : this.player.y + 16;
+    const tx = protagonist.x + 16;
+    const ty = protagonist.y + 16;
 
     const dark = ((Math.sin(DayTime.time / (DayTime.DAY_LENGTH * 220) * 1000) + 1) / 2) * 255 | 0;
     const dark2 = dark > 100 ? dark : Math.min(255, dark + 60);
-
-    // this.ui.subtitle.text = "Day " + DayTime.day + " (" + (DayTime.percent).toFixed(1) + ")";
 
     night.context.fillStyle = `rgb(${dark}, ${dark}, ${dark})`;
     night.context.fillRect(0, 0, this.game.width, this.game.height);
@@ -323,18 +303,20 @@ class World extends Phaser.State {
   doMobStrategy () {
     // Randomly run towards player
     if (Math.random() < 0.005) {
-      const {mobs, player} = this;
+      const {mobs, protagonist} = this;
       const mob = mobs.getRandom();
-      this.world.makePath(mob, player.x, player.y);
+      this.world.makePath(mob, protagonist.x, protagonist.y);
     }
   }
 
   collisionsMob () {
-    const {mobs, player, inventory} = this;
+    const {mobs, inventory} = this;
 
     if (this._cheat) {
       return;
     }
+
+    const player = this.protagonist;
 
     let someoneClose = false;
 
@@ -350,6 +332,7 @@ class World extends Phaser.State {
 
         // Should we shoot?
         const proj = this.inventory.projectiles();
+        // todo: lol, shooting is player, not vehicle
         if (proj && this.player.shoot(m)) {
           this.inventory.useItem(proj.item);
         }
@@ -358,7 +341,7 @@ class World extends Phaser.State {
           someoneClose = true;
 
           if (damage || this.inventory.autoStab()) {
-            player.attack(m);
+            player.attack && player.attack(m);
           }
           if (dist < 32) {
             this.collideWithMob(m);
@@ -371,11 +354,12 @@ class World extends Phaser.State {
     });
 
     if (!someoneClose) {
-      player.noAttack();
+      player.noAttack && player.noAttack();
     }
   }
 
   collideWithMob (m) {
+    // TODO: player, not vehicle
     const {player} = this;
 
     const holding = this.inventory.holding();
@@ -393,16 +377,20 @@ class World extends Phaser.State {
   }
 
   collisionsPickup () {
-    const {floppies, player} = this;
+    const {floppies, protagonist} = this;
 
+    let closest = Number.POSITIVE_INFINITY;
     floppies.forEach(f => {
-      const dist = Phaser.Math.distance(f.x, f.y, player.x, player.y);
+      const dist = Phaser.Math.distance(f.x, f.y, protagonist.x, protagonist.y);
+      if (dist < closest) closest = dist;
 
       if (dist <= 32) {
         this.floppyGets++;
         f.destroy();
+        this.toggleDriving();
       }
     });
+    this.ui.subtitle.text = closest.toFixed(2);
   }
 
   walkToThenAct (worldX, worldY) {
@@ -410,9 +398,6 @@ class World extends Phaser.State {
     this.particles.emitting = false;
     groundTarget.x = (worldX / 32 | 0) * 32;
     groundTarget.y = (worldY / 32 | 0) * 32;
-
-    const tile = this.world.getTileXY(worldX, worldY);
-    groundTarget.frame = tile.mid.mine ? 31 : 21;
 
     // Walk to spot
     this.world.makePath(
@@ -459,6 +444,48 @@ class World extends Phaser.State {
 
     }
 
+  }
+
+  toggleDriving () {
+    if (this.mode === "driving") {
+      this.mode = "exploring";
+      this.protagonist.visible = false;
+
+      this.player.visible = true;
+      this.player.shadow.visible = true;
+      this.player.x = this.protagonist.x;
+      this.player.y = this.protagonist.y;
+      this.protagonist = this.player;
+      this.walkToThenAct(this.protagonist.x, this.protagonist.y);
+    }
+    else {
+      this.mode = "driving";
+      const vehicle = Math.random() < 0.5 ? this.plane : this.car;
+      this.player.visible = false;
+      this.player.shadow.visible = false;
+      vehicle.visible = true;
+      vehicle.x = this.player.x;
+      vehicle.y = this.player.y;
+      this.protagonist = vehicle;
+    }
+  }
+
+  updateDriving (game) {
+    // TODO: just so shoots from correct pos.
+    this.player.x = this.protagonist.x;
+    this.player.y = this.protagonist.y;
+
+    game.physics.arcade.collide(
+      this.car,
+      this.world.layerz.base,
+      null,
+      () => this.car.onTheGround);
+
+    game.physics.arcade.collide(
+      this.car,
+      this.world.layerz.mid,
+      null,
+      () => this.car.onTheGround);
   }
 
   serialize () {
