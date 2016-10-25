@@ -198,7 +198,9 @@ class Player extends Phaser.Sprite {
     if (this.attacking) {
       return;
     }
-    if (this.state.is("mining")) {
+    const holding = this.inventory.holding();
+    const damage = Items[holding.item].damage;
+    if (damage && this.state.is("mining")) {
       this.stop();
     }
   }

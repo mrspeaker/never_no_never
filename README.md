@@ -7,11 +7,9 @@
 * [bug] mining particles stuck if switch mode
 * [bug] mining direction can be wrong
 * [bug] knockback direction always the same (up left or down right)
-* plow down resources on segway
 * Add a "town"
 * add skids
 * some way to switch vehicles
-* [bug] doesn't serialize on death
 * one-up on floppy get
 * floppies per day
 * zombie roaming state

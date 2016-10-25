@@ -3,8 +3,10 @@ import State from "../State";
 
 class Segway extends Phaser.Sprite {
 
-  alt = 0;
   rotFriction = 0.95;
+  power = 120;
+  drag = 80;
+  maxVel = 140;
   turn = 0.045;
 
   constructor (game, x, y, controls) {
@@ -17,8 +19,8 @@ class Segway extends Phaser.Sprite {
     this.state = new State("stopped");
 
     game.physics.enable(this);
-    this.body.drag.set(90);
-    this.body.maxVelocity.set(120);
+    this.body.drag.set(this.drag);
+    this.body.maxVelocity.set(this.maxVel);
     //this.body.bounce.setTo(0.3);
     this.body.setSize(30, 20, 1, 28);
 
@@ -65,11 +67,16 @@ class Segway extends Phaser.Sprite {
       }
       controls.angle *= this.rotFriction;
       if (controls.isDown) {
-        game.physics.arcade.accelerationFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, 150, body.acceleration);
+        game.physics.arcade.accelerationFromRotation(
+          game.math.degToRad(this._angle) - Math.PI / 2,
+          this.power,
+          body.acceleration);
+        this.body.drag.set(this.drag * 1.2);
       } else {
         body.acceleration.set(0);
+        this.body.drag.set(this.drag * 2.5);
       }
-      game.physics.arcade.velocityFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, vel, body.velocity);
+      // game.physics.arcade.velocityFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, vel, body.velocity);
       break;
     }
 

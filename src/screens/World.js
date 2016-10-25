@@ -136,6 +136,7 @@ void main(void) {
     light.fixedToCamera = true;
 
     this.inventory = new Inventory(game, ::this.player.switchTool);
+    this.player.inventory = this.inventory;
 
     if (DayTime.firstDayOnTheJob) {
       DayTime.addDayOverListener(() => {
@@ -512,7 +513,7 @@ void main(void) {
     }
     else {
       this.stayte.set("driving");
-      const vehicle = Math.random() < 0.5 ? this.plane : this.car;
+      const vehicle = Math.random() < 0.01 ? this.plane : this.car;
       this.player.visible = false;
       this.player.shadow.visible = false;
       vehicle.visible = true;

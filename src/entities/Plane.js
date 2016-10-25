@@ -39,6 +39,7 @@ class Plane extends Phaser.Sprite {
   update () {
     const {controls, body, game} = this;
 
+    // Think this is sthe same body.speed
     let vel = body.velocity.getMagnitude();
 
     switch (this.state.get()) {
