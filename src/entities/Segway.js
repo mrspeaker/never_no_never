@@ -71,7 +71,6 @@ class Segway extends Phaser.Sprite {
           game.math.degToRad(this._angle) - Math.PI / 2,
           this.power,
           body.acceleration);
-        //this.body.drag.set(this.drag * 1.2);
         game.physics.arcade.velocityFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, vel, body.velocity);
       } else {
         body.acceleration.set(0);

@@ -46,10 +46,11 @@ class Zombie extends Phaser.Sprite {
 
   onHurt (h, max, by) {
     this.hurtPause = 50;
-    const angle = this.game.math.angleBetween(
+    let angle = by.angle - Math.PI / 2 || this.game.math.angleBetween(
       this.x, this.y,
       by.x, by.y
     ) + Math.PI;
+
     const xo = Math.sin(angle) * 40;
     const yo = Math.cos(angle) * 40;
     Tween.to(this, {x: this.x + xo, y: this.y + yo}, 150);
