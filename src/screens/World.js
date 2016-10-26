@@ -48,7 +48,9 @@ uniform vec2 pos;
 void main(void) {
 
   vec4 texColor = texture2D(uSampler, vTextureCoord);
+  float dist = distance(texColor.xz, vec2(0.0, 1.0));
   texColor *= vec4(abs(sin(vTextureCoord.y + time / 30.0)), 1.0, abs(cos(pos.x / 1000.0)), 1.0);
+  texColor.z *= sin(vTextureCoord.x * 100.0 + time * 30.0) * dist; //vec4(0.0, 1.0, dist, 1.0);
   gl_FragColor = texColor;
 
 }
@@ -513,12 +515,12 @@ void main(void) {
     }
     else {
       this.stayte.set("driving");
-      const vehicle = Math.random() < 0.01 ? this.plane : this.car;
+      const vehicle = Math.random() < 0.5 ? this.plane : this.car;
       this.player.visible = false;
       this.player.shadow.visible = false;
       vehicle.visible = true;
-      vehicle.x = this.player.x;
-      vehicle.y = this.player.y;
+      vehicle.x = this.player.x + 16;
+      vehicle.y = this.player.y + 16;
       this.protagonist = vehicle;
     }
   }
@@ -529,7 +531,6 @@ void main(void) {
     // TODO: just so shoots from correct pos.
     player.x = vehicle.x;
     player.y = vehicle.y;
-
 
     game.physics.arcade.collide(
       vehicle,
@@ -552,6 +553,21 @@ void main(void) {
         });
       },
       () => vehicle.onTheGround);
+
+
+    const {controls, inventory} = this;
+    const {justPressed, x, y, worldX, worldY} = controls;
+
+    if (justPressed) {
+      const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
+      if (y > bottomOfTouchable - 5) return;
+
+      // Crafting button - TODO: factorize it.
+      if (y < 70 && x > game.width - 70) {
+        this.stayte.set("crafting");
+        return;
+      }
+    }
   }
 
   serialize () {

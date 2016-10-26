@@ -1,7 +1,6 @@
 # Never, No Never,
 
 * [bug] use up items when placed
-* [bug] can't switch to crafting in vehicle
 * [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] baddies stuck when attacking
 * [bug] knockback direction always the same (up left or down right)
@@ -10,6 +9,7 @@
 * some way to switch vehicles
 * one-up on floppy get
 * add splats
+* add a tower-defense module
 * floppies per day
 * zombie roaming state
 * roam on player death
@@ -21,6 +21,8 @@
 * store progress/stats/unlocks
   * on died, show progress hp
   * on died, "surived for" time.
+* explode vehicle when leave
+* vehicle stays after death
 * reset unlocks for testing
 * stats on splash
 * Move blocks and items from flyweight to actual objects

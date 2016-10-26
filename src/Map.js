@@ -36,8 +36,8 @@ class Map {
 
     const grid = [];
     const gridMid = [];
-    const h = 55;
-    const w = 55;
+    const h = 100;
+    const w = 100;
 
     let min = 1, max = 0;
     for (let x = 0; x < h; x++) {
