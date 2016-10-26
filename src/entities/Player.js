@@ -186,7 +186,20 @@ class Player extends Phaser.Sprite {
     }
   }
 
+
+
   mineTile (block, tile, toolEfficiency, onDone) {
+
+    const x1 = this.x / 32 | 0;
+    const y1 = this.y / 32 | 0;
+    const {x, y} = tile;
+    if (y1 !== y) {
+      this.direction.set(y1 < y ? "down" : "up");
+    }
+    else if (x1 !== x) {
+      this.direction.set(x1 < x ? "right" : "left");
+    }
+
     this.state.set("mining", {
       onMined: onDone,
       toolEfficiency,

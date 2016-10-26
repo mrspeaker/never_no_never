@@ -4,13 +4,12 @@
 * [bug] can't switch to crafting in vehicle
 * [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] baddies stuck when attacking
-* [bug] mining particles stuck if switch mode
-* [bug] mining direction can be wrong
 * [bug] knockback direction always the same (up left or down right)
 * Add a "town"
 * add skids
 * some way to switch vehicles
 * one-up on floppy get
+* add splats
 * floppies per day
 * zombie roaming state
 * roam on player death
