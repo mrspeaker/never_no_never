@@ -5,9 +5,9 @@ class Segway extends Phaser.Sprite {
 
   rotFriction = 0.95;
   power = 120;
-  drag = 80;
-  maxVel = 140;
-  turn = 0.045;
+  drag = 100;
+  maxVel = 150;
+  turn = 0.07;
 
   constructor (game, x, y, controls) {
     super(game, x, y, "segway");
@@ -71,12 +71,13 @@ class Segway extends Phaser.Sprite {
           game.math.degToRad(this._angle) - Math.PI / 2,
           this.power,
           body.acceleration);
-        this.body.drag.set(this.drag * 1.2);
+        //this.body.drag.set(this.drag * 1.2);
+        game.physics.arcade.velocityFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, vel, body.velocity);
       } else {
         body.acceleration.set(0);
         this.body.drag.set(this.drag * 2.5);
       }
-      // game.physics.arcade.velocityFromRotation(game.math.degToRad(this._angle) - Math.PI / 2, vel, body.velocity);
+
       break;
     }
 
