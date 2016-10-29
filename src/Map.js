@@ -71,6 +71,9 @@ class Map {
         else if (o > 0.4 && o < 0.404) {
           gridMid[x][y] = Blocks.stalegmite.tile;
         }
+        else if (o > 0.6 && o < 0.605) {
+          gridMid[x][y] = Blocks.iron_ore.tile;
+        }
       }
     }
 
@@ -178,8 +181,16 @@ class Map {
     base.resizeWorld();
     map.addTilesetImage("mid", "mid");
     const mid = this.layerz.mid = map.createLayer("mid");
-    map.setCollisionBetween(2, 30, true, base);
-    map.setCollisionBetween(256, 260, true, mid);
+
+    // TODO: better to pass as ranges to setCollisionBetween?
+    Object.keys(Blocks)
+      .map(k => Blocks[k])
+      .filter(b => b.tile !== undefined && !b.walk)
+      .map(b => b.tile)
+      .sort((a, b) => a - b)
+      .forEach(t => {
+        map.setCollision(t, true, t < 256 ? base : mid);
+      });
     //base.debug = true;
     //mid.debug = true;
 
