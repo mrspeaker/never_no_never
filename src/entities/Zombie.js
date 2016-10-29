@@ -69,15 +69,15 @@ class Zombie extends Phaser.Sprite {
     this.state.set("dying");
   }
   dead () {
-    const {bmax:world} = this;
-    const corpse = world.perma.create(this.x, this.y, "peeps");
+    const {bmax} = this;
+    const corpse = bmax.perma.create(this.x, this.y, "peeps");
     corpse.frame = Math.random() < 0.5 ? 30 : 31;
 
-    const {x, y} = world.getMobSpawnPoint();
+    const {x, y} = bmax.getMobSpawnPoint();
     this.x = x * 32;
     this.y = y * 32;
     this.health.health = this.health.maxHealth;
-    world.world.makePath(this, x, y); // lol... damn it.
+    bmax.world.makePath(this, x, y); // lol... damn it.
   }
 
   setPath (path, onDone) {

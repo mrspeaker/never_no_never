@@ -5,7 +5,7 @@ class Plane extends Phaser.Sprite {
 
   alt = 0;
   rotFriction = 0.95;
-  turn = 0.045;
+  turn = 0.06;
 
   constructor (game, x, y, controls) {
     super(game, x, y, "mediums");
