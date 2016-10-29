@@ -1,10 +1,9 @@
 # Never, No Never,
 
-* [bug] use up items when placed
 * [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] baddies stuck when attacking
 * [bug] knockback direction always the same (up left or down right)
-* [bug] vehicles lose tile collisions (after crafting?)
+* [bug] vehicles lose tile collisions (after crafting?) - multi vehicle?
 * Add a "town"
 * add skids
 * some way to switch vehicles
@@ -12,9 +11,6 @@
 * add splats
 * add a tower-defense module
 * floppies per day
-* Add iron
-* Add saltpeter
-* add rubber
 * zombie roaming state
 * roam on player death
 * drops from mining
@@ -38,3 +34,8 @@
 * [bug] Errors when destroying particle emitters after screen swap
 * [bug] dead in vehicle, vehicle still visible/usable
 * [bug] not using damage tools when in vehicle
+* craftings
+  * placable/usable Segway
+  * add saltpeter + coal -> gunpowder
+  * add gunpowder + wood -> fireworks
+  * add gunpowder + stone? iron? -> projectiles

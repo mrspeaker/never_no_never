@@ -480,7 +480,9 @@ void main(void) {
       else if (base.name === "sand") {
         this.world.setTileXY(block, worldX, worldY);
       }
+      return true;
     }
+    return false;
   }
 
   updateExploring (game) {

@@ -5,9 +5,9 @@ import recipes from "../Recipes";
 
 class Crafting {
 
-  recipeXo = 120;
-  recipeYo = 130;
-  recipeLineSpacing = 75;
+  recipeXo = 20;
+  recipeYo = 80;
+  recipeLineSpacing = 65;
 
   constructor (game, world) {
     this.world = world;

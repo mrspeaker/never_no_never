@@ -175,12 +175,42 @@ class Player extends Phaser.Sprite {
     else if (current === "building") {
       this.state.set("exploring");
     }
+
   }
 
   handleClick(tool, walk, place) {
+    const {inventory} = this;
     if (this.state.get() === "building") {
-      // NOTE: assuming an Item is the same as a Block for placeables.
-      place(Blocks[tool.item].tile);
+      if (!inventory.hasItem(tool.item)) {
+        return;
+      }
+      const item = Items[tool.item];
+      const block = Blocks[tool.item];
+
+      if (item) {
+        if (item.rideable) {
+          console.log("rid me!");
+          // TODO: create segway pickup at click pos.
+          inventory.useItem(tool.item);
+        }
+        else if (item.placeable) {
+          if (place(block.tile)) {
+            inventory.useItem(tool.item);
+          }
+        }
+        else {
+          console.log("don't know how to use this item:", item);
+        }
+      }
+      else if (block) {
+        // NOTE: assuming an Item is the same as a Block for placeables.
+        if (place(block.tile)) {
+          inventory.useItem(tool.item);
+        }
+      }
+      else {
+        console.error("dunno what this tool is...", tool);
+      }
     } else {
       walk();
     }

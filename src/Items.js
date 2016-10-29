@@ -12,4 +12,6 @@ export default {
   "stone_sword": { name: "stone_sword", icon: 14, damage: 2 },
   "wood_pick": { name: "wood_pick", icon: 11, efficiency: 4 },
   "wood_axe": { name: "wood_pick", icon: 12 },
+  "tire": { name: "tire", icon: 16 },
+  "segway": { name: "segway", icon: 17, rideable: true, placeable: true },
 };
