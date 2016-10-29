@@ -7,6 +7,8 @@ export default {
   "tree_hole": { name: "tree", tile: 257 + 17, walk: true},
   "coal_ore": { name: "coal_ore", tile: 258, mine: true, hardness: 20, yields: [{name: "coal", amount: 5}]},
   "stone_ore": { name: "stone_ore", tile: 259, mine: true, hardness: 50, yields: [{name: "stone", amount: 1}]},
+  "rubber_sap": { name: "rubber_sap", tile: 264, mine: true, hardness: 15, yields: [{name: "rubber", amount: 3}]},
+  "stalegmite": { name: "stalegmite", tile: 280, mine: true, hardness: 20, yields: [{name: "saltpeter", amount: 3}]},
   "water": { name: "water", tile: 2, mine: false },
   "water_tl": { name: "water_tl", tile: 3, mine: false },
   "water_tr": { name: "water_tr", tile: 4, mine: false },

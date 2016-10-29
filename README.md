@@ -12,6 +12,9 @@
 * add splats
 * add a tower-defense module
 * floppies per day
+* Add iron
+* Add saltpeter
+* add rubber
 * zombie roaming state
 * roam on player death
 * drops from mining

@@ -56,6 +56,10 @@ class Map {
         if (v > 0.5 && v < 0.52) {
           gridMid[x][y] = Blocks.tree.tile;
         }
+        if (v > 0.52 && v < 0.53) {
+          gridMid[x][y] = Blocks.rubber_sap.tile;
+        }
+
 
         const o = noiseOres.in2D(x, y);
         if (o > 0.5 && o < 0.503) {
@@ -63,6 +67,9 @@ class Map {
         }
         else if (o > 0.6 && o < 0.603) {
           gridMid[x][y] = Blocks.stone_ore.tile;
+        }
+        else if (o > 0.4 && o < 0.404) {
+          gridMid[x][y] = Blocks.stalegmite.tile;
         }
       }
     }
