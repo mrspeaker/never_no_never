@@ -5,6 +5,7 @@ import Title from "../Title";
 import Items from "../Items";
 import DayTime from "../DayTime";
 import data from "../data";
+import Explosion from "../entities/Explosion";
 
 const startWiths = [
   [{item: "wood", amount: 2, unlocked: false, question: false}],
@@ -28,6 +29,17 @@ class Splash extends Phaser.State {
 
     const title = Title(game, "bmax!", 36, 100, 112).font;
     const start = Title(game, "Start with?", 9, 130, 210, true).font;
+
+    const x = 160;
+    const y = 100;
+    Array.from(new Array(40), () => {
+      setTimeout(() => {
+        new Explosion(game,
+          x + Math.random() * 120 - 60,
+          y + Math.random() * 60 - 30
+        );
+      }, Math.random() * 800);
+    });
 
     this.starts = startWiths.map(([item], i) => {
       const xo = 50;

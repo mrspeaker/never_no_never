@@ -22,7 +22,6 @@
   * on died, show progress hp
   * on died, "surived for" time.
 * explode vehicle when leave
-* vehicle stays after death
 * reset unlocks for testing
 * stats on splash
 * Move blocks and items from flyweight to actual objects

@@ -265,6 +265,12 @@ void main(void) {
     }
   }
 
+  goRandoRadius (e, radius) {
+    // Figure out radious thign
+    const {x, y} = this.world.findEmptySpot();
+    this.world.makePath(e, x, y);
+  }
+
   killZombie () {
     const {player, inventory} = this;
     const holding = inventory.holding();

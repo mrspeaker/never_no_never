@@ -17,6 +17,13 @@ class Plane extends Phaser.Sprite {
     this.state = new State("stopped");
     game.physics.enable(this);
 
+    this.frame = 5;
+    const animSpeed = 10;
+    this.animations.add("idle", [5], animSpeed, true);
+    this.animations.add("run", [8,9], animSpeed, true);
+    this.animations.add("flying", [5, 6, 7, 6, 6], animSpeed, true);
+    this.animations.play("run");
+
     this.body.drag.set(30);
     this.body.maxVelocity.set(120);
     this.body.bounce.setTo(0.9);
@@ -24,10 +31,10 @@ class Plane extends Phaser.Sprite {
     const shadow = game.add.sprite(0, 0, "mediums");
     this.addChild(shadow);
 
-    shadow.frame = 0;
+    shadow.frame = 5;
     shadow.scale.set(0.6);
     shadow.tint = 0x000000;
-    shadow.alpha = 0.4;
+    shadow.alpha = 0.3;
 
     this.shadow = shadow;
   }
@@ -46,6 +53,8 @@ class Plane extends Phaser.Sprite {
     case "stopped":
       if (controls.justPressed) {
         this.state.set("taxiing");
+        this.animations.play("run");
+        break;
       }
       this.shadow.visible = false;
       break;
@@ -53,6 +62,7 @@ class Plane extends Phaser.Sprite {
     case "taxiing":
       if (vel > 100) {
         this.state.set("flying");
+        this.animations.play("flying");
         this.alt = 0.8;
         controls.pitch = 0;
         break;
@@ -80,6 +90,7 @@ class Plane extends Phaser.Sprite {
         this.alt = Math.min(1, Math.max(0, this.alt));
         if (this.alt === 0) {
           this.state.set("touchdown");
+          this.animations.play("run");
         }
       }
 
@@ -96,6 +107,7 @@ class Plane extends Phaser.Sprite {
 
       if (vel < 0.1) {
         this.state.set("stopped");
+        this.animations.play("idle");
       }
       break;
 

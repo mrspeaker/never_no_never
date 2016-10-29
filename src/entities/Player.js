@@ -317,8 +317,8 @@ class Player extends Phaser.Sprite {
         xx = xx / Math.sqrt(2);
         yy = yy / Math.sqrt(2);
       }
-      this.x += xx * (1 - (DayTime.percent * DayTime.percent));
-      this.y += yy * (1 - (DayTime.percent * DayTime.percent));
+      this.x += xx * 1;//(1 - (DayTime.percent * DayTime.percent));
+      this.y += yy * 1;//(1 - (DayTime.percent * DayTime.percent));
 
       return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
     });

@@ -14,6 +14,7 @@ class Zombie extends Phaser.Sprite {
     super(game, xtile * 32, ytile * 32, "peeps");
 
     this.bmax = bmax;
+    this.state = new State("idle");
     this.lastPathSet = Date.now();
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
@@ -89,7 +90,6 @@ class Zombie extends Phaser.Sprite {
       return;
     }
     this.lastPathSet = now;
-
     // FIXME: hack for chasing player at close range
     if (this.isClose && path.length > 1) {
       path = path.slice(1);
@@ -122,6 +122,11 @@ class Zombie extends Phaser.Sprite {
 
   }
 
+  goRando () {
+    //console.log("gorand")
+    //this.bmax.goRandoRadius(this, 10);
+  }
+
   update () {
     const {animations} = this;
     const current = this.state.get();
@@ -130,6 +135,7 @@ class Zombie extends Phaser.Sprite {
       if (this.state.isFirst()) {
         animations.play("idle");
       }
+      this.goRando();
       break;
     case "walking":
       if (this.hurtPause-- < 0) {

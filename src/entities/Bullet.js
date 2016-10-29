@@ -1,4 +1,5 @@
 const Phaser = window.Phaser;
+import Explosion from "./Explosion";
 
 class Bullet extends Phaser.Sprite {
 
@@ -76,6 +77,7 @@ class Bullet extends Phaser.Sprite {
         this.smoke.destroy();
       }, 5000);
       this.destroy();
+      new Explosion(game, target.x + 16, target.y + 16);
       game.camera.shake(0.01, 200);
       target.health && target.health.damage(2, this);
     }
