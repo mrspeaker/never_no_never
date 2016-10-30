@@ -1,5 +1,18 @@
 # Never, No Never,
 
+## build
+
+* `npm install`
+* `npm start`
+
+To test the level gen:
+
+* `npm run test`
+
+Browse on localhost:9966
+
+## TODO
+
 * [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] baddies stuck when attacking
 * [bug] knockback direction always the same (up left or down right)

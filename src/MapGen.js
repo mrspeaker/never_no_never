@@ -6,14 +6,14 @@ export default function () {
     frequency: 0.09,
     max: 1,
     min: 0,
-    octaves: 4
+    octaves: 1
   });
 
   const noiseTrees = new FastSimplexNoise({
-    frequency: 0.1,
+    frequency: 0.2,
     max: 1,
     min: 0,
-    octaves: 1
+    octaves: 3
   });
 
   const noiseTrees2 = new FastSimplexNoise({
@@ -48,7 +48,7 @@ export default function () {
         continue;
       }
       const v = noiseTrees.in2D(x, y);
-      if (v < 0.1) {
+      if (v > 0.7) {
         gridMid[x][y] = Blocks.tree.tile;
       }
 

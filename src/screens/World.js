@@ -175,7 +175,7 @@ void main(void) {
 
     this.maingroup.filters = [filter];
 
-    this.toggleDriving("plane");
+    //this.toggleDriving("plane");
 
   }
 

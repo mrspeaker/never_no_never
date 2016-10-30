@@ -8,7 +8,9 @@ const getCol = (base, mid) => {
     if (mid === Blocks.empty.tile) return "#E8C789";
     if (mid === Blocks.tree.tile) return "#4B962A";
     if (mid === Blocks.coal_ore.tile) return "#333333";
-    if (mid === Blocks.rubber_sap.tile) return "#C23531";
+    if (mid === Blocks.stone_ore.tile) return "#888888";
+    if (mid === Blocks.rubber_sap.tile) return "#C57BDB";
+    if (mid === Blocks.stalegmite.tile) return "#F9406C";
     return "#" + Math.floor(Math.random()*16777215).toString(16);
   }
   return "#" + Math.floor(Math.random()*16777215).toString(16);
