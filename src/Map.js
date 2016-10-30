@@ -14,7 +14,7 @@ class Map {
 
   create (game) {
     const noiseBase = new FastSimplexNoise({
-      frequency: 0.1,
+      frequency: 0.09,
       max: 1,
       min: 0,
       octaves: 4
@@ -44,7 +44,7 @@ class Map {
       grid[x] = [];
       gridMid[x] = [];
       for (let y = 0; y < w; y++) {
-        grid[x][y] = noiseBase.in2D(x, y) > 0.62 ? Blocks.water.tile : Blocks.sand.tile;
+        grid[x][y] = noiseBase.in2D(x, y) > 0.65 ? Blocks.water.tile : Blocks.sand.tile;
         gridMid[x][y] = 0;
 
         if (grid[x][y] !== Blocks.sand.tile) {
@@ -275,7 +275,7 @@ class Map {
     };
   }
 
-  makePath (e, tx, ty, onWalked) {
+  makePath (e, tx, ty, onWalked, force) {
     const layer = this.layerz.base;
     const xt = layer.getTileX(tx);
     const yt = layer.getTileY(ty);
@@ -299,7 +299,7 @@ class Map {
           onWalked && onWalked();
         }
         else {
-          e.setPath(path, onWalked || (() => {}));
+          e.setPath(path, onWalked || (() => {}), force);
         }
       });
     this.estar.calculate();

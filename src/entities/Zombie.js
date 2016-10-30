@@ -15,7 +15,6 @@ class Zombie extends Phaser.Sprite {
 
     this.bmax = bmax;
     this.state = new State("idle");
-    this.lastPathSet = Date.now();
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
     this.shadow.frame = 40;
@@ -36,9 +35,8 @@ class Zombie extends Phaser.Sprite {
     this.health.onHurt = this.onHurt.bind(this);
     this.health.onDie = this.onDie.bind(this);
 
-    this.state = new State("idle");
     this.direction = new State("right");
-
+    this.lastPathSet = Date.now();
     this.pathWalker = new PathWalker();
 
     this.hurtPause = 0;
@@ -80,13 +78,13 @@ class Zombie extends Phaser.Sprite {
     bmax.world.makePath(this, x, y); // lol... damn it.
   }
 
-  setPath (path, onDone) {
+  setPath (path, onDone, force) {
     if (this.state.get() === "dying") {
       return;
     }
     // FIXME: if want this, move to pathwalker.
     const now = Date.now();
-    if (now - this.lastPathSet < 700) {
+    if (!force && now - this.lastPathSet < 700) {
       return;
     }
     this.lastPathSet = now;

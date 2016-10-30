@@ -6,7 +6,7 @@ import Player from "../entities/Player";
 import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
 import Floppy from "../entities/Floppy";
-import Car from "../entities/Car";
+// import Car from "../entities/Car";
 import Plane from "../entities/Plane";
 import Segway from "../entities/Segway";
 import Blocks from "../Blocks";
@@ -175,6 +175,8 @@ void main(void) {
 
     this.maingroup.filters = [filter];
 
+    // this.toggleDriving("plane");
+
   }
 
   getMobSpawnPoint () {
@@ -209,6 +211,10 @@ void main(void) {
       time: Date.now(),
       onDead: ::this.reset
     };
+    this.mobs.forEach(m => {
+      const {x, y} = this.getMobSpawnPoint();
+      this.world.makePath(m, x * 32, y * 32, () => {}, true);
+    });
   }
 
   toggleCheat () {
@@ -285,8 +291,6 @@ void main(void) {
 
     DayTime.update(game.time.elapsedMS / 1000);
 
-  //  console.log(this.filter.uniforms);
-    //this.filter.uniforms.time = game.time.elapsedMS / 1000;
     this.filter.uniforms.pos.value = {
       x: protagonist.x,
       y: protagonist.y
@@ -324,7 +328,7 @@ void main(void) {
       break;
     }
 
-    if (updateDay) {
+    if (updateDay && !this.player.died) {
       this.doMobStrategy();
       this.collisionsMob();
       this.collisionsPickup();
@@ -368,26 +372,27 @@ void main(void) {
   collisionsMob () {
     const {mobs, inventory} = this;
 
-    if (this._cheat) {
+    if (this._cheat || this.player.died) {
       return;
     }
 
-    const player = this.protagonist;
+    const protagonist = this.protagonist;
 
     let someoneClose = false;
 
+    const item = Items[inventory.holding().item];
+    const damage = item.damage;
+    const proj = this.inventory.projectiles();
+
     mobs.forEach(m => {
-      const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
+      const dist = Phaser.Math.distance(m.x, m.y, protagonist.x, protagonist.y);
 
       if (dist < 200) {
         m.isClose = true;
 
-        const item = Items[inventory.holding().item];
-        const damage = item.damage;
-        this.world.makePath(m, player.x, player.y);
+        this.world.makePath(m, protagonist.x, protagonist.y);
 
         // Should we shoot?
-        const proj = this.inventory.projectiles();
         // todo: lol, shooting is player, not vehicle
         if (proj && this.player.shoot(m)) {
           this.inventory.useItem(proj.item);
@@ -401,7 +406,7 @@ void main(void) {
           this.particles.emitting = false;
 
           if (damage || this.inventory.autoStab()) {
-            player.attack && player.attack(m);
+            protagonist.attack && protagonist.attack(m);
           }
           if (dist < 32) {
             this.collideWithMob(m);
@@ -414,7 +419,7 @@ void main(void) {
     });
 
     if (!someoneClose) {
-      player.noAttack && player.noAttack();
+      protagonist.noAttack && protagonist.noAttack();
     }
   }
 
@@ -509,8 +514,8 @@ void main(void) {
 
   }
 
-  toggleDriving () {
-    if (this.stayte.get() === "driving") {
+  toggleDriving (vehicleName) {
+    if (!vehicleName && this.stayte.get() === "driving") {
       this.stayte.set("exploring");
       this.protagonist.visible = false;
 
@@ -523,7 +528,8 @@ void main(void) {
     }
     else {
       this.stayte.set("driving");
-      const vehicle = Math.random() < 0.5 ? this.plane : this.car;
+      const vehicle = vehicleName ? this[vehicleName] :
+        (Math.random() < 0.5 ? this.plane : this.car);
       this.player.visible = false;
       this.player.shadow.visible = false;
       vehicle.visible = true;
