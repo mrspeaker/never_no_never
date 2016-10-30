@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "budo index.js:bundle.js --live -- -t [ babelify --presets [ es2015 stage-0 ] --plugins [ ]  ]",
+    "test": "budo test.js:bundle.js --live -- -t [ babelify --presets [ es2015 stage-0 ] --plugins [ ]  ]",
     "build": "browserify index.js > build.js -t [ babelify --presets [ es2015 stage-0 ] --plugins [ ]  ]"
   },
   "author": "",

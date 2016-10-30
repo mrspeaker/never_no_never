@@ -13,6 +13,7 @@
   * add saltpeter + coal -> gunpowder
   * add gunpowder + wood -> fireworks
   * add gunpowder + stone? iron? -> projectiles
+  * armor
 * Juice
   * add skids
   * one-up on floppy get
