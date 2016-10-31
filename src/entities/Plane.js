@@ -21,7 +21,7 @@ class Plane extends Phaser.Sprite {
     const animSpeed = 10;
     this.animations.add("idle", [5], animSpeed, true);
     this.animations.add("run", [8,9], animSpeed, true);
-    this.animations.add("flying", [5, 6, 7, 6, 6], animSpeed, true);
+    this.animations.add("flying", [5, 6, 6, 5, 7], animSpeed / 1.8, true);
     this.animations.play("run");
 
     this.body.drag.set(30);

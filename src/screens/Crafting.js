@@ -9,7 +9,7 @@ class Crafting {
   recipeYo = 80;
   recipeLineSpacing = 55;
   columnWidth = 180;
-  columnLength = 5;
+  columnLength = 6;
 
   constructor (game, world) {
     this.world = world;

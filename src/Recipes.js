@@ -12,7 +12,13 @@ const Recipes = [{
   yields: [{item: "stone_sword", amount: 5}]
 },{
   source: [{item: "wood", amount: 1}, {item: "iron", amount: 1}],
+  yields: [{item: "iron_pick", amount: 6}]
+},{
+  source: [{item: "wood", amount: 1}, {item: "iron", amount: 1}],
   yields: [{item: "iron_sword", amount: 6}]
+},{
+  source: [{item: "coal", amount: 1}],
+  yields: [{item: "sand", amount: 3}]
 },{
   source: [{item: "stone", amount: 1}],
   yields: [{item: "brick", amount: 5}]
