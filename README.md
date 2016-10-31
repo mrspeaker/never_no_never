@@ -17,6 +17,8 @@ Browse on localhost:9966
 * [bug] baddies stuck when attacking
 * [bug] knockback direction always the same (up left or down right)
 * [bug] vehicles lose tile collisions (after crafting?) - multi vehicle?
+* [bug] shadow under body after dead.
+* [bug] can spawn on a disk
 * Try tap baddies to attack (auto weapon, but not auto attack)
 * Try swip to move (raycast swipe strenght, move to free spot)
 * Add a "town"

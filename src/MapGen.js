@@ -58,16 +58,16 @@ export default function () {
       }
 
       const o = noiseOres.in2D(x, y);
-      if (o > 0.5 && o < 0.503) {
-        gridMid[x][y] = Blocks.coal_ore.tile;
-      }
-      else if (o > 0.6 && o < 0.603) {
-        gridMid[x][y] = Blocks.stone_ore.tile;
-      }
-      else if (o > 0.4 && o < 0.404) {
+      if (o > 0.4 && o < 0.404) {
         gridMid[x][y] = Blocks.stalegmite.tile;
       }
+      else if (o > 0.5 && o < 0.503) {
+        gridMid[x][y] = Blocks.coal_ore.tile;
+      }
       else if (o > 0.6 && o < 0.605) {
+        gridMid[x][y] = Blocks.stone_ore.tile;
+      }
+      else if (o > 0.7 && o < 0.705) {
         gridMid[x][y] = Blocks.iron_ore.tile;
       }
     }

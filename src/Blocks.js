@@ -17,8 +17,9 @@ export default {
   "water_br": { name: "water_br", tile: 20, mine: false },
 
   "sand": { name: "sand", tile: 1, mine: false, walk: true },
-  "brick": { name: "brick", tile: 260, mine: true, hardness: 10, yields: [{name: "stone", amount: 1}] },
+  "brick": { name: "brick", tile: 276, mine: true, hardness: 10, yields: [{name: "stone", amount: 1}] },
 
+  // TODO: Get this out of here.
   getByTileId: function (id) {
     for (let e in this) {
       if (this[e].tile && this[e].tile === id) {

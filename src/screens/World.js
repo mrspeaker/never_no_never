@@ -176,9 +176,9 @@ void main(void) {
     this.stayte.set("exploring");
 
     // Filters stop camera shake from working.
-    //this.maingroup.filters = [filter];
+    // this.maingroup.filters = [filter];
 
-    this.toggleDriving("plane");
+    // this.toggleDriving("plane");
 
   }
 
@@ -226,8 +226,7 @@ void main(void) {
   }
 
   onPathWalked (xt, yt) {
-    const {ui, world, player, mobs} = this;
-    ui.subtitle.text = `${xt},${yt}`;
+    const {world, player, mobs} = this;
 
     const tile = world.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
@@ -456,10 +455,36 @@ void main(void) {
         this.floppyGets++;
         this.recipesUnlocked[0] = true;
         f.destroy();
-        this.toggleDriving();
+        this.unlockRecipe();
+        //this.toggleDriving();
       }
     });
-    this.ui.subtitle.text = closest.toFixed(2);
+  }
+
+  unlockRecipe () {
+    const unlocks = [
+      ["wood_sword"],
+      ["wood_pick"],
+      ["stone_pick"],
+      ["stone_sword"],
+      ["iron_pick"],
+      ["iron_sword"],
+      ["brick", "sand"],
+      ["tire", "segway"]
+    ];
+
+    for (let i = 0; i < unlocks.length; i++) {
+      const un = unlocks[i];
+      if (data.recipes[un[0]]) {
+        continue;
+      }
+      un.forEach(u => {
+        data.recipes[u] = true;
+      });
+      this.ui.subtitle.text = un.join(", ");
+      break;
+    }
+    this.game.camera.flash(0xffffff, 300);
   }
 
   walkToThenAct (worldX, worldY) {
