@@ -156,7 +156,7 @@ void main(void) {
     // this.inventory.addItem("sand", 10);
 
     const title = Title(game, "bmax!", 36, 12, 12).font;
-    const subtitle = Title(game, "0123456789!? You bet.", 9, 4, 36, true).font;
+    const subtitle = Title(game, "...", 9, 4, 36, true).font;
 
     this.HUD = new HUD(game);
 
@@ -456,7 +456,6 @@ void main(void) {
         this.recipesUnlocked[0] = true;
         f.destroy();
         this.unlockRecipe();
-        //this.toggleDriving();
       }
     });
   }
@@ -469,8 +468,10 @@ void main(void) {
       ["stone_sword"],
       ["iron_pick"],
       ["iron_sword"],
+      ["fireworks"],
       ["brick", "sand"],
-      ["tire", "segway"]
+      ["tire"],
+      ["segway"],
     ];
 
     for (let i = 0; i < unlocks.length; i++) {

@@ -6,6 +6,7 @@ import Items from "../Items";
 import DayTime from "../DayTime";
 import data from "../data";
 import Explosion from "../entities/Explosion";
+import Player from "../entities/Player";
 
 const startWiths = [
   [{item: "wood", amount: 2, unlocked: false, question: false}],
@@ -23,14 +24,21 @@ class Splash extends Phaser.State {
       startWiths[0][0].unlocked = true;
     }
 
-
     game.add.sprite(0, 0, "splash");
+    this.p = new Player(game, 3, 13);
+    this.p.scale.set(2);
+    this.p.update = () => {};
+    this.p.doAnim("walk_right");
 
-    const title = Title(game, "bmax!", 36, 100, 112).font;
-    const start = Title(game, "Start with?", 9, 130, 210, true).font;
+    const xo = 90;
+    const yo = 100;
+    const title = Title(game, "never,", 36, xo, yo).font;
+    Title(game, "no", 36, xo, yo + 40).font;
+    Title(game, "never,", 36, xo, yo + 80).font;
+    //const start = Title(game, "Start with?", 9, 130, 210, true).font;
 
     const x = 160;
-    const y = 100;
+    const y = 140;
     Array.from(new Array(40), () => {
       setTimeout(() => {
         new Explosion(game,
@@ -85,7 +93,6 @@ class Splash extends Phaser.State {
 
     this.ui = {
       title,
-      start,
     };
   }
 

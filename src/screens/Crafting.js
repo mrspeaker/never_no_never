@@ -3,6 +3,7 @@ import Items from "../Items";
 import Title from "../Title";
 import recipes from "../Recipes";
 import data from "../data";
+import Floppy from "../entities/Floppy";
 
 class Crafting {
 
@@ -106,13 +107,15 @@ class Crafting {
 
     icons.removeAll();
 
+    let dbIsEmpty = true;
+
     this.recipeRow = recipes.map(({name, source, yields}, i) => {
       let xo = this.recipeXo + (i / this.columnLength | 0) * this.columnWidth;
       let yo = this.recipeYo + ((i % this.columnLength) * this.recipeLineSpacing);
       if (!data.recipes[name]) {
         return null;
       }
-
+      dbIsEmpty = false;
       const g = game.add.group();
       icons.add(g);
 
@@ -141,6 +144,16 @@ class Crafting {
       });
       return g;
     });
+
+    if (dbIsEmpty) {
+      const flop = new Floppy(game, 80, 200);
+      flop.fixedToCamera = true;
+      flop.scale.set(3);
+      icons.add(flop);
+      icons.add(Title(game, "error.", 36, 50, 120, true).img);
+      icons.add(Title(game, "no knowledge found in database.", 9, 50, 320, true).img);
+      icons.add(Title(game, "seek digital information.", 9, 50, 340, true).img);
+    }
   }
 
   update (game) {
