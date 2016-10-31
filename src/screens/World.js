@@ -74,11 +74,13 @@ void main(void) {
     this.maingroup = game.add.group();
 
     this.world = new Map(game);
-    this.maingroup.add(this.world.layerz.base);
-    this.maingroup.add(this.world.layerz.mid);
 
     this.groundTarget = game.add.sprite(0, 0, "icons");
     this.groundTarget.frame = 31;
+
+    this.maingroup.add(this.world.layerz.base);
+    this.maingroup.add(this.groundTarget);
+    this.maingroup.add(this.world.layerz.mid);
 
     this.perma = game.add.group();
     this.maingroup.add(this.perma);
@@ -173,7 +175,7 @@ void main(void) {
 
     this.stayte.set("exploring");
 
-    this.maingroup.filters = [filter];
+    //this.maingroup.filters = [filter];
 
     //this.toggleDriving("plane");
 
