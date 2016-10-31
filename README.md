@@ -43,8 +43,10 @@ Browse on localhost:9966
   * stats on splash
   * reset unlocks for testing
 * add a tower-defense module
+* mining anim with tool
+* [bug] passing over unwalkable area kills zombie pathfinding perf
+* [bug] after placing last placeable, clicking doesnt walk.
 * zombie roaming state
-* roam on player death
 * drops from mining
 * drops from zombie kills
 * add death screen (or modal)

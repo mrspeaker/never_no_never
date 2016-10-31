@@ -41,7 +41,7 @@ export default function () {
     grid[x] = [];
     gridMid[x] = [];
     for (let y = 0; y < w; y++) {
-      grid[x][y] = noiseBase.in2D(x, y) > 0.65 ? Blocks.water.tile : Blocks.sand.tile;
+      grid[x][y] = noiseBase.in2D(x, y) > 0.7 ? Blocks.water.tile : Blocks.sand.tile;
       gridMid[x][y] = 0;
 
       if (grid[x][y] !== Blocks.sand.tile) {
@@ -56,7 +56,6 @@ export default function () {
       if (t2 > 0.9) {
         gridMid[x][y] = Blocks.rubber_sap.tile;
       }
-
 
       const o = noiseOres.in2D(x, y);
       if (o > 0.5 && o < 0.503) {

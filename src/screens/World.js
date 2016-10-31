@@ -116,7 +116,7 @@ void main(void) {
     this.cameraTarget.alpha = 0;
 
     const mobs = this.mobs = game.add.group();
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 30; i++) {
       const {x, y} = this.getMobSpawnPoint();
       mobs.add(new Zombie(game, x, y, this));
     }

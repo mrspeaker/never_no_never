@@ -7,7 +7,9 @@ class Crafting {
 
   recipeXo = 20;
   recipeYo = 80;
-  recipeLineSpacing = 65;
+  recipeLineSpacing = 55;
+  columnWidth = 180;
+  columnLength = 5;
 
   constructor (game, world) {
     this.world = world;
@@ -70,19 +72,18 @@ class Crafting {
       const g = game.add.group();
       group.add(g);
 
-      let xo = this.recipeXo;
-      let yo = this.recipeYo + i * this.recipeLineSpacing;
+      let xo = this.recipeXo + (i / this.columnLength | 0) * this.columnWidth;
+      let yo = this.recipeYo + ((i % this.columnLength) * this.recipeLineSpacing);
 
       source.forEach(({item, amount}) => {
-        //const has = inventory.count(item);
-        Array.from(new Array(amount), (_, ii) => {
-          const x = xo + (ii * 32);
-          const icon = g.create(x, yo, "icons");
-          icon.frame = Items[item].icon;
-          //if (i >= has) icon.alpha = 0.5;
-          icon.fixedToCamera = true;
-        });
-        xo += amount * 32;
+        const icon = g.create(xo, yo, "icons");
+        icon.frame = Items[item].icon;
+        icon.fixedToCamera = true;
+        if (amount > 1) {
+          const title = Title(game, amount, 9, xo + 24, yo + 24, true);
+          g.add(title.img);
+        }
+        xo += 32;
       });
       const arrow = g.create(xo, yo, "icons");
       arrow.frame = 30;
@@ -133,7 +134,7 @@ class Crafting {
   update (game) {
     const {world, recipeYo, recipeLineSpacing} = this;
     const {controls, inventory} = world;
-    const {justPressed, y} = controls;
+    const {justPressed, x, y} = controls;
 
     if (justPressed) {
       if (y < 70) {
@@ -142,8 +143,19 @@ class Crafting {
         this.world.stayte.set("exploring");
       }
 
-      if (y >= recipeYo && y <= recipeYo + recipes.length * recipeLineSpacing) {
-        const idx = (y - recipeYo) / recipeLineSpacing | 0;
+      if (y >= recipeYo && y <= game.height - 60) {
+        const xo = x - this.recipeXo;
+        const yo = y - this.recipeYo;
+        const col = xo / this.columnWidth | 0;
+        const row = yo / recipeLineSpacing | 0;
+
+        if (row > this.columnLength - 1) {
+          return;
+        }
+        const idx = col * this.columnLength + row;
+        if (idx > recipes.length - 1) {
+          return;
+        }
         const {source, yields} = recipes[idx];
         const isCheat = this.world._cheat;
         const hasSources = isCheat || source.every(({item, amount}) => inventory.hasItem(item, amount));
