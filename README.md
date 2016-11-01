@@ -13,6 +13,8 @@ Browse on localhost:9966
 
 ## TODO
 
+* Modal message.
+* Modal for unlocked electronics.
 * [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] baddies stuck when attacking
 * [bug] knockback direction always the same (up left or down right)

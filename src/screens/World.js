@@ -17,6 +17,8 @@ import HUD from "../HUD";
 import Tween from "../Tween";
 import DayTime from "../DayTime";
 import Particles from "../Particles";
+import Info from "./Info";
+
 import State from "../State";
 
 import data from "../data";
@@ -474,8 +476,9 @@ void main(void) {
       ["segway"],
     ];
 
+    let un = [];
     for (let i = 0; i < unlocks.length; i++) {
-      const un = unlocks[i];
+      un = unlocks[i];
       if (data.recipes[un[0]]) {
         continue;
       }
@@ -485,7 +488,7 @@ void main(void) {
       this.ui.subtitle.text = un.join(", ");
       break;
     }
-    this.game.camera.flash(0xffffff, 300);
+    new Info(this.game, un.join(", "));
   }
 
   walkToThenAct (worldX, worldY) {
