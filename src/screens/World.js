@@ -488,7 +488,7 @@ void main(void) {
       this.ui.subtitle.text = un.join(", ");
       break;
     }
-    new Info(this.game, un.join(", "));
+    new Info(this.game, un[0]);
   }
 
   walkToThenAct (worldX, worldY) {
