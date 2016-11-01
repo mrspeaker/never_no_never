@@ -257,6 +257,7 @@ class Player extends Phaser.Sprite {
 
     if (this.died) {
       animations.stop();
+      this.shadow.visible = false;
       this.frame = 19;
       this.alpha -= 0.01;
       if (Date.now() - this.died.time > 2500) {

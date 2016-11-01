@@ -110,7 +110,7 @@ void main(void) {
 
     this.floppies = game.add.group();
     Array.from(new Array(20), () => {
-      const spot = this.world.findEmptySpot();
+      const spot = this.getMobSpawnPoint(300);
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
     this.maingroup.add(this.floppies);
@@ -175,6 +175,8 @@ void main(void) {
 
     this._cheat = false;
 
+    this.info = new Info(game);
+
     this.stayte.set("exploring");
 
     // Filters stop camera shake from working.
@@ -184,9 +186,8 @@ void main(void) {
 
   }
 
-  getMobSpawnPoint () {
+  getMobSpawnPoint (CLOSE_PIXELS = 400) {
     const {world, protagonist} = this;
-    const CLOSE_PIXELS = 400;
     let close = true;
     let x = -1;
     let y = -1;
@@ -488,7 +489,7 @@ void main(void) {
       this.ui.subtitle.text = un.join(", ");
       break;
     }
-    new Info(this.game, un[0]);
+    this.info.show(un[0]);
   }
 
   walkToThenAct (worldX, worldY) {
