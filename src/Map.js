@@ -131,6 +131,17 @@ class Map {
       xt, yt,
       path => {
         if (!path) { return; }
+
+        if (path.length > 1) {
+          // find out if path[0] is in the right direction or not...
+          // and slice it if not.
+          const xo = path[1].x - path[0].x;
+          const yo = path[1].y - path[0].y;
+          if (xo > 0 || yo > 0) {
+            path = path.slice(1);
+          }
+        }
+
         // TODO: still a bug with this on diagonals
         if (oldx === BLOCK_TYPE.solid ||
           (e instanceof Player && oldx !== BLOCK_TYPE.walkable)) {

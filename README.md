@@ -13,8 +13,6 @@ Browse on localhost:9966
 
 ## TODO
 
-* [bug] baddies stuck when attacking. they should own you.
-* [bug] pathfinding recalc on player goes wrong way for first block
 * [bug] knockback direction always the same (up left or down right)
 * [bug] vehicles lose tile collisions (after crafting?) - multi vehicle?
 * [bug] auto-tools buggy... stop working

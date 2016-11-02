@@ -112,10 +112,10 @@ class Player extends Phaser.Sprite {
     }
     const cx = Math.floor(this.x / 32);
     const cy = Math.floor(this.y / 32);
-    if (path.length && cx === path[0].x && cy === path[1].y) {
+    //if (path.length && cx === path[0].x && cy === path[1].y) {
       // console.log("same player pos. slice it.");
-      path = path.slice(1);
-    }
+      //path = path.slice(1);
+    //}
 
     if (path.length) {
       if (cx > path[0].x) this.direction.set("left");

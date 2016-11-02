@@ -181,7 +181,6 @@ void main(void) {
 
     // Filters stop camera shake from working.
     // this.maingroup.filters = [filter];
-
     // this.toggleDriving("plane");
 
   }
