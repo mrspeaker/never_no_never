@@ -13,7 +13,19 @@ Browse on localhost:9966
 
 ## TODO
 
+* intro explanation...
+  * "start" button at base of ladder... click and player path-finds to ladder, then climbs
+  * exit bunker anim
+  * glowing floppy? make it obvious to click it.
+  * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
+
+* Death screen
+  * show progress hp
+  * showed unlocks
+  * "survived for" time.
+
 * [bug] knockback direction always the same (up left or down right)
+* [bug] knockback knocksback into solid tiles.
 * [bug] vehicles lose tile collisions (after crafting?) - multi vehicle?
 * [bug] auto-tools buggy... stop working
 * [bug] auto-tools don't choose most efficient
@@ -41,9 +53,6 @@ Browse on localhost:9966
 * progression
   * floppies per day
   * store progress/stats/unlocks
-  * on died, show progress hp
-  * on died, showed unlocks
-  * on died, "surived for" time.
   * stats on splash
   * reset unlocks for testing
 * add a tower-defense module
@@ -53,7 +62,8 @@ Browse on localhost:9966
 * zombie roaming state
 * drops from mining
 * drops from zombie kills
-* add death screen (or modal)
+* add animals
+* add food
 * Move blocks and items from flyweight to actual objects
   * cellular autonoma ability
   * show un-obtained resources in crafting.

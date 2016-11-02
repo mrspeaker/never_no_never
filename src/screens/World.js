@@ -12,6 +12,7 @@ import Segway from "../entities/Segway";
 import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
+import GameOver from "./GameOver";
 import Title from "../Title";
 import HUD from "../HUD";
 import Tween from "../Tween";
@@ -162,7 +163,10 @@ void main(void) {
 
     this.HUD = new HUD(game);
 
-    this.craftingScreen = new Crafting(game, this);
+    this.overlays = {
+      crafting: new Crafting(game, this),
+      gameOver: new GameOver(game, this)
+    };
 
     this.ui = {
       title,
@@ -214,7 +218,12 @@ void main(void) {
     this.world.setTileXY(Blocks.tombstone.tile, this.protagonist.x, this.protagonist.y);
     this.player.died = {
       time: Date.now(),
-      onDead: ::this.reset
+      onDead: (() => {
+        console.log(this);
+        if (!this.stayte.is("gameOver")) {
+          this.stayte.set("gameOver");
+        }
+      }).bind(this)
     };
     this.mobs.forEach(m => {
       const {x, y} = this.getMobSpawnPoint();
@@ -321,15 +330,20 @@ void main(void) {
       break;
     case "crafting":
       if (isFirst) {
-        this.craftingScreen.visible = true;
+        this.overlays.crafting.visible = true;
       }
-      this.craftingScreen.update(game);
+      this.overlays.crafting.update(game);
       updateDay = true;
       break;
     case "dayOver":
       this.serialize();
       this.state.start("DayOver");
       break;
+    case "gameOver":
+      if (isFirst) {
+        this.overlays.gameOver.visible = true;
+      }
+      this.overlays.gameOver.update(game);
     }
 
     if (updateDay && !this.player.died) {

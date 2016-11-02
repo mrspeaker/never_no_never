@@ -23,7 +23,6 @@ class Map {
     map.addTilesetImage("mid", "mid");
     const mid = this.layerz.mid = map.createLayer("mid");
 
-    // TODO: better to pass as ranges to setCollisionBetween?
     Object.keys(Blocks)
       .map(k => Blocks[k])
       .filter(b => b.tile !== undefined && !b.walk)
