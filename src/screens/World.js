@@ -435,13 +435,17 @@ void main(void) {
     const holding = this.inventory.holding();
     const damage = Items[holding.item].damage;
 
-    if (damage) {
+    if (damage && player.chargedForAttack()) {
+      player.rechargeAttack();
       if (m.health.damage(damage, player) <= 0) {
         this.killZombie(m);
       }
     }
     else {
-      player.health.damage(1, m);
+      if (m.chargedForAttack()) {
+        m.rechargeAttack();
+        player.health.damage(1, m);
+      }
     }
 
   }

@@ -9,6 +9,7 @@ import Particles from "../Particles";
 class Zombie extends Phaser.Sprite {
 
   walkSpeed = 1.5;
+  lastAttack = Date.now();
 
   constructor (game, xtile, ytile, bmax) {
     super(game, xtile * 32, ytile * 32, "peeps");
@@ -45,6 +46,7 @@ class Zombie extends Phaser.Sprite {
 
   onHurt (h, max, by) {
     this.hurtPause = 50;
+    this.lastAttack = Date.now();
     let angle = by.angle - Math.PI / 2 || this.game.math.angleBetween(
       this.x, this.y,
       by.x, by.y
@@ -76,6 +78,13 @@ class Zombie extends Phaser.Sprite {
     this.y = y * 32;
     this.health.health = this.health.maxHealth;
     bmax.world.makePath(this, x, y); // lol... damn it.
+  }
+
+  chargedForAttack () {
+    return Date.now() - this.lastAttack > 800;
+  }
+  rechargeAttack () {
+    this.lastAttack = Date.now();
   }
 
   setPath (path, onDone, force) {

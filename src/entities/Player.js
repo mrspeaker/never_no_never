@@ -20,6 +20,7 @@ class Player extends Phaser.Sprite {
 
   died = null;
   attacking = false;
+  lastAttack = Date.now();
 
   states = {
     idle: "idle",
@@ -97,6 +98,13 @@ class Player extends Phaser.Sprite {
       this.bloods.emitting = false;
     }, 600);
 
+  }
+
+  chargedForAttack () {
+    return Date.now() - this.lastAttack > 300;
+  }
+  rechargeAttack () {
+    this.lastAttack = Date.now();
   }
 
   setPath (path, onDone) {
