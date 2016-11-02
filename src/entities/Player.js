@@ -9,8 +9,6 @@ import Blocks from "../Blocks";
 import Bullet from "./Bullet";
 import Particles from "../Particles";
 
-import DayTime from "../DayTime";
-
 class Player extends Phaser.Sprite {
 
   walkSpeed = 3;
@@ -19,7 +17,7 @@ class Player extends Phaser.Sprite {
   maxArmour = 3;
 
   died = null;
-  attacking = false;
+  swingingForAttack = false;
   lastAttack = Date.now();
 
   states = {
@@ -148,15 +146,15 @@ class Player extends Phaser.Sprite {
     return true;
   }
 
-  attack (e) {
-    this.attacking = true;
+  startSwinging (e) {
+    this.swingingForAttack = true;
     const dir = e.x > this.x ? "left" : "right";
     this.direction.set(dir);
     this.doAnim(`attack_${dir}`, true);
   }
 
-  noAttack () {
-    this.attacking = false;
+  stopSwinging () {
+    this.swingingForAttack = false;
   }
 
   doAnim (anim, force) {
@@ -164,7 +162,7 @@ class Player extends Phaser.Sprite {
       this.animations.stop();
     }
     else {
-      if (this.attacking && !force) { return; }
+      if (this.swingingForAttack && !force) { return; }
       this.animations.play(anim);
     }
   }
@@ -246,7 +244,7 @@ class Player extends Phaser.Sprite {
   }
 
   someoneClose () {
-    if (this.attacking) {
+    if (this.swingingForAttack) {
       return;
     }
     const holding = this.inventory.holding();

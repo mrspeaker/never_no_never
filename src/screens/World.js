@@ -109,7 +109,7 @@ void main(void) {
     this.maingroup.add(this.particles);
 
     this.floppies = game.add.group();
-    Array.from(new Array(20), () => {
+    Array.from(new Array(12), () => {
       const spot = this.getMobSpawnPoint(300);
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
@@ -411,7 +411,7 @@ void main(void) {
           this.particles.emitting = false;
 
           if (damage || this.inventory.autoStab()) {
-            protagonist.attack && protagonist.attack(m);
+            protagonist.startSwinging && protagonist.startSwinging(m);
           }
           if (dist < 32) {
             this.collideWithMob(m);
@@ -424,7 +424,7 @@ void main(void) {
     });
 
     if (!someoneClose) {
-      protagonist.noAttack && protagonist.noAttack();
+      protagonist.stopSwinging && protagonist.stopSwinging();
     }
   }
 
