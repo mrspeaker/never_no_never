@@ -110,8 +110,8 @@ void main(void) {
     this.maingroup.add(this.particles);
 
     this.floppies = game.add.group();
-    Array.from(new Array(12), () => {
-      const spot = this.getMobSpawnPoint(300);
+    Array.from(new Array(142), () => {
+      const spot = this.getMobSpawnPoint(100);
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
     this.maingroup.add(this.floppies);
@@ -649,6 +649,13 @@ void main(void) {
     }
     if (data.recipesUnlocked) {
       this.recipesUnlocked = data.recipesUnlocked;
+    }
+  }
+
+  pauseUpdate (game) {
+    super.pauseUpdate(game);
+    if (this.info.visible) {
+      this.info.doUpdate(game);
     }
   }
 
