@@ -6,7 +6,6 @@ import Player from "../entities/Player";
 import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
 import Floppy from "../entities/Floppy";
-// import Car from "../entities/Car";
 import Plane from "../entities/Plane";
 import Segway from "../entities/Segway";
 import Blocks from "../Blocks";
@@ -27,16 +26,27 @@ import data from "../data";
 class World extends Phaser.State {
 
   _cheat = false;
-  floppyGets = 0;
-  recipesUnlocked = [];
 
   reset () {
+    this.stats.dailyHP = 0;
+    this.stats.gameCraftUnlocks = [];
+    this.stats.dailyCraftUnlocks = [];
+    this.serialize();
     this.game.state.start("Splash");
   }
 
   create (game) {
 
     this.stayte = new State("getready");
+
+    this.stats = {
+      dailyHP: 0,
+      gameHP: 0,
+      lifetimeHP: 0,
+      dailyCraftUnlocks: [],
+      permanentUnlocks: [],
+      gameCraftUnlocks: []
+    };
 
     game.stage.backgroundColor = "#343436";
 
@@ -149,9 +159,10 @@ void main(void) {
       DayTime.addDayOverListener(() => {
         this.stayte.set("dayOver");
       });
-      this.floppyGets = 0;
     }
     else {
+      this.stats.dailyCraftUnlocks = 0;
+      this.stats.dailyHP = 0;
       this.deserialize();
     }
     // this.inventory.addItem("coal", 20);
@@ -183,11 +194,7 @@ void main(void) {
 
     this.stayte.set("exploring");
 
-    this.stats = {
-      hp: 0,
-      craftUnlocks: []
-    };
-    // Filters stop camera shake from working.
+    // Filters stop camera shake from working... need to pass in shake offset to shader
     // this.maingroup.filters = [filter];
     // this.toggleDriving("plane");
 
@@ -236,8 +243,8 @@ void main(void) {
 
   addHP (amount) {
     if (!amount) return;
-    this.stats.hp += amount;
-    this.ui.subtitle.text = `HP: ${this.stats.hp}`;
+    this.stats.dailyHP += amount;
+    this.ui.subtitle.text = `HP: ${this.stats.dailyHP}`;
   }
 
   toggleCheat () {
@@ -485,8 +492,8 @@ void main(void) {
       if (dist < closest) closest = dist;
 
       if (dist <= 32) {
-        this.floppyGets++;
-        this.recipesUnlocked[0] = true;
+        this.stats.dailyCraftUnlocks++;
+        this.stats.permanentUnlocks[0] = true;
         f.destroy();
         this.unlockRecipe();
       }
@@ -519,7 +526,7 @@ void main(void) {
       this.ui.subtitle.text = un.join(", ");
       break;
     }
-    this.stats.craftUnlocks.push(...un);
+    this.stats.gameCraftUnlocks.push(...un);
     this.info.show(un[0]);
   }
 
@@ -650,24 +657,20 @@ void main(void) {
 
   serialize () {
     data.inventory = this.inventory.serialize();
-    data.floppyGets = this.floppyGets;
-    data.recipesUnlocked = this.recipesUnlocked;
-    data.hp = this.stats.hp;
-    data.craftUnlocks = this.stats.craftUnlocks.slice(0);
+    data.dailyCraftUnlocks = this.stats.dailyCraftUnlocks;
+    data.gameCraftUnlocks = this.stats.gameCraftUnlocks.slice(0);
+    data.permanentUnlocks = this.stats.permanentUnlocks;
+    data.dailyHP = this.stats.dailyHP;
   }
 
   deserialize () {
     if (data.inventory) {
       this.inventory.deserialize(data.inventory);
     }
-    if (data.floppyGets) {
-      this.floppyGets = data.floppyGets;
-    }
-    if (data.recipesUnlocked) {
-      this.recipesUnlocked = data.recipesUnlocked;
-    }
-    this.stats.hp = data.hp;
-    this.stats.craftUnlocks = data.craftUnlocks.slice(0);
+    this.stats.dailyCraftUnlocks = data.dailyCraftUnlocks;
+    this.stats.gameCraftUnlocks = data.gameCraftUnlocks.slice(0);
+    this.stats.permanentUnlocks = data.permanentUnlocks;
+    this.stats.dailyHP = data.dailyHP;
   }
 
   pauseUpdate (game) {

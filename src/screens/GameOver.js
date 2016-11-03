@@ -44,6 +44,8 @@ class GameOver {
 
   set visible (visible) {
     if (visible) {
+      data.gameHP += data.dailyHP;
+      data.lifetimeHP += data.gameHP;
       this.redraw();
     }
     this.group.visible = visible;
@@ -57,8 +59,9 @@ class GameOver {
     icons.add(Title(game, "death.", 36, 50, 120, true).img);
     icons.add(Title(game, "but you did good, kid.", 9, 50, 180, true).img);
     icons.add(Title(game, "here's the deets...", 9, 50, 200, true).img);
-    icons.add(Title(game, "HP: " + data.hp, 36, 60, 230, true).img);
-    icons.add(Title(game, "unlocks: " + data.craftUnlocks.join(",") || "-", 9, 60, 270, true).img);
+    icons.add(Title(game, "hp: " + data.gameHP, 36, 60, 230, true).img);
+    icons.add(Title(game, "lifetime hp: " + data.gameHP, 9, 60, 270, true).img);
+    icons.add(Title(game, "unlocks: " + (data.gameCraftUnlocks.join(",") || "0"), 9, 60, 290, true).img);
 
   }
 
@@ -71,7 +74,6 @@ class GameOver {
       if (y < 70) {
         // TODO: crafting shouldn't know about world state
         this.visible = false;
-        data.craftUnlocks = [];
         this.world.reset();
       }
     }

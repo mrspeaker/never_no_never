@@ -19,7 +19,7 @@ class DayOver extends Phaser.State {
     game.stage.backgroundColor = "#001111";
 
     const title = Title(game, "Sleep", 26, 100, 112).font;
-    const start = Title(game, "floppies: " + data.floppyGets, 9, 130, 210, true).font;
+    const start = Title(game, "Unlocks: " + data.dailyCraftUnlocks, 9, 130, 210, true).font;
 
     this.starts = startWiths.map(([item], i) => {
       const xo = 50;
@@ -68,6 +68,8 @@ class DayOver extends Phaser.State {
       title,
       start,
     };
+
+    data.gameHP += data.dailyHP;
   }
 
   update (game) {

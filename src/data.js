@@ -1,7 +1,10 @@
 export default {
-  hp: 0,
-  recipesUnlocked: [],
-  craftUnlocks: [],
+  dailyHP: 0,
+  gameHP: 0,
+  lifetimeHP: 0,
+  permanentUnlocks: [],
+  gameCraftUnlocks: [],
+  dailyCraftUnlocks: 0,
   recipes: {
   },
 };

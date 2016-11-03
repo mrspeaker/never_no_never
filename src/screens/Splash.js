@@ -20,7 +20,7 @@ class Splash extends Phaser.State {
   create (game) {
     game.stage.backgroundColor = "#000000";
 
-    if (data.recipesUnlocked[0]) {
+    if (data.permanentUnlocks[0]) {
       startWiths[0][0].unlocked = true;
     }
 
