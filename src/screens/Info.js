@@ -112,7 +112,7 @@ class Info extends Phaser.Group {
         state.set("ready");
       }
       this.decrypt.text = "decrypting " +
-        (btoa(Date.now()/1000).slice(-10)).split("").sort(()=>Math.random()<0.5?-1:1).join("");
+        (btoa(Date.now()/1000).slice(-10)).split("").sort(()=>0.5 - Math.random()).join("");
       break;
     case "ready":
       if (first) {

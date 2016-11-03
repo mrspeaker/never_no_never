@@ -20,16 +20,9 @@ Browse on localhost:9966
   * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
 
 * Death screen
-  * show progress hp
   * showed unlocks
   * "survived for" time.
 
-* [bug] knockback direction always the same (up left or down right)
-* [bug] knockback knocksback into solid tiles.
-* [bug] vehicles lose tile collisions (after crafting?) - multi vehicle?
-* [bug] auto-tools buggy... stop working
-* [bug] auto-tools don't choose most efficient
-* [bug] dead in vehicle, vehicle still visible/usable
 * "arm" projectiles... tap once to arm, once to disarm.
 * add attack chances (not hit always).
 * knockback when attack
@@ -57,8 +50,6 @@ Browse on localhost:9966
   * reset unlocks for testing
 * add a tower-defense module
 * mining anim with tool
-* [bug] passing over unwalkable area kills close zombie pathfinding perf
-* [bug] after placing last placeable, clicking doesnt walk.
 * zombie roaming state
 * drops from mining
 * drops from zombie kills
@@ -68,6 +59,19 @@ Browse on localhost:9966
   * cellular autonoma ability
   * show un-obtained resources in crafting.
 * system for player -> tool -> target block
-* [bug] invalidate/recalc paths on build, destroy.
-* [bug] Errors when destroying particle emitters after screen swap
-* [bug] not auto-selecting damage tools when in vehicle
+
+## Bugs
+
+* knockback direction always the same (up left or down right)
+* knockback knocksback into solid tiles.
+* vehicles lose tile collisions (after crafting?) - multi vehicle?
+* auto-tools buggy... stop working
+* auto-tools don't choose most efficient
+* dead in vehicle, vehicle still visible/usable
+* can craft before you've found recipes
+* mine from several blocks away
+* passing over unwalkable area kills close zombie pathfinding perf
+* after placing last placeable, clicking doesnt walk.
+* invalidate/recalc paths on build, destroy.
+* Errors when destroying particle emitters after screen swap
+* not auto-selecting damage tools when in vehicle

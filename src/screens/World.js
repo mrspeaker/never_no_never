@@ -110,7 +110,7 @@ void main(void) {
     this.maingroup.add(this.particles);
 
     this.floppies = game.add.group();
-    Array.from(new Array(142), () => {
+    Array.from(new Array(12), () => {
       const spot = this.getMobSpawnPoint(100);
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
@@ -183,6 +183,10 @@ void main(void) {
 
     this.stayte.set("exploring");
 
+    this.stats = {
+      hp: 0,
+      craftUnlocks: []
+    };
     // Filters stop camera shake from working.
     // this.maingroup.filters = [filter];
     // this.toggleDriving("plane");
@@ -219,7 +223,6 @@ void main(void) {
     this.player.died = {
       time: Date.now(),
       onDead: (() => {
-        console.log(this);
         if (!this.stayte.is("gameOver")) {
           this.stayte.set("gameOver");
         }
@@ -229,6 +232,12 @@ void main(void) {
       const {x, y} = this.getMobSpawnPoint();
       this.world.makePath(m, x * 32, y * 32, () => {}, true);
     });
+  }
+
+  addHP (amount) {
+    if (!amount) return;
+    this.stats.hp += amount;
+    this.ui.subtitle.text = `HP: ${this.stats.hp}`;
   }
 
   toggleCheat () {
@@ -266,6 +275,8 @@ void main(void) {
       p.y = yt * 32 + 8;
       player.mineTile(block, tile, toolEfficiency, () => {
 
+        this.addHP(block.hp || 0);
+
         p.emitting = false;
         world.setTile(
           tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile :
@@ -294,6 +305,7 @@ void main(void) {
     const {player, inventory} = this;
     const holding = inventory.holding();
     inventory.useItem(holding.item);
+    this.addHP(42);
     player.state.set("idle");
   }
 
@@ -336,6 +348,7 @@ void main(void) {
       updateDay = true;
       break;
     case "dayOver":
+      this.addHP(250);
       this.serialize();
       this.state.start("DayOver");
       break;
@@ -506,6 +519,7 @@ void main(void) {
       this.ui.subtitle.text = un.join(", ");
       break;
     }
+    this.stats.craftUnlocks.push(...un);
     this.info.show(un[0]);
   }
 
@@ -638,6 +652,8 @@ void main(void) {
     data.inventory = this.inventory.serialize();
     data.floppyGets = this.floppyGets;
     data.recipesUnlocked = this.recipesUnlocked;
+    data.hp = this.stats.hp;
+    data.craftUnlocks = this.stats.craftUnlocks.slice(0);
   }
 
   deserialize () {
@@ -650,6 +666,8 @@ void main(void) {
     if (data.recipesUnlocked) {
       this.recipesUnlocked = data.recipesUnlocked;
     }
+    this.stats.hp = data.hp;
+    this.stats.craftUnlocks = data.craftUnlocks.slice(0);
   }
 
   pauseUpdate (game) {

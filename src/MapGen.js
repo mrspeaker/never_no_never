@@ -64,7 +64,7 @@ export default function () {
       else if (o > 0.5 && o < 0.503) {
         gridMid[x][y] = Blocks.coal_ore.tile;
       }
-      else if (o > 0.6 && o < 0.605) {
+      else if (o > 0.6 && o < 0.606) {
         gridMid[x][y] = Blocks.stone_ore.tile;
       }
       else if (o > 0.7 && o < 0.705) {
