@@ -390,6 +390,7 @@ void main(void) {
     if (updateDay && !this.player.died) {
       this.doMobStrategy();
       this.collisionsMob();
+      this.collisionsAnimals();
       this.collisionsPickup();
       this.updateNight();
     }
@@ -426,6 +427,30 @@ void main(void) {
       const mob = mobs.getRandom();
       this.world.makePath(mob, protagonist.x, protagonist.y);
     }
+  }
+
+  collisionsAnimals () {
+    const {player, game, animals, inventory} = this;
+    animals.forEach(m => {
+      const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
+      if (dist < 32) {
+        const item = Items[inventory.holding().item];
+        const damage = item.damage;
+        if (damage) {
+          m.destroy();
+        }
+        else {
+          const angle = game.math.angleBetween(
+            player.x, player.y,
+            m.x, m.y
+          );
+          const xo = Math.sin(angle) * 40;
+          const yo = Math.cos(angle) * 40;
+          Tween.to(player, {x: player.x + xo, y: player.y + yo}, 50);
+          player.state.set("idle");
+        }
+      }
+    });
   }
 
   collisionsMob () {
