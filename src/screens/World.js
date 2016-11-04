@@ -152,7 +152,19 @@ void main(void) {
     light.blendMode = Phaser.blendModes.MULTIPLY;
     light.fixedToCamera = true;
 
-    this.inventory = new Inventory(game, ::this.player.switchTool);
+    this.inventory = new Inventory(game, tool => {
+      if (tool.item === "empty") {
+        if (this.stayte.is("driving")) {
+          this.toggleDriving();
+        }
+        return;
+      }
+      if (tool.item === "segway") {
+        this.toggleDriving("car");
+      } else {
+        this.player.switchTool(tool);
+      }
+    });
     this.player.inventory = this.inventory;
 
     if (DayTime.firstDayOnTheJob) {
@@ -168,7 +180,7 @@ void main(void) {
     this.stats.dailyHP = 0;
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
-    // this.inventory.addItem("sand", 10);
+    this.inventory.addItem("segway", 1);
 
     const title = Title(game, "bmax!", 36, 12, 12).font;
     const subtitle = Title(game, "...", 9, 4, 36, true).font;
@@ -588,7 +600,7 @@ void main(void) {
   }
 
   toggleDriving (vehicleName) {
-    if (!vehicleName && this.stayte.get() === "driving") {
+    if (!vehicleName && this.stayte.is("driving")) {
       this.stayte.set("exploring");
       this.protagonist.visible = false;
 

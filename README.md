@@ -18,10 +18,8 @@ Browse on localhost:9966
   * exit bunker anim
   * glowing floppy? make it obvious to click it.
   * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
-
 * Death screen
   * "survived for" time.
-
 * "arm" projectiles... tap once to arm, once to disarm.
 * add attack chances (not hit always).
 * knockback when attack
@@ -60,6 +58,8 @@ Browse on localhost:9966
 
 ## Bugs
 
+* crafting menu getting "backgrounded"? weird alpha.
+* times (day time) based on Date.now()! use game time.
 * knockback direction always the same (up left or down right)
 * knockback knocksback into solid tiles.
 * vehicles lose tile collisions (after crafting?) - multi vehicle?
@@ -73,3 +73,7 @@ Browse on localhost:9966
 * invalidate/recalc paths on build, destroy.
 * Errors when destroying particle emitters after screen swap
 * not auto-selecting damage tools when in vehicle
+
+---
+
+* axis of skill progression: give feedback.

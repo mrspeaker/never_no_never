@@ -150,13 +150,15 @@ class Inventory extends Phaser.Group {
   selectItem (idx, dontDeselect) {
     const deselect = this.selected === idx;
     if (dontDeselect && deselect) {
-      return;
+      return this.selected;
     }
+
     if (deselect || idx < 0 || idx > this.maxSlots) {
       this.selected = -1;
       this.ui.selected.visible = false;
-      return;
+      return this.onItemSwitch(this.emptySlot);
     }
+
     this.selected = idx;
     this.ui.selected.visible = true;
     this.ui.selected.cameraOffset.x = this.ui.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
