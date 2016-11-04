@@ -20,7 +20,6 @@ Browse on localhost:9966
   * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
 
 * Death screen
-  * showed unlocks
   * "survived for" time.
 
 * "arm" projectiles... tap once to arm, once to disarm.
@@ -44,7 +43,6 @@ Browse on localhost:9966
   * explode vehicle when leave
   * clouds float overhead: mechanic! hard to see.
 * progression
-  * floppies per day
   * store progress/stats/unlocks
   * stats on splash
   * reset unlocks for testing

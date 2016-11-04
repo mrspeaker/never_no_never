@@ -159,12 +159,13 @@ void main(void) {
       DayTime.addDayOverListener(() => {
         this.stayte.set("dayOver");
       });
+      this.stats.gameHP = 0;
     }
     else {
-      this.stats.dailyCraftUnlocks = 0;
-      this.stats.dailyHP = 0;
       this.deserialize();
     }
+    this.stats.dailyCraftUnlocks = 0;
+    this.stats.dailyHP = 0;
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
     // this.inventory.addItem("sand", 10);
@@ -361,6 +362,7 @@ void main(void) {
       break;
     case "gameOver":
       if (isFirst) {
+        this.serialize();
         this.overlays.gameOver.visible = true;
       }
       this.overlays.gameOver.update(game);
@@ -661,6 +663,7 @@ void main(void) {
     data.gameCraftUnlocks = this.stats.gameCraftUnlocks.slice(0);
     data.permanentUnlocks = this.stats.permanentUnlocks;
     data.dailyHP = this.stats.dailyHP;
+    data.gameHP = this.stats.gameHP;
   }
 
   deserialize () {
@@ -671,6 +674,7 @@ void main(void) {
     this.stats.gameCraftUnlocks = data.gameCraftUnlocks.slice(0);
     this.stats.permanentUnlocks = data.permanentUnlocks;
     this.stats.dailyHP = data.dailyHP;
+    this.stats.gameHP = data.gameHP;
   }
 
   pauseUpdate (game) {
