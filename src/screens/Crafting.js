@@ -181,10 +181,11 @@ class Crafting {
         if (idx > recipes.length - 1) {
           return;
         }
-        const {source, yields} = recipes[idx];
+        const {source, yields, name} = recipes[idx];
         const isCheat = this.world._cheat;
+        const hasRecipe = isCheat || !!data.recipes[name];
         const hasSources = isCheat || source.every(({item, amount}) => inventory.hasItem(item, amount));
-        if (hasSources) {
+        if (hasRecipe && hasSources) {
           yields.forEach(({item, amount}) => {
             const slot = inventory.addItem(item, amount);
             inventory.selectItem(slot.idx, true);

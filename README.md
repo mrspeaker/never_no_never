@@ -15,7 +15,6 @@ Browse on localhost:9966
 
 * intro explanation...
   * "start" button at base of ladder... click and player path-finds to ladder, then climbs
-  * exit bunker anim
   * glowing floppy? make it obvious to click it.
   * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
 * Death screen
@@ -65,7 +64,6 @@ Browse on localhost:9966
 * auto-tools buggy... stop working
 * auto-tools don't choose most efficient
 * dead in vehicle, vehicle still visible/usable
-* can craft before you've found recipes
 * mine from several blocks away
 * passing over unwalkable area kills close zombie pathfinding perf
 * after placing last placeable, clicking doesnt walk.
