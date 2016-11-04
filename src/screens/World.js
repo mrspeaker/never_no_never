@@ -5,6 +5,7 @@ import Controls from "../Controls";
 import Player from "../entities/Player";
 import Inventory from "../Inventory";
 import Zombie from "../entities/Zombie";
+import Cow from "../entities/Cow";
 import Floppy from "../entities/Floppy";
 import Plane from "../entities/Plane";
 import Segway from "../entities/Segway";
@@ -136,6 +137,12 @@ void main(void) {
       mobs.add(new Zombie(game, x, y, this));
     }
     this.maingroup.add(this.mobs);
+
+    const animals = this.animals = game.add.group();
+    for (let i = 0; i < 100; i++) {
+      const {x, y} = this.getMobSpawnPoint();
+      animals.add(new Cow(game, x, y, this));
+    }
 
     // TODO: all vehicles updating, all the time.
     this.car = new Segway(game, this.protagonist.x, this.protagonist.y, this.controls);
