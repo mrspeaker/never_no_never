@@ -49,7 +49,6 @@ Browse on localhost:9966
 * zombie roaming state
 * drops from mining
 * drops from zombie kills
-* add animals
 * add food
 * Move blocks and items from flyweight to actual objects
   * cellular autonoma ability

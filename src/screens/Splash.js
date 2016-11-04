@@ -28,7 +28,9 @@ class Splash extends Phaser.State {
     this.p = new Player(game, 3, 13);
     this.p.scale.set(2);
     this.p.update = () => {};
-    this.p.doAnim("walk_right");
+    //this.p.doAnim("walk_left");
+
+    this.goingToNext = false;
 
     const xo = 90;
     const yo = 100;
@@ -97,20 +99,39 @@ class Splash extends Phaser.State {
   }
 
   update (game) {
+    if (this.goingToNext) {
+      return;
+    }
+
     const {controls} = this;
     const {justPressed} = controls;
 
     controls.update();
 
     this.starts.forEach((s, i) => {
-      s.y += Math.sin(i + Date.now() / 500) * 0.1;
+      s.y += Math.sin(i + Date.now() / 300) * 0.1;
     });
 
-    if (justPressed) {
-      DayTime.reset();
-      game.state.start("World");
-    }
+    const xo = Math.sign(Math.sin(Date.now() / 500));
+    this.p.x += xo;
+    this.p.doAnim("walk_" + (xo > 0 ? "right": "left"));
 
+
+    if (justPressed) {
+      this.goingToNext = true;
+      this.p.doAnim("walk_right");
+      const tweenA = game.add.tween(this.p).to({ x: 145, y: 300 }, 1000);
+      const tweenB = game.add.tween(this.p).to({ y: -40 }, 1000, "Quart.easeOut");
+      tweenA.chain(tweenB);
+      tweenA.start();
+      tweenA.onComplete.add(() => this.p.doAnim("walk_up"), this);
+      tweenB.onComplete.add(this.next, this);
+    }
+  }
+
+  next () {
+    DayTime.reset();
+    this.game.state.start("World");
   }
 
 

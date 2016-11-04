@@ -8,6 +8,10 @@ class Controls {
   _angle = 0;
   _pitch = 0;
 
+  attack = 0;
+  sustain = 0;
+  decay = 0;
+
   constructor (game) {
     this.game = game;
     this.setActive();
