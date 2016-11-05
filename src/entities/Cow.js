@@ -63,16 +63,11 @@ class Cow extends Phaser.Sprite {
   onDie () {
     this.state.set("dying");
   }
+
   dead () {
     const {bmax} = this;
     const corpse = bmax.perma.create(this.x, this.y, "peeps");
-    corpse.frame = Math.random() < 0.5 ? 30 : 31;
-
-    const {x, y} = bmax.getMobSpawnPoint();
-    this.x = x * 32;
-    this.y = y * 32;
-    this.health.health = this.health.maxHealth;
-    bmax.world.makePath(this, x, y); // lol... damn it.
+    corpse.frame = 164;
   }
 
   update () {
@@ -86,21 +81,19 @@ class Cow extends Phaser.Sprite {
       }
       this.state.set("walking");
       break;
-    case "walking":
+    case "walking": {
       const d = this.lastDir;
-      let xo = Math.sign(Math.sin((Date.now() + this.offset) / 1000)) * 0.2;
+      const xo = Math.sign(Math.sin((Date.now() + this.offset) / 1000)) * 0.2;
       this.x += xo;
       this.lastDir = xo;
       if (d !== xo) {
         animations.play("walk_" + (xo > 0 ? "right" : "left"));
       }
       break;
+    }
     case "dying":
       if (this.state.isFirst()) {
         this.dead();
-      }
-      if (Math.random() < 0.1) {
-        this.state.set("idle");
       }
       break;
     }

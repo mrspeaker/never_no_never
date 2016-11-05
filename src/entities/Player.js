@@ -258,6 +258,11 @@ class Player extends Phaser.Sprite {
     this.state.set("idle");
   }
 
+  syncShadow () {
+    this.shadow.x = this.x;
+    this.shadow.y = this.y + 8;
+  }
+
   update () {
     const {animations} = this;
 
@@ -305,8 +310,7 @@ class Player extends Phaser.Sprite {
       this.lastDir = dir;
     }
 
-    this.shadow.x = this.x;
-    this.shadow.y = this.y + 8;
+    this.syncShadow();
   }
 
   updateMining () {

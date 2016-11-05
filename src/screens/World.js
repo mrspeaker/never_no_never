@@ -433,21 +433,27 @@ void main(void) {
     const {player, game, animals, inventory} = this;
     animals.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
-      if (dist < 32) {
+      if (dist < 60) {
         const item = Items[inventory.holding().item];
         const damage = item.damage;
         if (damage) {
-          m.destroy();
+          player.startSwinging(m);
         }
-        else {
-          const angle = game.math.angleBetween(
-            player.x, player.y,
-            m.x, m.y
-          );
-          const xo = Math.sin(angle) * 40;
-          const yo = Math.cos(angle) * 40;
-          Tween.to(player, {x: player.x + xo, y: player.y + yo}, 50);
-          player.state.set("idle");
+        if (dist < 32) {
+          if (damage) {
+            m.dead();
+            m.destroy();
+          }
+          else {
+            const angle = game.math.angleBetween(
+              player.x, player.y,
+              m.x, m.y
+            );
+            const xo = Math.sin(angle) * 40;
+            const yo = Math.cos(angle) * 40;
+            Tween.to(player, {x: player.x + xo, y: player.y + yo}, 50);
+            player.state.set("idle");
+          }
         }
       }
     });

@@ -19,6 +19,7 @@ Browse on localhost:9966
   * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
 * Death screen
   * "survived for" time.
+* Treat all entities the same... dispatch behaviour
 * "arm" projectiles... tap once to arm, once to disarm.
 * add attack chances (not hit always).
 * knockback when attack
@@ -57,11 +58,11 @@ Browse on localhost:9966
 ## Bugs
 
 * crafting menu getting "backgrounded"? weird alpha.
+* vehicles lose tile collisions (after crafting?) - multi vehicle?
 * times (day time) based on Date.now()! use game time.
 * knockback direction always the same (up left or down right)
 * knockback knocksback into solid tiles.
-* vehicles lose tile collisions (after crafting?) - multi vehicle?
-* auto-tools buggy... stop working
+* auto-tools buggy... stops working
 * auto-tools don't choose most efficient
 * dead in vehicle, vehicle still visible/usable
 * mine from several blocks away

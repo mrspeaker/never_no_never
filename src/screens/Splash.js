@@ -27,8 +27,11 @@ class Splash extends Phaser.State {
     game.add.sprite(0, 0, "splash");
     this.p = new Player(game, 3, 13);
     this.p.scale.set(2);
+    this.p.shadow.scale.set(2);
     this.p.update = () => {};
-    //this.p.doAnim("walk_left");
+
+    game.add.sprite(32 * 4, 0, "splash-cover");
+    game.add.sprite(32 * 4, 2, "splash-cover");
 
     this.goingToNext = false;
 
@@ -99,6 +102,8 @@ class Splash extends Phaser.State {
   }
 
   update (game) {
+
+    this.p.syncShadow();
     if (this.goingToNext) {
       return;
     }
