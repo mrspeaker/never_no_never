@@ -3,6 +3,7 @@ import Title from "../Title";
 import Items from "../Items";
 import recipes from "../Recipes";
 import State from "../State";
+import Floppy from "../entities/Floppy";
 
 class Info extends Phaser.Group {
 
@@ -14,12 +15,16 @@ class Info extends Phaser.Group {
 
     this.state = new State("hidden");
 
-    const bg = this.add(game.add.sprite(0, 0, "crafting"));
-    bg.fixedToCamera = true;
+    this.bg = this.add(game.add.sprite(0, 0, "crafting"));
+    this.bg.fixedToCamera = true;
+    this.bg.alpha = 0.6;
 
-    const t = this.c = Title(game, "craft", 36, 80, 70, true);
-    this.add(t.img);
-    this.add(Title(game, "unlock!", 36, 100, 110, true).img);
+    this.t1 = Title(game, "craft", 36, 80, 70, true);
+    this.add(this.t1.img);
+    this.t2 = Title(game, "unlock!", 36, 100, 110, true);
+    this.add(this.t2.img);
+    this.t1.img.visible = false;
+    this.t2.img.visible = false;
 
     this.decrypt = Title(game, "", 9, 80, 180, true);
     this.add(this.decrypt.img);
@@ -31,6 +36,9 @@ class Info extends Phaser.Group {
   }
 
   hide () {
+    if (Date.now() - this.shownAt < 1000) {
+      return;
+    }
     this.visible = false;
     this.game.input.onDown.remove(this.hide, this);
     this.game.paused = false;
@@ -39,10 +47,11 @@ class Info extends Phaser.Group {
 
   show (pickup) {
     const {game} = this;
+
     this.pickup = pickup;
     this.deets.removeAll();
     this.visible = true;
-    this.state.set("shown");
+    this.state.set(pickup === "intro" ? "intro" : "shown");
 
     //this.game.camera.flash(0xffffff, 300);
     game.time.events.add(Phaser.Timer.SECOND * 0.3, () => {
@@ -58,10 +67,10 @@ class Info extends Phaser.Group {
     const recipe = recipes.find(({name}) => name === pickup);
     const {name, source, yields, description} = recipe;
 
-    deets.add(Title(game, name, 9, 80, 250, true).img);
 
-    let xo = 80;
-    let yo = 200;
+    const oxo = 50;
+    const yo = 200;
+    let xo = oxo;
 
     const g = game.add.group();
     deets.add(g);
@@ -87,12 +96,15 @@ class Info extends Phaser.Group {
       xo += 32;
     });
 
+    deets.add(Title(game, name + " added to", 9, oxo, yo + 50, true).img);
+    deets.add(Title(game, "crafting database.", 9, oxo, yo + 70, true).img);
+
     description && description.split("\n")
       .map(d => d.trim())
       .filter(d => d !== "")
       .forEach((d, i) => {
         if (d === "-") d = " ";
-        g.add(Title(game, d, 9, 80, 320 + (i * 16), true).img);
+        g.add(Title(game, d, 9, oxo, yo + 120 + (i * 16), true).img);
       });
   }
 
@@ -102,8 +114,34 @@ class Info extends Phaser.Group {
     const first = state.isFirst();
 
     switch (cur) {
+    case "intro":
+      if (first) {
+        this.shownAt = Date.now();
+        const flop = this.flop1 = new Floppy(game, 120, 270);
+        flop.fixedToCamera = true;
+        flop.scale.set(1.5);
+        const flop2 = this.flop2 = new Floppy(game, 180, 270);
+        flop2.fixedToCamera = true;
+        flop2.scale.set(1.5);
+        flop.tint = 0x666666;
+        flop2.tint = 0x666666;
+        this.deets.add(flop);
+        this.deets.add(flop2);
+        this.deets.add(Title(game, "find info.", 36, 20, 120, true).img);
+        this.deets.add(Title(game, "in a world were all knowledge has been", 9, 20, 170, true).img);
+        this.deets.add(Title(game, "lost... only digital scraps remain.", 9, 20, 190, true).img);
+        this.deets.add(Title(game, "Find them - they hold the keys to", 9, 20, 210, true).img);
+        this.deets.add(Title(game, "survival.", 9, 20, 230, true).img);
+      }
+      this.flop1.y += Math.sin(Date.now() / 500) * 0.5;
+      this.flop2.y += Math.sin((Date.now() + 500) / 500) * 0.5;
+      break;
     case "shown":
       if (first) {
+        this.t1.img.visible = true;
+        this.t2.img.visible = true;
+
+        this.shownAt = Date.now();
         state.set("calculating");
       }
       break;

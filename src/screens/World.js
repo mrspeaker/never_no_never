@@ -175,19 +175,19 @@ void main(void) {
     this.player.inventory = this.inventory;
 
     if (DayTime.firstDayOnTheJob) {
+      this.deserialize(false);
       DayTime.addDayOverListener(() => {
         this.stayte.set("dayOver");
       });
       this.stats.gameHP = 0;
-    }
-    else {
-      this.deserialize();
+    } else {
+      this.deserialize(true);
     }
     this.stats.dailyCraftUnlocks = 0;
     this.stats.dailyHP = 0;
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
-    this.inventory.addItem("segway", 1);
+    // this.inventory.addItem("segway", 1);
 
     const title = Title(game, "bmax!", 36, 12, 12).font;
     const subtitle = Title(game, "...", 9, 4, 36, true).font;
@@ -211,8 +211,6 @@ void main(void) {
     this._cheat = false;
 
     this.info = new Info(game);
-
-    this.stayte.set("exploring");
 
     // Filters stop camera shake from working... need to pass in shake offset to shader
     // this.maingroup.filters = [filter];
@@ -357,10 +355,32 @@ void main(void) {
 
     switch (this.stayte.get()) {
     case "getready":
-      this.stayte.set("exploring");
+      if (!this.stats.lifetimeHP) {
+        this.haveEverCrafted = false;
+        this.stayte.set("pre-intro");
+      }
+      else {
+        this.stayte.set("exploring");
+      }
+      break;
+    case "pre-intro":
+      if (Date.now() - this.stayte.time > 2000) {
+        this.stayte.set("intro");
+      }
+      break;
+    case "intro":
+      if (isFirst) {
+        this.info.show("intro");
+      }
+      else {
+        this.stayte.set("exploring");
+      }
       break;
     case "exploring":
       this.updateExploring(game);
+      if (!this.haveEverCrafted) {
+        this.inventory.pda.scale.set(0.5 + Math.abs(Math.sin(Date.now() /300)) * 0.5);
+      }
       updateDay = true;
       break;
     case "driving":
@@ -369,6 +389,8 @@ void main(void) {
       break;
     case "crafting":
       if (isFirst) {
+        this.haveEverCrafted = true;
+        this.inventory.pda.scale.set(1);
         this.overlays.crafting.visible = true;
       }
       this.overlays.crafting.update(game);
@@ -714,10 +736,11 @@ void main(void) {
     data.permanentUnlocks = this.stats.permanentUnlocks;
     data.dailyHP = this.stats.dailyHP;
     data.gameHP = this.stats.gameHP;
+    //data.lifetimeHP = this.stats.lifetimeHP; um, why comment?...
   }
 
-  deserialize () {
-    if (data.inventory) {
+  deserialize (doInventory = true) {
+    if (doInventory && data.inventory) {
       this.inventory.deserialize(data.inventory);
     }
     this.stats.dailyCraftUnlocks = data.dailyCraftUnlocks;
@@ -725,6 +748,7 @@ void main(void) {
     this.stats.permanentUnlocks = data.permanentUnlocks;
     this.stats.dailyHP = data.dailyHP;
     this.stats.gameHP = data.gameHP;
+    this.stats.lifetimeHP = data.lifetimeHP;
   }
 
   pauseUpdate (game) {

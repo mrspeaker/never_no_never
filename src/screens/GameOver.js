@@ -23,15 +23,6 @@ class GameOver {
     craft.fixedToCamera = true;
     craft.frame = 21;
 
-    const tmpReset = this.tmpReset = group.create(game.width - 140, game.height - 60, "craft-tmp");
-    tmpReset.frame = 2;
-    tmpReset.fixedToCamera = true;
-    tmpReset.inputEnabled = true;
-    tmpReset.events.onInputDown.add(() => {
-      this.visible = false;
-      this.world.reset();
-    }, this);
-
     this.redraw();
 
     this.visible = false;
@@ -43,10 +34,8 @@ class GameOver {
 
   set visible (visible) {
     if (visible) {
-      console.log(data.gameHP, data.dailyHP, data.lifetimeHP);
       data.gameHP += data.dailyHP;
       data.lifetimeHP += data.gameHP;
-      console.log(data.gameHP, data.dailyHP, data.lifetimeHP);
       this.redraw();
     }
     this.group.visible = visible;

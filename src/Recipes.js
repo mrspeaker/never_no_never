@@ -12,10 +12,10 @@ const Recipes = [{
   source: [{item: "wood", amount: 2}],
   yields: [{item: "wood_sword", amount: 4}],
   description: `
-    a wood sword cuts like
-    a knife.
+    a pointy stick. It can be formed
+    by sharpening two bits of wood.
     -
-    Cuts like a wooden knife.`
+    better than nothing, i suppose.`
 },{
   name: "stone_pick",
   source: [{item: "wood", amount: 1}, {item: "stone", amount: 1}],
@@ -30,24 +30,20 @@ const Recipes = [{
   source: [{item: "wood", amount: 1}, {item: "stone", amount: 1}],
   yields: [{item: "stone_sword", amount: 5}],
   description: `
-    upgrade! stone swords
-    are stronger and better.
+    a stone sword cuts like
+    a knife.
     -
     Cuts like a stone knife.`
 },{
-  name: "iron_pick",
-  source: [{item: "wood", amount: 1}, {item: "iron", amount: 1}],
-  yields: [{item: "iron_pick", amount: 6}],
+  name: "fireworks",
+  source: [{item: "coal", amount: 1}, {item: "saltpeter", amount: 1}],
+  yields: [{item: "fireworks", amount: 5}],
   description: `
-    Iron is like the best.
-    Iron picks are super strong`
-},{
-  name: "iron_sword",
-  source: [{item: "wood", amount: 1}, {item: "iron", amount: 1}],
-  yields: [{item: "iron_sword", amount: 6}],
-  description: `
-    Iron swords are not
-    to be trifled with.`
+    firepower! fireworks are
+    pretty, but also dangerous
+    -
+    do not aim directly
+    at anybody.`
 },{
   name: "sand",
   source: [{item: "coal", amount: 1}],
@@ -63,16 +59,6 @@ const Recipes = [{
 
   build a wall`
 },{
-  name: "fireworks",
-  source: [{item: "coal", amount: 1}, {item: "saltpeter", amount: 1}],
-  yields: [{item: "fireworks", amount: 5}],
-  description: `
-    firepower! fireworks are
-    pretty, but also dangerous
-    -
-    do not aim directly
-    at anybody.`
-},{
   name: "tire",
   source: [{item: "rubber", amount: 2}],
   yields: [{item: "tire", amount: 1}],
@@ -83,8 +69,24 @@ const Recipes = [{
   source: [{item: "tire", amount: 2}, {item: "iron", amount: 2}],
   yields: [{item: "segway", amount: 1}],
   description: `the segway!
-    now you're travelling
-    with style.`
+    now you're travelling with style.
+    -
+    hold to accelerate.
+    left or right to turn.`
+},{
+  name: "iron_pick",
+  source: [{item: "wood", amount: 1}, {item: "iron", amount: 1}],
+  yields: [{item: "iron_pick", amount: 6}],
+  description: `
+    Iron is like the best.
+    Iron picks are super strong`
+},{
+  name: "iron_sword",
+  source: [{item: "wood", amount: 1}, {item: "iron", amount: 1}],
+  yields: [{item: "iron_sword", amount: 6}],
+  description: `
+    Iron swords are not
+    to be trifled with.`
 }];
 
 export default Recipes;

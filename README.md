@@ -62,6 +62,7 @@ Browse on localhost:9966
 * times (day time) based on Date.now()! use game time.
 * knockback direction always the same (up left or down right)
 * knockback knocksback into solid tiles.
+* knockback knocksback out of screen
 * auto-tools buggy... stops working
 * auto-tools don't choose most efficient
 * dead in vehicle, vehicle still visible/usable
