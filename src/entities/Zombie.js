@@ -8,6 +8,7 @@ import Particles from "../Particles";
 
 class Zombie extends Phaser.Sprite {
 
+  defaultWalkSpeed = 1.5;
   walkSpeed = 1.5;
   lastAttack = Date.now();
 
@@ -68,6 +69,7 @@ class Zombie extends Phaser.Sprite {
   onDie () {
     this.state.set("dying");
   }
+
   dead () {
     const {bmax} = this;
     const corpse = bmax.perma.create(this.x, this.y, "peeps");

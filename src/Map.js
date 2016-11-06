@@ -177,7 +177,7 @@ class Map {
     return {x, y};
   }
 
-  findEmptySpotAtCenter () {
+  findEmptySpotAtCenter (area = 4) {
     let y = null;
     let x = null;
     let spot = -1;
@@ -185,7 +185,6 @@ class Map {
     let midX = this.map.width / 2 | 0;
     let midY = this.map.height / 2 | 0;
 
-    let area = 4;
     let halfArea = area / 2;
 
     while (spot !== 0) {

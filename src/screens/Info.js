@@ -157,7 +157,7 @@ class Info extends Phaser.Group {
       }
       break;
     case "calculating":
-      if (Math.random() < 0.01) {
+      if (Date.now() - state.time > 1000 && (Math.random() < 0.01 || Date.now() - state.time > 5000)) {
         state.set("ready");
       }
       this.decrypt.text = "decrypting " +

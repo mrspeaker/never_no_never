@@ -146,9 +146,9 @@ class World extends Phaser.State {
 
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
-    this.inventory.addItem("wood", 3);
-    this.inventory.addItem("wings", 1);
-    this.inventory.addItem("segway", 1);
+    //this.inventory.addItem("wood", 3);
+    //this.inventory.addItem("wings", 1);
+    //this.inventory.addItem("segway", 1);
 
     this.HUD = new HUD(game);
 
@@ -290,6 +290,27 @@ class World extends Phaser.State {
 
     switch (stayte.get()) {
     case "getready":
+      if (isFirst && !this.haveEverFoundRecipe) {
+        // Positin first ever floppy in view.
+        const flops = this.floppies.children.map(({x, y}, i) => ({x, y, i})).sort((a, b) => {
+          const aDist = Phaser.Math.distance(a.x * 32, a.y * 32, protagonist.x, protagonist.y);
+          const bDist = Phaser.Math.distance(b.x * 32, b.y * 32, protagonist.x, protagonist.y);
+          return aDist - bDist;
+        });
+        const flop = flops[0];
+        let count = 0;
+        let goodDist = false;
+        while (count++ < 100 && !goodDist) {
+          let {x, y} = this.map.findEmptySpotAtCenter(10);
+          const dist = Phaser.Math.distance(x * 32, y * 32, protagonist.x, protagonist.y);
+          if (dist > 100 && dist < 180) {
+            goodDist = true;
+            this.floppies.children[flop.i].x = x * 32;
+            this.floppies.children[flop.i].y = y * 32;
+          }
+        }
+      }
+
       if (!this.stats.lifetimeHP) {
         this.haveEverCrafted = false;
         stayte.set("pre-intro");
@@ -429,7 +450,7 @@ class World extends Phaser.State {
   }
 
   collisionsMob () {
-    const {mobs, inventory, protagonist} = this;
+    const {mobs, inventory, protagonist, player} = this;
 
     if (this._cheat) {
       return;
@@ -444,35 +465,43 @@ class World extends Phaser.State {
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, protagonist.x, protagonist.y);
 
-      if (dist < 200) {
-        m.isClose = true;
+      m.isClose = false;
+      if (dist < 400) {
 
-        // TODO: check player on walkable tile, else go to nearest walkable
-        // TODO: if line of sight, run at player.
-        this.map.makePath(m, protagonist.x, protagonist.y);
+        m.walkSpeed = Math.min(4.5, m.walkSpeed + 0.003);
+        if (dist < 200) {
+          m.isClose = true;
+          const path = player.pathWalker.path;
+          const skateToPuck = path.length > 2;
+          const target = skateToPuck ? path[2] : player;
+          const multiplier = skateToPuck ? 32 : 1;
+          // TODO: check player on walkable tile, else go to nearest walkable
+          // TODO: if line of sight, run at player.
+          this.map.makePath(m, target.x * multiplier, target.y * multiplier);
 
-        // Should we shoot?
-        // todo: lol, shooting is player, not vehicle
-        if (proj && this.player.shoot(m)) {
-          inventory.useItem(proj.item);
-        }
-
-        if (dist < 60) {
-          someoneClose = true;
-
-          this.player.someoneClose(m);
-          // TODO: better "stop mining" check. Particles should be triggered by mining!
-          this.particles.emitting = false;
-
-          if (damage || this.inventory.autoStab()) {
-            protagonist.startSwinging && protagonist.startSwinging(m);
+          // Should we shoot?
+          // todo: lol, shooting is player, not vehicle
+          if (proj && this.player.shoot(m)) {
+            inventory.useItem(proj.item);
           }
-          if (dist < 32) {
-            this.collideWithMob(m);
+
+          if (dist < 60) {
+            someoneClose = true;
+
+            this.player.someoneClose(m);
+            // TODO: better "stop mining" check. Particles should be triggered by mining!
+            this.particles.emitting = false;
+
+            if (damage || this.inventory.autoStab()) {
+              protagonist.startSwinging && protagonist.startSwinging(m);
+            }
+            if (dist < 32) {
+              this.collideWithMob(m);
+            }
           }
         }
       } else {
-        m.isClose = false;
+        m.walkSpeed = Math.max(m.defaultWalkSpeed, m.walkSpeed - 0.1);
       }
 
     });
