@@ -170,6 +170,20 @@ class Map {
     return {x, y};
   }
 
+  placeBlockAt (block, worldX, worldY) {
+    const {base, mid} = this.getTileXY(worldX, worldY);
+    if (mid.name === "clear") {
+      if (block === Blocks.sand.tile) {
+        this.setTileXY(block, worldX, worldY, 0);
+      }
+      else if (base.name === "sand") {
+        this.setTileXY(block, worldX, worldY);
+      }
+      return true;
+    }
+    return false;
+  }
+
 }
 
 export default Map;

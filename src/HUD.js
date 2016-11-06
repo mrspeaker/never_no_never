@@ -1,4 +1,5 @@
 const Phaser = window.Phaser;
+import Title from "./Title";
 
 class HUD extends Phaser.Group {
 
@@ -18,6 +19,8 @@ class HUD extends Phaser.Group {
       if (i > 2) h.frame = 18;
       h.fixedToCamera = true;
     }
+
+    this.subtitle = Title(game, "...", 9, 4, 36, true).font;
 
   }
 

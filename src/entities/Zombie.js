@@ -130,8 +130,7 @@ class Zombie extends Phaser.Sprite {
   }
 
   goRando () {
-    //console.log("gorand")
-    //this.bmax.goRandoRadius(this, 10);
+    
   }
 
   update () {

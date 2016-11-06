@@ -13,16 +13,14 @@ import Blocks from "../Blocks";
 import Items from "../Items";
 import Crafting from "./Crafting";
 import GameOver from "./GameOver";
-import Title from "../Title";
 import HUD from "../HUD";
 import Tween from "../Tween";
 import DayTime from "../DayTime";
 import Particles from "../Particles";
 import Info from "./Info";
-
 import State from "../State";
-
 import data from "../data";
+import shaders from "../shaders";
 
 class World extends Phaser.State {
 
@@ -51,44 +49,17 @@ class World extends Phaser.State {
 
     game.stage.backgroundColor = "#343436";
 
-    const fragmentSrc = `
-precision mediump float;
-
-varying vec2 vTextureCoord;
-uniform sampler2D uSampler;
-uniform float time;
-uniform vec2 pos;
-
-void main(void) {
-
-  vec4 texColor = texture2D(uSampler, vTextureCoord);
-  float dist = 1.0 - distance(texColor.xz, vec2(0.0, 1.0));
-  texColor *= vec4(abs(sin(vTextureCoord.y + time / 30.0)), 1.0, abs(cos(pos.x / 1000.0)), 1.0);
-  texColor.z *= sin((pos.y - vTextureCoord.y) + (pos.x - vTextureCoord.x) * 10.0  + time * 10.0) * dist; //vec4(0.0, 1.0, dist, 1.0);
-  gl_FragColor = texColor;
-
-}
-`;
-
-    const customUniforms = {
-      pos: { type: "2f", value: null },
-    };
-
-    const filter = this.filter = new Phaser.Filter(game, customUniforms, fragmentSrc.split("\n"));
+    this.filter = new Phaser.Filter(game, shaders.green.uniforms, shaders.green.frag.split("\n"));
 
     // game.stage.disableVisibilityChange = true;
     game.physics.startSystem(Phaser.Physics.ARCADE);
-
     this.camera.flash(0x000000, 2000);
 
     DayTime.wakeUp();
 
     Tween.game = game;
-
     this.maingroup = game.add.group();
-
     this.world = new Map(game);
-
     this.groundTarget = game.add.sprite(0, 0, "icons");
     this.groundTarget.frame = 31;
 
@@ -154,24 +125,12 @@ void main(void) {
     this.plane.visible = false;
     this.maingroup.add(this.plane);
 
-    this.night = this.game.add.bitmapData(this.game.width, this.game.height);
+    /*this.night = this.game.add.bitmapData(this.game.width, this.game.height);
     const light = this.game.add.image(0, 0, this.night);
     light.blendMode = Phaser.blendModes.MULTIPLY;
-    light.fixedToCamera = true;
+    light.fixedToCamera = true;*/
 
-    this.inventory = new Inventory(game, tool => {
-      if (tool.item === "empty") {
-        if (this.stayte.is("driving")) {
-          this.toggleDriving();
-        }
-        return;
-      }
-      if (tool.item === "segway") {
-        this.toggleDriving("car");
-      } else {
-        this.player.switchTool(tool);
-      }
-    });
+    this.inventory = new Inventory(game, this.switchedTool.bind(this));
     this.player.inventory = this.inventory;
 
     if (DayTime.firstDayOnTheJob) {
@@ -189,19 +148,12 @@ void main(void) {
     // this.inventory.addItem("wood_sword", 10);
     // this.inventory.addItem("segway", 1);
 
-    const title = Title(game, "bmax!", 36, 12, 12).font;
-    const subtitle = Title(game, "...", 9, 4, 36, true).font;
-
     this.HUD = new HUD(game);
 
     this.overlays = {
       crafting: new Crafting(game, this),
-      gameOver: new GameOver(game, this)
-    };
-
-    this.ui = {
-      title,
-      subtitle,
+      gameOver: new GameOver(game, this),
+      info: new Info(game)
     };
 
     game.camera.focusOn(this.protagonist);
@@ -210,12 +162,24 @@ void main(void) {
 
     this._cheat = false;
 
-    this.info = new Info(game);
-
     // Filters stop camera shake from working... need to pass in shake offset to shader
     // this.maingroup.filters = [filter];
     // this.toggleDriving("plane");
 
+  }
+
+  switchedTool (tool) {
+    if (tool.item === "empty") {
+      if (this.stayte.is("driving")) {
+        this.toggleDriving();
+      }
+      return;
+    }
+    if (tool.item === "segway") {
+      this.toggleDriving("car");
+    } else {
+      this.player.switchTool(tool);
+    }
   }
 
   getMobSpawnPoint (CLOSE_PIXELS = 400) {
@@ -262,7 +226,7 @@ void main(void) {
   addHP (amount) {
     if (!amount) return;
     this.stats.dailyHP += amount;
-    this.ui.subtitle.text = `HP: ${this.stats.dailyHP}`;
+    this.HUD.subtitle.text = `HP: ${this.stats.dailyHP}`;
   }
 
   toggleCheat () {
@@ -320,12 +284,6 @@ void main(void) {
     }
   }
 
-  goRandoRadius (e, radius) {
-    // Figure out radious thign
-    const {x, y} = this.world.findEmptySpot();
-    this.world.makePath(e, x, y);
-  }
-
   killZombie () {
     const {player, inventory} = this;
     const holding = inventory.holding();
@@ -335,7 +293,7 @@ void main(void) {
   }
 
   update (game) {
-    const {protagonist, cameraTarget, controls} = this;
+    const {protagonist, cameraTarget, controls, stayte} = this;
 
     controls.update();
 
@@ -353,27 +311,27 @@ void main(void) {
     let updateDay = false;
     const isFirst = this.stayte.isFirst();
 
-    switch (this.stayte.get()) {
+    switch (stayte.get()) {
     case "getready":
       if (!this.stats.lifetimeHP) {
         this.haveEverCrafted = false;
-        this.stayte.set("pre-intro");
+        stayte.set("pre-intro");
       }
       else {
-        this.stayte.set("exploring");
+        stayte.set("exploring");
       }
       break;
     case "pre-intro":
-      if (Date.now() - this.stayte.time > 2000) {
-        this.stayte.set("intro");
+      if (Date.now() - stayte.time > 2000) {
+        stayte.set("intro");
       }
       break;
     case "intro":
       if (isFirst) {
-        this.info.show("intro");
+        this.overlays.info.show("intro");
       }
       else {
-        this.stayte.set("exploring");
+        stayte.set("exploring");
       }
       break;
     case "exploring":
@@ -419,7 +377,7 @@ void main(void) {
   }
 
   updateNight () {
-    const {night, protagonist} = this;
+    /*const {night, protagonist} = this;
 
     const tx = protagonist.x + 16;
     const ty = protagonist.y + 16;
@@ -440,6 +398,7 @@ void main(void) {
     night.context.fill();
 
     night.dirty = true;
+    */
   }
 
   doMobStrategy () {
@@ -482,19 +441,17 @@ void main(void) {
   }
 
   collisionsMob () {
-    const {mobs, inventory} = this;
+    const {mobs, inventory, protagonist} = this;
 
     if (this._cheat || this.player.died) {
       return;
     }
 
-    const protagonist = this.protagonist;
-
     let someoneClose = false;
 
     const item = Items[inventory.holding().item];
     const damage = item.damage;
-    const proj = this.inventory.projectiles();
+    const proj = inventory.projectiles();
 
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, protagonist.x, protagonist.y);
@@ -507,7 +464,7 @@ void main(void) {
         // Should we shoot?
         // todo: lol, shooting is player, not vehicle
         if (proj && this.player.shoot(m)) {
-          this.inventory.useItem(proj.item);
+          inventory.useItem(proj.item);
         }
 
         if (dist < 60) {
@@ -597,11 +554,11 @@ void main(void) {
       un.forEach(u => {
         data.recipes[u] = true;
       });
-      this.ui.subtitle.text = un.join(", ");
+      this.HUD.subtitle.text = un.join(", ");
       break;
     }
     this.stats.gameCraftUnlocks.push(...un);
-    this.info.show(un[0]);
+    this.overlays.info.show(un[0]);
   }
 
   walkToThenAct (worldX, worldY) {
@@ -621,20 +578,6 @@ void main(void) {
     );
   }
 
-  placeBlockAt (block, worldX, worldY) {
-    const {base, mid} = this.world.getTileXY(worldX, worldY);
-    if (mid.name === "clear") {
-      if (block === Blocks.sand.tile) {
-        this.world.setTileXY(block, worldX, worldY, 0);
-      }
-      else if (base.name === "sand") {
-        this.world.setTileXY(block, worldX, worldY);
-      }
-      return true;
-    }
-    return false;
-  }
-
   updateExploring (game) {
     const {controls, inventory} = this;
     const {justPressed, x, y, worldX, worldY} = controls;
@@ -652,7 +595,7 @@ void main(void) {
       this.player.handleClick(
         inventory.holding(),
         this.walkToThenAct.bind(this, worldX, worldY),
-        (block) => this.placeBlockAt(block, worldX, worldY)
+        (block) => this.world.placeBlockAt(block, worldX, worldY)
       );
 
     }
@@ -753,8 +696,8 @@ void main(void) {
 
   pauseUpdate (game) {
     super.pauseUpdate(game);
-    if (this.info.visible) {
-      this.info.doUpdate(game);
+    if (this.overlays.info.visible) {
+      this.overlays.info.doUpdate(game);
     }
   }
 

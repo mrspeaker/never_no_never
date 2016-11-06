@@ -6,5 +6,5 @@ export default {
   gameCraftUnlocks: [],
   dailyCraftUnlocks: 0,
   recipes: {
-  },
+  }
 };
