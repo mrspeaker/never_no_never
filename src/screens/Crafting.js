@@ -7,7 +7,7 @@ import Floppy from "../entities/Floppy";
 
 class Crafting {
 
-  recipeXo = 20;
+  recipeXo = 30;
   recipeYo = 80;
   recipeLineSpacing = 55;
   columnWidth = 180;
@@ -21,6 +21,9 @@ class Crafting {
 
     const bg = group.create(0, 0, "crafting");
     bg.fixedToCamera = true;
+
+    this.pda = group.add(game.add.sprite(-6, 0, "pda"));
+    this.pda.fixedToCamera = true;
 
     group.add(icons);
     // const mask = game.add.graphics(0, 0);
@@ -150,9 +153,10 @@ class Crafting {
       flop.fixedToCamera = true;
       flop.scale.set(3);
       icons.add(flop);
-      icons.add(Title(game, "error.", 36, 50, 120, true).img);
-      icons.add(Title(game, "no knowledge found in database.", 9, 50, 320, true).img);
-      icons.add(Title(game, "seek digital information.", 9, 50, 340, true).img);
+      icons.add(Title(game, "error.", 36, 60, 120, true).img);
+      icons.add(Title(game, "no knowledge found in", 9, 60, 320, true).img);
+      icons.add(Title(game, "database.", 9, 60, 340, true).img);
+      icons.add(Title(game, "seek digital information.", 9, 60, 380, true).img);
     }
   }
 

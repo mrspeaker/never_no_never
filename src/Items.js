@@ -20,4 +20,5 @@ export default {
 
   "tire": { name: "tire", icon: 16 },
   "segway": { name: "segway", icon: 17, rideable: true, placeable: true },
+  "wings": { name: "wings", icon: 27, rideable: true, placeable: true },
 };

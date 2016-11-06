@@ -76,6 +76,9 @@ class Inventory extends Phaser.Group {
   shooty = null;
   diggy = null;
 
+  xo = 40;
+  yo = 28;
+
   constructor (game, onItemSwitch) {
     super(game);
     game.add.existing(this);
@@ -86,8 +89,8 @@ class Inventory extends Phaser.Group {
     this.emptySlot.item = "empty";
 
     const box = this.create(
-      game.width / 2 - 144,
-      game.height - 100, "inventory");
+      0,
+      game.height - 122, "inventory");
     box.fixedToCamera = true;
     box.inputEnabled = true;
     box.events.onInputDown.add(this.onClick, this);
@@ -98,8 +101,8 @@ class Inventory extends Phaser.Group {
     this.slots = Array
       .from(new Array(this.maxSlots), (_, i) => {
         var s = new Slot(game, i);
-        s.x = box.x + ((i % this.slotsPerRow) * this.slotTileW) + 6;
-        s.y = box.y + ((i / this.slotsPerRow | 0) * this.slotTileH) + 8;
+        s.x = box.x + this.xo + ((i % this.slotsPerRow) * this.slotTileW) + 6;
+        s.y = box.y + this.yo + ((i / this.slotsPerRow | 0) * this.slotTileH) + 8;
         return s;
       })
       .map(s => this.add(s));
@@ -142,8 +145,8 @@ class Inventory extends Phaser.Group {
   }
 
   onClick (box, click) {
-    const x = (click.x - box.cameraOffset.x) / this.slotTileW | 0;
-    const y = (click.y - box.cameraOffset.y) / this.slotTileH | 0;
+    const x = (click.x - box.cameraOffset.x - this.xo) / this.slotTileW | 0;
+    const y = (click.y - box.cameraOffset.y - this.yo) / this.slotTileH | 0;
     this.selectItem(y * this.slotsPerRow + x);
   }
 
@@ -161,8 +164,8 @@ class Inventory extends Phaser.Group {
 
     this.selected = idx;
     this.ui.selected.visible = true;
-    this.ui.selected.cameraOffset.x = this.ui.box.cameraOffset.x + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
-    this.ui.selected.cameraOffset.y = this.ui.box.cameraOffset.y + ((idx / this.slotsPerRow | 0) * this.slotTileH);
+    this.ui.selected.cameraOffset.x = this.ui.box.cameraOffset.x + this.xo + ((idx % this.slotsPerRow) * this.slotTileW) - 4;
+    this.ui.selected.cameraOffset.y = this.ui.box.cameraOffset.y + this.yo + ((idx / this.slotsPerRow | 0) * this.slotTileH);
 
     this.onItemSwitch(this.holding());
   }

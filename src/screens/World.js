@@ -112,6 +112,7 @@ class World extends Phaser.State {
       const {x, y} = this.map.findEmptySpotFurtherThan(this.protagonist, 150);
       animals.add(new Cow(game, x, y, this));
     }
+    this.maingroup.add(this.animals);
 
     // TODO: all vehicles updating, all the time.
     this.segway = new Segway(game, this.protagonist.x, this.protagonist.y, this.controls);
@@ -142,9 +143,12 @@ class World extends Phaser.State {
     }
     this.stats.dailyCraftUnlocks = 0;
     this.stats.dailyHP = 0;
+    
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
-    // this.inventory.addItem("segway", 1);
+    this.inventory.addItem("wood", 3);
+    this.inventory.addItem("wings", 1);
+    this.inventory.addItem("segway", 1);
 
     this.HUD = new HUD(game);
 
@@ -169,8 +173,8 @@ class World extends Phaser.State {
       }
       return;
     }
-    if (tool.item === "segway") {
-      this.toggleDriving("segway");
+    if (tool.item === "segway" || tool.item === "wings") {
+      this.toggleDriving(tool.item === "segway" ? "segway" : "plane");
     } else {
       this.player.switchTool(tool);
     }
@@ -508,6 +512,7 @@ class World extends Phaser.State {
 
   unlockRecipe () {
     const unlocks = [
+      ["wings"],
       ["wood_sword"],
       ["wood_pick"],
       ["stone_pick"],
@@ -603,7 +608,7 @@ class World extends Phaser.State {
   }
 
   updateDriving (game) {
-    const {world, player, protagonist} = this;
+    const {map, player, protagonist} = this;
     const vehicle = protagonist;
     // TODO: just so shoots from correct pos.
     player.x = vehicle.x;
@@ -621,7 +626,7 @@ class World extends Phaser.State {
       (p, tile) => {
         const block = Blocks.getByTileId(tile.index);
 
-        world.setTile(
+        map.setTile(
           tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile : Blocks.clear.tile,
           tile.x, tile.y);
 

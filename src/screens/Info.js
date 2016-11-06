@@ -19,9 +19,14 @@ class Info extends Phaser.Group {
     this.bg.fixedToCamera = true;
     this.bg.alpha = 0.6;
 
-    this.t1 = Title(game, "craft", 36, 80, 70, true);
+    //this.dialog = this.add(game.add.sprite(24, 64, "dialog"));
+    //this.dialog.fixedToCamera = true;
+    this.pda = this.add(game.add.sprite(-6, 0, "pda"));
+    this.pda.fixedToCamera = true;
+
+    this.t1 = Title(game, "craft", 36, 60, 110, true);
     this.add(this.t1.img);
-    this.t2 = Title(game, "unlock!", 36, 100, 110, true);
+    this.t2 = Title(game, "unlock!", 36, 74, 140, true);
     this.add(this.t2.img);
     this.t1.img.visible = false;
     this.t2.img.visible = false;
@@ -68,7 +73,7 @@ class Info extends Phaser.Group {
     const {name, source, yields, description} = recipe;
 
 
-    const oxo = 50;
+    const oxo = 60;
     const yo = 200;
     let xo = oxo;
 
@@ -127,11 +132,17 @@ class Info extends Phaser.Group {
         flop2.tint = 0x666666;
         this.deets.add(flop);
         this.deets.add(flop2);
-        this.deets.add(Title(game, "find info.", 36, 20, 120, true).img);
-        this.deets.add(Title(game, "in a world were all knowledge has been", 9, 20, 170, true).img);
-        this.deets.add(Title(game, "lost... only digital scraps remain.", 9, 20, 190, true).img);
-        this.deets.add(Title(game, "Find them - they hold the keys to", 9, 20, 210, true).img);
-        this.deets.add(Title(game, "survival.", 9, 20, 230, true).img);
+        this.deets.add(Title(game, "find", 36, 60, 110, true).img);
+        this.deets.add(Title(game, "disks.", 36, 74, 150, true).img);
+        this.add(this.t2.img);
+
+        const xo = 60;
+        const yo = 220;
+        this.deets.add(Title(game, "in a world where all knowledge", 9, xo - 6, yo, true).img);
+        this.deets.add(Title(game, "has been lost... only digital", 9, xo, yo + 20, true).img);
+        this.deets.add(Title(game, "scraps remain.", 9, xo, yo + 40, true).img);
+        this.deets.add(Title(game, "Find them, for they hold the", 9, xo, yo + 80, true).img);
+        this.deets.add(Title(game, "keys to survival.", 9, xo, yo + 100, true).img);
       }
       this.flop1.y += Math.sin(Date.now() / 500) * 0.5;
       this.flop2.y += Math.sin((Date.now() + 500) / 500) * 0.5;

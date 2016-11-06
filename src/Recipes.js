@@ -87,6 +87,16 @@ const Recipes = [{
   description: `
     Iron swords are not
     to be trifled with.`
+},{
+  name: "wings",
+  source: [{item: "wood", amount: 1}],
+  yields: [{item: "wings", amount: 1}],
+  description: `the wings!
+    now you're flying.
+    -
+    hold to accelerate.
+    up/down to take off.
+    left or right to turn.`
 }];
 
 export default Recipes;
