@@ -57,22 +57,22 @@ class World extends Phaser.State {
 
     Tween.game = game;
     this.maingroup = game.add.group();
-    this.world = new Map(game);
+    this.map = new Map(game);
     this.groundTarget = game.add.sprite(0, 0, "icons");
     this.groundTarget.frame = 31;
 
-    this.maingroup.add(this.world.layerz.base);
+    this.maingroup.add(this.map.layerz.base);
     this.maingroup.add(this.groundTarget);
-    this.maingroup.add(this.world.layerz.mid);
+    this.maingroup.add(this.map.layerz.mid);
 
     this.perma = game.add.group();
     this.maingroup.add(this.perma);
 
     // Position the player and manhole
-    let {x, y} = this.world.findEmptySpot();
-    this.world.setTile(Blocks.manhole.tile, x, y);
-    const above = this.world.getTile(x, y - 1);
-    const right = this.world.getTile(x + 1, y);
+    let {x, y} = this.map.findEmptySpot();
+    this.map.setTile(Blocks.manhole.tile, x, y);
+    const above = this.map.getTile(x, y - 1);
+    const right = this.map.getTile(x + 1, y);
     if (above.base.name === "sand" && above.mid.name === "clear") {
       y -= 1;
     }
@@ -91,7 +91,7 @@ class World extends Phaser.State {
 
     this.floppies = game.add.group();
     Array.from(new Array(12), () => {
-      const spot = this.world.findEmptySpotFurtherThan(this.protagonist, 100);
+      const spot = this.map.findEmptySpotFurtherThan(this.protagonist, 100);
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
     this.maingroup.add(this.floppies);
@@ -102,14 +102,14 @@ class World extends Phaser.State {
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 30; i++) {
-      const {x, y} = this.world.findEmptySpotFurtherThan(this.protagonist);
+      const {x, y} = this.map.findEmptySpotFurtherThan(this.protagonist);
       mobs.add(new Zombie(game, x, y, this));
     }
     this.maingroup.add(this.mobs);
 
     const animals = this.animals = game.add.group();
     for (let i = 0; i < 100; i++) {
-      const {x, y} = this.world.findEmptySpotFurtherThan(this.protagonist, 150);
+      const {x, y} = this.map.findEmptySpotFurtherThan(this.protagonist, 150);
       animals.add(new Cow(game, x, y, this));
     }
 
@@ -181,7 +181,7 @@ class World extends Phaser.State {
   }
 
   playerDied () {
-    const {stayte, player, protagonist, world:map, mobs} = this;
+    const {stayte, player, protagonist, map, mobs} = this;
     if (player.died) {
       // I don't think this check is necessary
       console.error("already dead.");
@@ -217,9 +217,9 @@ class World extends Phaser.State {
   }
 
   onPathWalked (xt, yt) {
-    const {world, player, mobs} = this;
+    const {map, player, mobs} = this;
 
-    const tile = world.map.layers[1].data[yt][xt];
+    const tile = map.map.layers[1].data[yt][xt];
     const block = Blocks.getByTileId(tile.index);
 
     if (block.mine) {
@@ -230,7 +230,7 @@ class World extends Phaser.State {
         const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
         if (dist < 300) {
           done = true;
-          world.makePath(m, player.x, player.y);
+          map.makePath(m, player.x, player.y);
         }
       });
 
@@ -248,7 +248,7 @@ class World extends Phaser.State {
         this.addHP(block.hp || 0);
         p.emitting = false;
 
-        world.setTile(
+        map.setTile(
           tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile :
           Blocks.clear.tile
           , xt, yt);
@@ -378,7 +378,7 @@ class World extends Phaser.State {
     if (Math.random() < 0.005) {
       const {mobs, protagonist} = this;
       const mob = mobs.getRandom();
-      this.world.makePath(mob, protagonist.x, protagonist.y);
+      this.map.makePath(mob, protagonist.x, protagonist.y);
     }
   }
 
@@ -431,7 +431,7 @@ class World extends Phaser.State {
       if (dist < 200) {
         m.isClose = true;
 
-        this.world.makePath(m, protagonist.x, protagonist.y);
+        this.map.makePath(m, protagonist.x, protagonist.y);
 
         // Should we shoot?
         // todo: lol, shooting is player, not vehicle
@@ -543,7 +543,7 @@ class World extends Phaser.State {
     groundTarget.y = (worldY / 32 | 0) * 32;
 
     // Walk to spot
-    this.world.makePath(
+    this.map.makePath(
       this.player,
       worldX,
       worldY,
@@ -570,7 +570,7 @@ class World extends Phaser.State {
       this.player.handleClick(
         inventory.holding(),
         this.walkToThenAct.bind(this, worldX, worldY),
-        (block) => this.world.placeBlockAt(block, worldX, worldY)
+        (block) => this.map.placeBlockAt(block, worldX, worldY)
       );
 
     }
@@ -611,13 +611,13 @@ class World extends Phaser.State {
 
     game.physics.arcade.collide(
       vehicle,
-      this.world.layerz.base,
+      this.map.layerz.base,
       null,
       () => vehicle.onTheGround);
 
     game.physics.arcade.collide(
       vehicle,
-      this.world.layerz.mid,
+      this.map.layerz.mid,
       (p, tile) => {
         const block = Blocks.getByTileId(tile.index);
 

@@ -73,11 +73,11 @@ class Zombie extends Phaser.Sprite {
     const corpse = bmax.perma.create(this.x, this.y, "peeps");
     corpse.frame = Math.random() < 0.5 ? 30 : 31;
 
-    const {x, y} = bmax.world.findEmptySpotFurtherThan(bmax.protagonist);
+    const {x, y} = bmax.map.findEmptySpotFurtherThan(bmax.protagonist);
     this.x = x * 32;
     this.y = y * 32;
     this.health.health = this.health.maxHealth;
-    bmax.world.makePath(this, x, y); // lol... damn it.
+    bmax.map.makePath(this, x, y); // lol... damn it.
   }
 
   chargedForAttack () {
