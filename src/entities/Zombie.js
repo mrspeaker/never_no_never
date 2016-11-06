@@ -98,7 +98,7 @@ class Zombie extends Phaser.Sprite {
     }
     this.lastPathSet = now;
     // FIXME: hack for chasing player at close range
-    if (this.isClose && path.length > 1) {
+    if (this.isClose && path.length > 2) {
       path = path.slice(1);
     }
     //const ppath = this.pathWalker.path;

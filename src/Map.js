@@ -41,6 +41,7 @@ class Map {
     estar.enableDiagonals();
     estar.disableCornerCutting();
     estar.setAcceptableTiles([0, 3]);
+    // estar.setIterationsPerCalculation(1000);
   }
 
   mapToGrid (map) {
@@ -121,6 +122,12 @@ class Map {
     const yt = layer.getTileY(ty);
     if (xt <= -1 || yt <= -1) return;
 
+    if (e.lastPathSet && Date.now() - e.lastPathSet < 500) {
+      //console.log("too soon");
+      // this prevents starting more calcs - but not sure if it's useful
+      return;
+    }
+
     const oldx = this.grid[yt][xt];
     this.grid[yt][xt] = BLOCK_TYPE.tmpwalkable;
     this.estar.setGrid(this.grid);
@@ -166,6 +173,27 @@ class Map {
       y = Math.random() * this.map.height | 0;
       x = Math.random() * this.map.width | 0;
       spot = this.grid[y][x];
+    }
+    return {x, y};
+  }
+
+  findEmptySpotAtCenter () {
+    let y = null;
+    let x = null;
+    let spot = -1;
+
+    let midX = this.map.width / 2 | 0;
+    let midY = this.map.height / 2 | 0;
+
+    let area = 4;
+    let halfArea = area / 2;
+
+    while (spot !== 0) {
+      y = (Math.random() * area - halfArea) + midX | 0;
+      x = (Math.random() * area - halfArea) + midY | 0;
+      spot = this.grid[y][x];
+      area += 0.5;
+      halfArea = area / 2;
     }
     return {x, y};
   }

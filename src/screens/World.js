@@ -69,7 +69,7 @@ class World extends Phaser.State {
     this.maingroup.add(this.perma);
 
     // Position the player and manhole
-    let {x, y} = this.map.findEmptySpot();
+    let {x, y} = this.map.findEmptySpotAtCenter();
     this.map.setTile(Blocks.manhole.tile, x, y);
     const above = this.map.getTile(x, y - 1);
     const right = this.map.getTile(x + 1, y);
@@ -143,7 +143,7 @@ class World extends Phaser.State {
     }
     this.stats.dailyCraftUnlocks = 0;
     this.stats.dailyHP = 0;
-    
+
     // this.inventory.addItem("coal", 20);
     // this.inventory.addItem("wood_sword", 10);
     this.inventory.addItem("wood", 3);
@@ -232,8 +232,9 @@ class World extends Phaser.State {
       mobs.forEach(m => {
         if (done) return;
         const dist = Phaser.Math.distance(m.x, m.y, player.x, player.y);
-        if (dist < 300) {
+        if (dist < 400) {
           done = true;
+          // TODO: check player on walkable tile, else go to nearest walkable
           map.makePath(m, player.x, player.y);
         }
       });
@@ -312,7 +313,7 @@ class World extends Phaser.State {
       break;
     case "exploring":
       this.updateExploring(game);
-      if (!this.haveEverCrafted) {
+      if (this.haveEverFoundRecipe && !this.haveEverCrafted) { // TODO: move haveEverCrafted to data.
         this.inventory.pda.scale.set(0.5 + Math.abs(Math.sin(Date.now() /300)) * 0.5);
       }
       updateDay = true;
@@ -350,6 +351,13 @@ class World extends Phaser.State {
       this.collisionsPickup();
       this.updateNight();
     }
+
+    // Confine to playfield
+    if (protagonist.x < 0) protagonist.x = 0;
+    else if (protagonist.y < 0) protagonist.y = 0;
+    else if (protagonist.x > (this.map.map.width - 1) * 32) protagonist.x = (this.map.map.width - 1) * 32;
+    else if (protagonist.y > (this.map.map.height - 4) * 32) protagonist.y = (this.map.map.height - 4) * 32;
+
   }
 
   updateNight () {
@@ -382,6 +390,7 @@ class World extends Phaser.State {
     if (Math.random() < 0.005) {
       const {mobs, protagonist} = this;
       const mob = mobs.getRandom();
+      // TODO: check player on walkable tile, else go to nearest walkable
       this.map.makePath(mob, protagonist.x, protagonist.y);
     }
   }
@@ -435,6 +444,8 @@ class World extends Phaser.State {
       if (dist < 200) {
         m.isClose = true;
 
+        // TODO: check player on walkable tile, else go to nearest walkable
+        // TODO: if line of sight, run at player.
         this.map.makePath(m, protagonist.x, protagonist.y);
 
         // Should we shoot?
@@ -512,14 +523,14 @@ class World extends Phaser.State {
 
   unlockRecipe () {
     const unlocks = [
-      ["wings"],
       ["wood_sword"],
       ["wood_pick"],
       ["stone_pick"],
       ["stone_sword"],
+      ["wings"],
+      ["fireworks"],
       ["iron_pick"],
       ["iron_sword"],
-      ["fireworks"],
       ["brick", "sand"],
       ["tire"],
       ["segway"],
@@ -537,6 +548,7 @@ class World extends Phaser.State {
       this.HUD.subtitle.text = un.join(", ");
       break;
     }
+    this.haveEverFoundRecipe = true;
     this.stats.gameCraftUnlocks.push(...un);
     this.overlays.info.show(un[0]);
   }
@@ -659,6 +671,7 @@ class World extends Phaser.State {
     data.permanentUnlocks = this.stats.permanentUnlocks;
     data.dailyHP = this.stats.dailyHP;
     data.gameHP = this.stats.gameHP;
+    data.haveEverFoundRecipe = this.haveEverFoundRecipe;
     //data.lifetimeHP = this.stats.lifetimeHP; um, why comment?...
   }
 
@@ -672,6 +685,8 @@ class World extends Phaser.State {
     this.stats.dailyHP = data.dailyHP;
     this.stats.gameHP = data.gameHP;
     this.stats.lifetimeHP = data.lifetimeHP;
+
+    this.haveEverFoundRecipe = data.haveEverFoundRecipe;
   }
 
   pauseUpdate (game) {
