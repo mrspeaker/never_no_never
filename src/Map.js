@@ -170,6 +170,22 @@ class Map {
     return {x, y};
   }
 
+  findEmptySpotFurtherThan (e, CLOSE_PIXELS = 400) {
+    let close = true;
+    let x = -1;
+    let y = -1;
+    while (close) {
+      const spot = this.findEmptySpot();
+      x = spot.x;
+      y = spot.y;
+      const dist = Phaser.Math.distance(x * 32, y * 32, e.x, e.y);
+      if (dist > CLOSE_PIXELS) {
+        close = false;
+      }
+    }
+    return {x, y};
+  }
+
   placeBlockAt (block, worldX, worldY) {
     const {base, mid} = this.getTileXY(worldX, worldY);
     if (mid.name === "clear") {

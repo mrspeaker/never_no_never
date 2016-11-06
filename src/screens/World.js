@@ -35,9 +35,7 @@ class World extends Phaser.State {
   }
 
   create (game) {
-
     this.stayte = new State("getready");
-
     this.stats = {
       dailyHP: 0,
       gameHP: 0,
@@ -93,7 +91,7 @@ class World extends Phaser.State {
 
     this.floppies = game.add.group();
     Array.from(new Array(12), () => {
-      const spot = this.getMobSpawnPoint(100);
+      const spot = this.world.findEmptySpotFurtherThan(this.protagonist, 100);
       this.floppies.add(new Floppy(game, spot.x * 32, spot.y * 32));
     });
     this.maingroup.add(this.floppies);
@@ -104,21 +102,21 @@ class World extends Phaser.State {
 
     const mobs = this.mobs = game.add.group();
     for (let i = 0; i < 30; i++) {
-      const {x, y} = this.getMobSpawnPoint();
+      const {x, y} = this.world.findEmptySpotFurtherThan(this.protagonist);
       mobs.add(new Zombie(game, x, y, this));
     }
     this.maingroup.add(this.mobs);
 
     const animals = this.animals = game.add.group();
     for (let i = 0; i < 100; i++) {
-      const {x, y} = this.getMobSpawnPoint();
+      const {x, y} = this.world.findEmptySpotFurtherThan(this.protagonist, 150);
       animals.add(new Cow(game, x, y, this));
     }
 
     // TODO: all vehicles updating, all the time.
-    this.car = new Segway(game, this.protagonist.x, this.protagonist.y, this.controls);
-    this.car.visible = false;
-    this.maingroup.add(this.car);
+    this.segway = new Segway(game, this.protagonist.x, this.protagonist.y, this.controls);
+    this.segway.visible = false;
+    this.maingroup.add(this.segway);
 
     // TODO: all vehicles updating, all the time.
     this.plane = new Plane(game, this.protagonist.x, this.protagonist.y, this.controls);
@@ -160,12 +158,8 @@ class World extends Phaser.State {
     game.camera.y += 2000;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
-    this._cheat = false;
-
     // Filters stop camera shake from working... need to pass in shake offset to shader
     // this.maingroup.filters = [filter];
-    // this.toggleDriving("plane");
-
   }
 
   switchedTool (tool) {
@@ -176,27 +170,10 @@ class World extends Phaser.State {
       return;
     }
     if (tool.item === "segway") {
-      this.toggleDriving("car");
+      this.toggleDriving("segway");
     } else {
       this.player.switchTool(tool);
     }
-  }
-
-  getMobSpawnPoint (CLOSE_PIXELS = 400) {
-    const {world, protagonist} = this;
-    let close = true;
-    let x = -1;
-    let y = -1;
-    while (close) {
-      const spot = world.findEmptySpot();
-      x = spot.x;
-      y = spot.y;
-      const dist = Phaser.Math.distance(x * 32, y * 32, protagonist.x, protagonist.y);
-      if (dist > CLOSE_PIXELS) {
-        close = false;
-      }
-    }
-    return {x, y};
   }
 
   playerHurt (health, maxHealth) {
@@ -204,22 +181,27 @@ class World extends Phaser.State {
   }
 
   playerDied () {
-    if (this.player.died) {
+    const {stayte, player, protagonist, world:map, mobs} = this;
+    if (player.died) {
+      // I don't think this check is necessary
+      console.error("already dead.");
       return;
     }
     this.serialize();
-    this.world.setTileXY(Blocks.tombstone.tile, this.protagonist.x, this.protagonist.y);
-    this.player.died = {
+    map.setTileXY(Blocks.tombstone.tile, protagonist.x, protagonist.y);
+    player.died = {
       time: Date.now(),
       onDead: (() => {
-        if (!this.stayte.is("gameOver")) {
-          this.stayte.set("gameOver");
+        if (!stayte.is("gameOver")) {
+          stayte.set("gameOver");
         }
       }).bind(this)
     };
-    this.mobs.forEach(m => {
-      const {x, y} = this.getMobSpawnPoint();
-      this.world.makePath(m, x * 32, y * 32, () => {}, true);
+
+    // this.mobManager.disperseMobs();
+    mobs.forEach(m => {
+      const {x, y} = map.findEmptySpotFurtherThan(protagonist);
+      map.makePath(m, x * 32, y * 32, () => {}, true);
     });
   }
 
@@ -241,7 +223,7 @@ class World extends Phaser.State {
     const block = Blocks.getByTileId(tile.index);
 
     if (block.mine) {
-      // Closest zombie chase player
+      // this.mobManager.closestZombieChasePlayer();
       let done = false;
       mobs.forEach(m => {
         if (done) return;
@@ -263,10 +245,9 @@ class World extends Phaser.State {
       p.x = xt * 32 + 16;
       p.y = yt * 32 + 8;
       player.mineTile(block, tile, toolEfficiency, () => {
-
         this.addHP(block.hp || 0);
-
         p.emitting = false;
+
         world.setTile(
           tile.index === Blocks.tree.tile ? Blocks.tree_hole.tile :
           Blocks.clear.tile
@@ -284,19 +265,10 @@ class World extends Phaser.State {
     }
   }
 
-  killZombie () {
-    const {player, inventory} = this;
-    const holding = inventory.holding();
-    inventory.useItem(holding.item);
-    this.addHP(42);
-    player.state.set("idle");
-  }
-
   update (game) {
     const {protagonist, cameraTarget, controls, stayte} = this;
 
     controls.update();
-
     DayTime.update(game.time.elapsedMS / 1000);
 
     this.filter.uniforms.pos.value = {
@@ -443,7 +415,7 @@ class World extends Phaser.State {
   collisionsMob () {
     const {mobs, inventory, protagonist} = this;
 
-    if (this._cheat || this.player.died) {
+    if (this._cheat) {
       return;
     }
 
@@ -494,15 +466,18 @@ class World extends Phaser.State {
 
   collideWithMob (m) {
     // TODO: player, not vehicle
-    const {player} = this;
+    const {player, inventory} = this;
 
-    const holding = this.inventory.holding();
+    const holding = inventory.holding();
     const damage = Items[holding.item].damage;
 
     if (damage && player.chargedForAttack()) {
       player.rechargeAttack();
       if (m.health.damage(damage, player) <= 0) {
-        this.killZombie(m);
+        // Kill zombie!
+        inventory.useItem(holding.item);
+        this.addHP(42);
+        player.state.set("idle");
       }
     }
     else {
@@ -603,23 +578,23 @@ class World extends Phaser.State {
   }
 
   toggleDriving (vehicleName) {
-    if (!vehicleName && this.stayte.is("driving")) {
-      this.stayte.set("exploring");
-      this.protagonist.visible = false;
-
-      this.player.visible = true;
-      this.player.shadow.visible = true;
-      this.player.x = this.protagonist.x;
-      this.player.y = this.protagonist.y;
-      this.protagonist = this.player;
-      this.walkToThenAct(this.protagonist.x, this.protagonist.y);
+    const {protagonist, player, stayte} = this;
+    if (!vehicleName && stayte.is("driving")) {
+      stayte.set("exploring");
+      protagonist.visible = false;
+      player.visible = true;
+      player.shadow.visible = true; // TODO: do this in player!
+      player.x = protagonist.x;
+      player.y = protagonist.y;
+      this.protagonist = player;
+      this.walkToThenAct(protagonist.x, protagonist.y);
     }
     else {
-      this.stayte.set("driving");
+      stayte.set("driving");
       const vehicle = vehicleName ? this[vehicleName] :
-        (Math.random() < 0.5 ? this.plane : this.car);
-      this.player.visible = false;
-      this.player.shadow.visible = false;
+        (Math.random() < 0.5 ? this.plane : this.segway);
+      player.visible = false;
+      player.shadow.visible = false; // TODO: do this in player!
       vehicle.visible = true;
       vehicle.x = this.player.x + 16;
       vehicle.y = this.player.y + 16;
@@ -658,7 +633,7 @@ class World extends Phaser.State {
 
 
     const {controls, inventory} = this;
-    const {justPressed, x, y, worldX, worldY} = controls;
+    const {justPressed, x, y} = controls;
 
     if (justPressed) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
@@ -702,8 +677,8 @@ class World extends Phaser.State {
   }
 
   /*render (game) {
-    game.debug.spriteBounds(this.car);
-    game.debug.body(this.car)
+    game.debug.spriteBounds(this.segway);
+    game.debug.body(this.segway)
   }*/
 
 }
