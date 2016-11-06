@@ -326,7 +326,10 @@ class World extends Phaser.State {
       if (isFirst) {
         this.haveEverCrafted = true;
         this.inventory.pda.scale.set(1);
+        // TODO move this to a overlay events show/hide system
         this.overlays.crafting.visible = true;
+        // TODO move this to a overlay events show/hide system
+        this.inventory.miniPDA.visible = false;
       }
       this.overlays.crafting.update(game);
       updateDay = true;

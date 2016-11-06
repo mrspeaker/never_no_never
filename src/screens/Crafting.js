@@ -7,10 +7,10 @@ import Floppy from "../entities/Floppy";
 
 class Crafting {
 
-  recipeXo = 30;
-  recipeYo = 80;
-  recipeLineSpacing = 55;
-  columnWidth = 180;
+  recipeXo = 60;
+  recipeYo = 110;
+  recipeLineSpacing = 50;
+  columnWidth = 150;
   columnLength = 6;
 
   constructor (game, world) {
@@ -86,6 +86,9 @@ class Crafting {
   set visible (visible) {
     if (visible) {
       this.redraw();
+    } else {
+      // TODO move this to a overlay events show/hide system
+      this.world.inventory.miniPDA.visible = true;
     }
     this.group.visible = visible;
   }

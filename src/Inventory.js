@@ -88,7 +88,7 @@ class Inventory extends Phaser.Group {
     this.emptySlot = new Slot(game, -1);
     this.emptySlot.item = "empty";
 
-    const box = this.create(
+    const box = this.miniPDA = this.create(
       0,
       game.height - 122, "inventory");
     box.fixedToCamera = true;
