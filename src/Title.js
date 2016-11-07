@@ -7,7 +7,7 @@ function Title (game, text, size, x, y, fixed) {
   const title = game.add.retroFont(fontName, fontSize, fontSize, chars, 13, 0, 0, 0, 0);
   title.text = text + "";
   const img = game.add.image(x, y, title);
-  img.fixedToCamera = !!fixed;
+  if (fixed) img.fixedToCamera = true;
   img.data.title = title;
   return {
     img: img,

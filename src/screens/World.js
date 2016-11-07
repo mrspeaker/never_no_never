@@ -265,7 +265,7 @@ class World extends Phaser.State {
   }
 
   update (game) {
-    const {protagonist, cameraTarget, controls, stayte} = this;
+    const {protagonist, cameraTarget, controls, stayte, inventory} = this;
 
     controls.update();
     DayTime.update(game.time.elapsedMS / 1000);
@@ -283,6 +283,7 @@ class World extends Phaser.State {
     const isFirst = this.stayte.isFirst();
 
     switch (stayte.get()) {
+
     case "getready":
       if (isFirst && !this.haveEverFoundRecipe) {
         // Positin first ever floppy in view.
@@ -313,51 +314,55 @@ class World extends Phaser.State {
         stayte.set("exploring");
       }
       break;
+
     case "pre-intro":
       if (Date.now() - stayte.time > 2000) {
         stayte.set("intro");
       }
       break;
+
     case "intro":
       if (isFirst) {
+        inventory.miniPDA.visible = false;
         this.overlays.show("info", { data: "intro", onDone: () => {
-          console.log("good bye info...");
-          //stayte.set("exploring");
+          stayte.set("exploring");
+          inventory.miniPDA.visible = true;
         }});
       }
-      else {
-        stayte.set("exploring");
-      }
       break;
+
     case "exploring":
       this.updateExploring(game);
       if (this.haveEverFoundRecipe && !this.haveEverCrafted) { // TODO: move haveEverCrafted to data.
-        this.inventory.pda.scale.set(0.5 + Math.abs(Math.sin(Date.now() /300)) * 0.5);
+        inventory.pda.scale.set(0.5 + Math.abs(Math.sin(Date.now() /300)) * 0.5);
       }
       updateDay = true;
       break;
+
     case "driving":
       this.updateDriving(game);
       updateDay = true;
       break;
+
     case "crafting":
       if (isFirst) {
         this.haveEverCrafted = true;
-
-        this.inventory.pda.scale.set(1);
-        this.inventory.miniPDA.visible = false;
+        inventory.pda.scale.set(1);
+        inventory.miniPDA.visible = false;
         this.overlays.show("crafting", {onDone: () => {
           this.stayte.set("exploring");
-          this.inventory.miniPDA.visible = true;
+          inventory.miniPDA.visible = true;
         }});
       }
       updateDay = true;
       break;
+
     case "dayOver":
       this.addHP(250);
       this.serialize();
       this.state.start("DayOver");
       break;
+
     case "gameOver":
       if (isFirst) {
         this.serialize();

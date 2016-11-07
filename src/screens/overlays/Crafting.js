@@ -18,17 +18,14 @@ class Crafting {
   constructor (game, world) {
     this.world = world;
     this.game = game;
+
     const group = this.group = game.add.group();
+    group.fixedToCamera = true;
     group.visible = false;
-    const icons = this.icons = game.add.group();
 
-    const bg = group.create(0, 0, "crafting");
-    bg.fixedToCamera = true;
-
+    group.create(0, 0, "crafting");
     this.pda = group.add(game.add.sprite(-6, 0, "pda"));
-    this.pda.fixedToCamera = true;
 
-    group.add(icons);
     // const mask = game.add.graphics(0, 0);
     // mask.fixedToCamera = true;
     // mask.beginFill(200, 100, 0 , 0);
@@ -54,12 +51,10 @@ class Crafting {
 
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;
     const craft = group.create(game.width - 64, 30, "icons");
-    craft.fixedToCamera = true;
     craft.frame = 21;
 
     const tmpReset = this.tmpReset = group.create(game.width - 140, game.height - 60, "craft-tmp");
     tmpReset.frame = 2;
-    tmpReset.fixedToCamera = true;
     tmpReset.inputEnabled = true;
     tmpReset.events.onInputDown.add(() => {
       this.visible = false;
@@ -68,7 +63,6 @@ class Crafting {
 
     const cheat = this.cheat = group.create(0, game.height - 60, "craft-tmp");
     cheat.frame = this.world._cheat ? 1 : 0;
-    cheat.fixedToCamera = true;
     cheat.inputEnabled = true;
     cheat.events.onInputDown.add(() => {
       const isCheat = this.world.toggleCheat();
@@ -76,8 +70,11 @@ class Crafting {
     }, this);
 
     //cheat.blendMode = window.PIXI.blendModes.DIFFERENCE;
+
+    const icons = this.icons = game.add.group();
+    group.add(icons);
+
     this.redraw();
-    this.visible = false;
   }
 
   show () {
@@ -125,9 +122,8 @@ class Crafting {
       source.forEach(({item, amount}) => {
         const icon = g.create(xo, yo, "icons");
         icon.frame = Items[item].icon;
-        icon.fixedToCamera = true;
         if (amount > 1) {
-          const title = Title(game, amount, 9, xo + 24, yo + 24, true);
+          const title = Title(game, amount, 9, xo + 24, yo + 24);
           g.add(title.img);
         }
         icon.alpha = inventory.hasItem(item, amount) ? 1 : 0.2;
@@ -135,13 +131,11 @@ class Crafting {
       });
       const arrow = g.create(xo, yo, "icons");
       arrow.frame = 30;
-      arrow.fixedToCamera = true;
       xo += 32;
       yields.forEach(({item, amount}) => {
         const icon = g.create(xo, yo, "icons");
         icon.frame = Items[item].icon;
-        icon.fixedToCamera = true;
-        const title = Title(game, amount, 9, xo + 24, yo + 24, true);
+        const title = Title(game, amount, 9, xo + 24, yo + 24);
         g.add(title.img);
         xo += 32;
       });
@@ -150,13 +144,12 @@ class Crafting {
 
     if (dbIsEmpty) {
       const flop = new Floppy(game, 80, 200);
-      flop.fixedToCamera = true;
       flop.scale.set(3);
       icons.add(flop);
-      icons.add(Title(game, "error.", 36, 60, 120, true).img);
-      icons.add(Title(game, "no knowledge found in", 9, 60, 320, true).img);
-      icons.add(Title(game, "database.", 9, 60, 340, true).img);
-      icons.add(Title(game, "seek digital information.", 9, 60, 380, true).img);
+      icons.add(Title(game, "error.", 36, 60, 120).img);
+      icons.add(Title(game, "no knowledge found in", 9, 60, 320).img);
+      icons.add(Title(game, "database.", 9, 60, 340).img);
+      icons.add(Title(game, "seek digital information.", 9, 60, 380).img);
     }
   }
 
@@ -168,7 +161,7 @@ class Crafting {
     if (justPressed) {
       if (y < 70) {
         // TODO: crafting shouldn't know about world state
-        this.world.overlays.hide();
+        //this.world.overlays.hide();
       }
 
       if (y >= recipeYo && y <= game.height - 60) {

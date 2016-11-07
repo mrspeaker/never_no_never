@@ -14,25 +14,23 @@ class Info {
     this.game = game;
 
     const group = this.group = game.add.group();
+    group.fixedToCamera = true;
     group.visible = false;
 
     this.state = new State("hidden");
 
     const bg = group.add(game.add.sprite(0, 0, "crafting"));
-    bg.fixedToCamera = true;
     bg.alpha = 0.6;
-
     this.pda = group.add(game.add.sprite(-6, 0, "pda"));
-    this.pda.fixedToCamera = true;
 
-    this.t1 = Title(game, "craft", 36, 60, 110, true);
+    this.t1 = Title(game, "craft", 36, 60, 110);
     group.add(this.t1.img);
-    this.t2 = Title(game, "unlock!", 36, 74, 140, true);
+    this.t2 = Title(game, "unlock!", 36, 74, 140);
     group.add(this.t2.img);
     this.t1.img.visible = false;
     this.t2.img.visible = false;
 
-    this.decrypt = Title(game, "", 9, 80, 180, true);
+    this.decrypt = Title(game, "", 9, 80, 180);
     group.add(this.decrypt.img);
 
     this.deets = game.add.group();
@@ -74,7 +72,7 @@ class Info {
       const icon = g.create(xo, yo, "icons");
       icon.frame = Items[item].icon;
       if (amount > 1) {
-        const title = Title(game, amount, 9, xo + 24, yo + 24, true);
+        const title = Title(game, amount, 9, xo + 24, yo + 24);
         g.add(title.img);
       }
       xo += 32;
@@ -82,7 +80,7 @@ class Info {
 
     const arrow = g.create(xo, yo, "icons");
     arrow.frame = 30;
-    arrow.fixedToCamera = true;
+    //arrow.fixedToCamera = true;
     xo += 32;
     yields.forEach(({item, amount}) => {
       const icon = g.create(xo, yo, "icons");
@@ -92,15 +90,15 @@ class Info {
       xo += 32;
     });
 
-    deets.add(Title(game, name + " added to", 9, oxo, yo + 50, true).img);
-    deets.add(Title(game, "crafting database.", 9, oxo, yo + 70, true).img);
+    deets.add(Title(game, name + " added to", 9, oxo, yo + 50).img);
+    deets.add(Title(game, "crafting database.", 9, oxo, yo + 70).img);
 
     description && description.split("\n")
       .map(d => d.trim())
       .filter(d => d !== "")
       .forEach((d, i) => {
         if (d === "-") d = " ";
-        g.add(Title(game, d, 9, oxo, yo + 120 + (i * 16), true).img);
+        g.add(Title(game, d, 9, oxo, yo + 120 + (i * 16)).img);
       });
   }
 
@@ -113,30 +111,33 @@ class Info {
     case "intro":
       if (first) {
         this.shownAt = Date.now();
+
+        const g = game.add.group();
+        deets.add(g);
+
         const flop = this.flop1 = new Floppy(game, 120, 270);
-        flop.fixedToCamera = true;
         flop.scale.set(1.5);
         const flop2 = this.flop2 = new Floppy(game, 180, 270);
-        flop2.fixedToCamera = true;
         flop2.scale.set(1.5);
         flop.tint = 0x666666;
         flop2.tint = 0x666666;
-        deets.add(flop);
-        deets.add(flop2);
-        deets.add(Title(game, "find", 36, 60, 110, true).img);
-        deets.add(Title(game, "disks.", 36, 74, 150, true).img);
+        g.add(flop);
+        g.add(flop2);
+        g.add(Title(game, "find", 36, 60, 110).img);
+        g.add(Title(game, "disks.", 36, 74, 150).img);
 
         const xo = 60;
         const yo = 220;
-        deets.add(Title(game, "in a world where all knowledge", 9, xo - 6, yo, true).img);
-        deets.add(Title(game, "has been lost... only digital", 9, xo, yo + 20, true).img);
-        deets.add(Title(game, "scraps remain.", 9, xo, yo + 40, true).img);
-        deets.add(Title(game, "Find them, for they hold the", 9, xo, yo + 80, true).img);
-        deets.add(Title(game, "keys to survival.", 9, xo, yo + 100, true).img);
+        g.add(Title(game, "in a world where all knowledge", 9, xo - 6, yo).img);
+        g.add(Title(game, "has been lost... only digital", 9, xo, yo + 20).img);
+        g.add(Title(game, "scraps remain.", 9, xo, yo + 40).img);
+        g.add(Title(game, "Find them, for they hold the", 9, xo, yo + 80).img);
+        g.add(Title(game, "keys to survival.", 9, xo, yo + 100).img);
       }
       this.flop1.y += Math.sin(Date.now() / 500) * 0.5;
       this.flop2.y += Math.sin((Date.now() + 500) / 500) * 0.5;
       break;
+
     case "shown":
       if (first) {
         this.t1.img.visible = true;
@@ -145,6 +146,7 @@ class Info {
         state.set("calculating");
       }
       break;
+
     case "calculating":
       if (Date.now() - state.time > 1000 && (Math.random() < 0.01 || Date.now() - state.time > 5000)) {
         state.set("ready");
@@ -152,6 +154,7 @@ class Info {
       this.decrypt.text = "decrypting " +
         (btoa(Date.now()/1000).slice(-10)).split("").sort(()=>0.5 - Math.random()).join("");
       break;
+
     case "ready":
       if (first) {
         this.decrypt.text = "";

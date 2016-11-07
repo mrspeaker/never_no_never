@@ -1,4 +1,3 @@
-const Phaser = window.Phaser;
 import Crafting from "./Crafting";
 import GameOver from "./GameOver";
 import Info from "./Info";
@@ -31,28 +30,29 @@ class Overlays {
     this.current = overlayName;
     this.onDone = onDone;
     if (o.pauseGame) {
-      //game.time.events.add(Phaser.Timer.SECOND * 0.2, () => {
       game.input.onDown.add(this.pausedClickHandler, this);
       game.paused = true;
-      //});
     }
     o.show(data);
   }
 
   hide () {
     const o = this.overlays[this.current];
-    if (o.hide()) {
+    if (o && o.hide()) {
       this.onDone && this.onDone();
       this.onDone = null;
       this.current = null;
+      return true;
     }
+    return false;
   }
 
   pausedClickHandler () {
     const {game} = this;
-    game.input.onDown.remove(this.pausedClickHandler, this);
-    game.paused = false;
-    this.hide();
+    if (this.hide()) {
+      game.input.onDown.remove(this.pausedClickHandler, this);
+      game.paused = false;
+    }
   }
 
   update () {
