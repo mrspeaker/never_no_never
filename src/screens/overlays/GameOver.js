@@ -1,7 +1,9 @@
-import Title from "../Title";
-import data from "../data";
+import Title from "../../Title";
+import data from "../../data";
 
 class GameOver {
+
+  pauseGame = false;
 
   recipeXo = 20;
   recipeYo = 80;
@@ -13,6 +15,7 @@ class GameOver {
     this.world = world;
     this.game = game;
     const group = this.group = game.add.group();
+    group.visible = false;
     const icons = this.icons = game.add.group();
 
     const bg = group.create(0, 0, "crafting");
@@ -28,17 +31,16 @@ class GameOver {
     this.visible = false;
   }
 
-  get visible () {
-    return this.group.visible;
+  show () {
+    data.gameHP += data.dailyHP;
+    data.lifetimeHP += data.gameHP;
+    this.redraw();
+    this.group.visible = true;
   }
 
-  set visible (visible) {
-    if (visible) {
-      data.gameHP += data.dailyHP;
-      data.lifetimeHP += data.gameHP;
-      this.redraw();
-    }
-    this.group.visible = visible;
+  hide () {
+    this.group.visible = false;
+    return true;
   }
 
   redraw () {
@@ -55,10 +57,12 @@ class GameOver {
 
   }
 
-  update () {
+  doUpdate () {
     const {world} = this;
     const {controls} = world;
     const {justPressed, y} = controls;
+
+    console.log("Gameover upping. presed:", justPressed);
 
     if (justPressed) {
       if (y < 70) {

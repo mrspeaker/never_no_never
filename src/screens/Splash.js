@@ -139,7 +139,6 @@ class Splash extends Phaser.State {
     this.game.state.start("World");
   }
 
-
 }
 
 export default Splash;

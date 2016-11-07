@@ -1,77 +1,67 @@
-const Phaser = window.Phaser;
-import Title from "../Title";
-import Items from "../Items";
-import recipes from "../Recipes";
-import State from "../State";
-import Floppy from "../entities/Floppy";
+import Title from "../../Title";
+import Items from "../../Items";
+import recipes from "../../Recipes";
+import State from "../../State";
+import Floppy from "../../entities/Floppy";
 
-class Info extends Phaser.Group {
+class Info {
 
+  pauseGame = true;
   pickup = null;
 
-  constructor (game) {
-    super(game);
-    game.add.existing(this);
+  constructor (game, world) {
+    this.world = world;
+    this.game = game;
+
+    const group = this.group = game.add.group();
+    group.visible = false;
 
     this.state = new State("hidden");
 
-    this.bg = this.add(game.add.sprite(0, 0, "crafting"));
-    this.bg.fixedToCamera = true;
-    this.bg.alpha = 0.6;
+    const bg = group.add(game.add.sprite(0, 0, "crafting"));
+    bg.fixedToCamera = true;
+    bg.alpha = 0.6;
 
-    //this.dialog = this.add(game.add.sprite(24, 64, "dialog"));
-    //this.dialog.fixedToCamera = true;
-    this.pda = this.add(game.add.sprite(-6, 0, "pda"));
+    this.pda = group.add(game.add.sprite(-6, 0, "pda"));
     this.pda.fixedToCamera = true;
 
     this.t1 = Title(game, "craft", 36, 60, 110, true);
-    this.add(this.t1.img);
+    group.add(this.t1.img);
     this.t2 = Title(game, "unlock!", 36, 74, 140, true);
-    this.add(this.t2.img);
+    group.add(this.t2.img);
     this.t1.img.visible = false;
     this.t2.img.visible = false;
 
     this.decrypt = Title(game, "", 9, 80, 180, true);
-    this.add(this.decrypt.img);
+    group.add(this.decrypt.img);
 
     this.deets = game.add.group();
-    this.deets.fixedToCamera = true;
-    this.add(this.deets);
-    this.visible = false;
+    group.add(this.deets);
+  }
+
+  get isOpen () {
+    return !!this.current;
   }
 
   hide () {
     if (Date.now() - this.shownAt < 1000) {
-      return;
+      return false;
     }
-    this.visible = false;
-    this.game.input.onDown.remove(this.hide, this);
-    this.game.paused = false;
-    this.state.set("hidden");
+    this.group.visible = false;
+    return true;
   }
 
   show (pickup) {
-    const {game} = this;
-
     this.pickup = pickup;
     this.deets.removeAll();
-    this.visible = true;
     this.state.set(pickup === "intro" ? "intro" : "shown");
-
-    //this.game.camera.flash(0xffffff, 300);
-    game.time.events.add(Phaser.Timer.SECOND * 0.3, () => {
-      game.input.onDown.add(this.hide, this);
-      game.paused = true;
-    });
-
+    this.group.visible = true;
   }
 
   redraw (game) {
     const {deets, pickup} = this;
-
     const recipe = recipes.find(({name}) => name === pickup);
     const {name, source, yields, description} = recipe;
-
 
     const oxo = 60;
     const yo = 200;
@@ -89,6 +79,7 @@ class Info extends Phaser.Group {
       }
       xo += 32;
     });
+
     const arrow = g.create(xo, yo, "icons");
     arrow.frame = 30;
     arrow.fixedToCamera = true;
@@ -113,8 +104,8 @@ class Info extends Phaser.Group {
       });
   }
 
-  doUpdate (game) {
-    const {state} = this;
+  doUpdate () {
+    const {state, game, deets} = this;
     const cur = state.get();
     const first = state.isFirst();
 
@@ -130,19 +121,18 @@ class Info extends Phaser.Group {
         flop2.scale.set(1.5);
         flop.tint = 0x666666;
         flop2.tint = 0x666666;
-        this.deets.add(flop);
-        this.deets.add(flop2);
-        this.deets.add(Title(game, "find", 36, 60, 110, true).img);
-        this.deets.add(Title(game, "disks.", 36, 74, 150, true).img);
-        this.add(this.t2.img);
+        deets.add(flop);
+        deets.add(flop2);
+        deets.add(Title(game, "find", 36, 60, 110, true).img);
+        deets.add(Title(game, "disks.", 36, 74, 150, true).img);
 
         const xo = 60;
         const yo = 220;
-        this.deets.add(Title(game, "in a world where all knowledge", 9, xo - 6, yo, true).img);
-        this.deets.add(Title(game, "has been lost... only digital", 9, xo, yo + 20, true).img);
-        this.deets.add(Title(game, "scraps remain.", 9, xo, yo + 40, true).img);
-        this.deets.add(Title(game, "Find them, for they hold the", 9, xo, yo + 80, true).img);
-        this.deets.add(Title(game, "keys to survival.", 9, xo, yo + 100, true).img);
+        deets.add(Title(game, "in a world where all knowledge", 9, xo - 6, yo, true).img);
+        deets.add(Title(game, "has been lost... only digital", 9, xo, yo + 20, true).img);
+        deets.add(Title(game, "scraps remain.", 9, xo, yo + 40, true).img);
+        deets.add(Title(game, "Find them, for they hold the", 9, xo, yo + 80, true).img);
+        deets.add(Title(game, "keys to survival.", 9, xo, yo + 100, true).img);
       }
       this.flop1.y += Math.sin(Date.now() / 500) * 0.5;
       this.flop2.y += Math.sin((Date.now() + 500) / 500) * 0.5;
@@ -151,7 +141,6 @@ class Info extends Phaser.Group {
       if (first) {
         this.t1.img.visible = true;
         this.t2.img.visible = true;
-
         this.shownAt = Date.now();
         state.set("calculating");
       }

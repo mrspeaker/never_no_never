@@ -11,13 +11,11 @@ import Plane from "../entities/Plane";
 import Segway from "../entities/Segway";
 import Blocks from "../Blocks";
 import Items from "../Items";
-import Crafting from "./Crafting";
-import GameOver from "./GameOver";
+import Overlays from "./overlays/";
 import HUD from "../HUD";
 import Tween from "../Tween";
 import DayTime from "../DayTime";
 import Particles from "../Particles";
-import Info from "./Info";
 import State from "../State";
 import data from "../data";
 import shaders from "../shaders";
@@ -49,7 +47,7 @@ class World extends Phaser.State {
 
     this.filter = new Phaser.Filter(game, shaders.green.uniforms, shaders.green.frag.split("\n"));
 
-    // game.stage.disableVisibilityChange = true;
+    //game.stage.disableVisibilityChange = true;
     game.physics.startSystem(Phaser.Physics.ARCADE);
     this.camera.flash(0x000000, 2000);
 
@@ -152,18 +150,14 @@ class World extends Phaser.State {
 
     this.HUD = new HUD(game);
 
-    this.overlays = {
-      crafting: new Crafting(game, this),
-      gameOver: new GameOver(game, this),
-      info: new Info(game)
-    };
+    this.overlays = new Overlays(game, this);
 
     game.camera.focusOn(this.protagonist);
     game.camera.y += 2000;
     game.camera.follow(this.cameraTarget, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
     // Filters stop camera shake from working... need to pass in shake offset to shader
-    // this.maingroup.filters = [filter];
+    // this.maingroup.filters = [this.filter];
   }
 
   switchedTool (tool) {
@@ -326,7 +320,10 @@ class World extends Phaser.State {
       break;
     case "intro":
       if (isFirst) {
-        this.overlays.info.show("intro");
+        this.overlays.show("info", { data: "intro", onDone: () => {
+          console.log("good bye info...");
+          //stayte.set("exploring");
+        }});
       }
       else {
         stayte.set("exploring");
@@ -346,13 +343,14 @@ class World extends Phaser.State {
     case "crafting":
       if (isFirst) {
         this.haveEverCrafted = true;
+
         this.inventory.pda.scale.set(1);
-        // TODO move this to a overlay events show/hide system
-        this.overlays.crafting.visible = true;
-        // TODO move this to a overlay events show/hide system
         this.inventory.miniPDA.visible = false;
+        this.overlays.show("crafting", {onDone: () => {
+          this.stayte.set("exploring");
+          this.inventory.miniPDA.visible = true;
+        }});
       }
-      this.overlays.crafting.update(game);
       updateDay = true;
       break;
     case "dayOver":
@@ -363,10 +361,11 @@ class World extends Phaser.State {
     case "gameOver":
       if (isFirst) {
         this.serialize();
-        this.overlays.gameOver.visible = true;
+        this.overlays.show("gameOver");
       }
-      this.overlays.gameOver.update(game);
     }
+
+    this.overlays.update();
 
     if (updateDay && !this.player.died) {
       this.doMobStrategy();
@@ -582,7 +581,7 @@ class World extends Phaser.State {
     }
     this.haveEverFoundRecipe = true;
     this.stats.gameCraftUnlocks.push(...un);
-    this.overlays.info.show(un[0]);
+    this.overlays.show("info", {data: un[0]});
   }
 
   walkToThenAct (worldX, worldY) {
@@ -723,9 +722,7 @@ class World extends Phaser.State {
 
   pauseUpdate (game) {
     super.pauseUpdate(game);
-    if (this.overlays.info.visible) {
-      this.overlays.info.doUpdate(game);
-    }
+    this.overlays.update(game);
   }
 
   /*render (game) {

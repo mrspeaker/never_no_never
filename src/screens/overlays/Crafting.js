@@ -1,11 +1,13 @@
 const Phaser = window.Phaser;
-import Items from "../Items";
-import Title from "../Title";
-import recipes from "../Recipes";
-import data from "../data";
-import Floppy from "../entities/Floppy";
+import Items from "../../Items";
+import Title from "../../Title";
+import recipes from "../../Recipes";
+import data from "../../data";
+import Floppy from "../../entities/Floppy";
 
 class Crafting {
+
+  pauseGame = false;
 
   recipeXo = 60;
   recipeYo = 110;
@@ -17,6 +19,7 @@ class Crafting {
     this.world = world;
     this.game = game;
     const group = this.group = game.add.group();
+    group.visible = false;
     const icons = this.icons = game.add.group();
 
     const bg = group.create(0, 0, "crafting");
@@ -73,24 +76,18 @@ class Crafting {
     }, this);
 
     //cheat.blendMode = window.PIXI.blendModes.DIFFERENCE;
-
     this.redraw();
-
     this.visible = false;
   }
 
-  get visible () {
-    return this.group.visible;
+  show () {
+    this.redraw();
+    this.group.visible = true;
   }
 
-  set visible (visible) {
-    if (visible) {
-      this.redraw();
-    } else {
-      // TODO move this to a overlay events show/hide system
-      this.world.inventory.miniPDA.visible = true;
-    }
-    this.group.visible = visible;
+  hide () {
+    this.group.visible = false;
+    return true;
   }
 
   fadeChoice (idx) {
@@ -163,16 +160,15 @@ class Crafting {
     }
   }
 
-  update (game) {
-    const {world, recipeYo, recipeLineSpacing} = this;
+  doUpdate () {
+    const {game, world, recipeYo, recipeLineSpacing} = this;
     const {controls, inventory} = world;
     const {justPressed, x, y} = controls;
 
     if (justPressed) {
       if (y < 70) {
         // TODO: crafting shouldn't know about world state
-        this.visible = false;
-        this.world.stayte.set("exploring");
+        this.world.overlays.hide();
       }
 
       if (y >= recipeYo && y <= game.height - 60) {
