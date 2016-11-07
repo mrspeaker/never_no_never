@@ -1,0 +1,61 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  body {
+    padding: 0;
+    margin: 0;
+    background-color: #000;
+  }
+</style>
+<title>bmax</title>
+<script src="vendor/phaser.js"></script>
+<script src="bundle.js"></script>
+<script src="gif.js"></script>
+<script src="gif.worker.js"></script>
+<script>
+  window.addEventListener("load", () => {
+
+    let recording = false;
+    let gif;
+    const can = document.querySelector("canvas");
+    const record = () => {
+      gif.addFrame(can, {delay: 60});
+      if (recording) {
+        requestAnimationFrame(record);
+      }
+    };
+
+    const done = () => {
+      gif.render();
+    }
+
+    window.addEventListener("keyup", (e) => {
+      if (e.which === 83 /* s */) {
+        const img = can.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        window.location.href = img;
+      }
+
+      if (e.which === 81 /* q */) {
+        recording = true;
+
+        gif = new GIF({
+          workers: 2,
+          quality: 10
+        });
+
+        gif.on("finished", function(blob) {
+          window.open(URL.createObjectURL(blob));
+        });
+
+        // // or copy the pixels from a canvas context
+        // gif.addFrame(ctx, {copy: true});
+        requestAnimationFrame(record);
+      }
+      if (e.which === 69 /* e */) {
+        recording = false;
+        done();
+      }
+    }, false);
+
+  }, false);
+</script>

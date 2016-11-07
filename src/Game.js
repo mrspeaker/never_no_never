@@ -17,6 +17,9 @@ class Game extends Phaser.Game {
     this.state.add("DayOver", DayOver, false);
     this.state.start("Preload");
 
+    // Needed for taking screen shots.
+    this.preserveDrawingBuffer = true;
+
     debug.game = game;
   }
 
