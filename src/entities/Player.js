@@ -316,7 +316,7 @@ class Player extends Phaser.Sprite {
     const {hardness, maxHardness} = props;
     if (!props.hit) {
       props.hit = true;
-      // TODO: add this to a group.
+      // TODO: add this to a group. Also, tile should handle itself (not by player only).
       props.prog = this.game.add.sprite(tile.x * 32, tile.y * 32, "icons4x4");
       props.prog.frame = 3;
     }
@@ -324,6 +324,7 @@ class Player extends Phaser.Sprite {
     const ratio = hardness / maxHardness;
     prog.scale.set(ratio * 2, 1);
     prog.x = tile.x * 32 + ((1 - ratio) * 16);
+    // TODO: tool should have hardeness too (not just 1-use-after-block-mined)
     props.hardness -= (0.1 * toolEfficiency);
 
     if (props.hardness <= 0) {

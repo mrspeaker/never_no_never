@@ -27,6 +27,11 @@ class Health {
     return this.health;
   }
 
+  powerUp (amount = 1, e) {
+    this.health = Math.min(this.health + amount, this.maxHealth);
+    this.onHurt && this.onHurt(this.health, this.maxHealth, e);
+  }
+
 }
 
 export default Health;

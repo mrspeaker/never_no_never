@@ -13,24 +13,19 @@ Browse on localhost:9966
 
 ## TODO
 
-* intro explanation...
+* intro explanation.
   * "start" button at base of ladder... click and player path-finds to ladder, then climbs
-  * glowing floppy? make it obvious to click it.
-  * floppy screen opens, explains... how to punch? need to find floppies? How to open craft.
-* Death screen
-  * "survived for" time.
-* Treat all entities the same... dispatch behaviour
+  * floppy screen opens, explains.How to punch? need to find floppies? How to open craft.
+* Treat all entities the same. Dispatch behaviour
 * "arm" projectiles... tap once to arm, once to disarm.
-* add attack chances (not hit always).
-* knockback when attack
-* attack one at a time (min re-attack time)
+* Add attack chances (not hit always).
+* Knockback when attack
 * Try tap baddies to attack (auto weapon, but not auto attack)
   * maybe, defend yourself by default, tap to attack.
 * Try swipe to move (raycast swipe strenght, move to free spot)
 * Add a "town"
 * Add a road or a bridge
 * craftings
-  * Add segway when crafted... tap on/off!
   * add saltpeter + coal -> gunpowder? + x = fireworks
   * add gunpowder + stone? iron? -> projectiles
   * armor
@@ -40,6 +35,7 @@ Browse on localhost:9966
   * tween when auto-switch items
   * explode vehicle when leave
   * clouds float overhead: mechanic! hard to see.
+  * death screen achievements
 * progression
   * store progress/stats/unlocks
   * stats on splash
@@ -54,13 +50,13 @@ Browse on localhost:9966
   * cellular autonoma ability
   * show un-obtained resources in crafting.
 * system for player -> tool -> target block
+* move close button to PDA
 
 ## Bugs
 
 * crafting should be paused game
 * zombie sometimes stays after player dead
-* screen close button inconsistent
-* crafting menu getting "backgrounded"? weird alpha.
+* mining progress bars not in layer
 * multi vehicle when switching / crafting in vehicle
 * times (day time) based on Date.now()! use game time.
 * knockback direction always the same (up left or down right)

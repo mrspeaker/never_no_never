@@ -67,6 +67,7 @@ class Cow extends Phaser.Sprite {
   dead () {
     const {bmax} = this;
     const corpse = bmax.perma.create(this.x, this.y, "peeps");
+    bmax.inventory.addItem("steak", 1);
     corpse.frame = 164;
   }
 
@@ -75,12 +76,14 @@ class Cow extends Phaser.Sprite {
     const current = this.state.get();
     const first = this.state.isFirst();
     switch (current) {
+
     case "idle":
       if (first) {
         animations.play("idle");
       }
       this.state.set("walking");
       break;
+
     case "walking": {
       const d = this.lastDir;
       const xo = Math.sign(Math.sin((Date.now() + this.offset) / 1000)) * 0.2;
@@ -91,6 +94,7 @@ class Cow extends Phaser.Sprite {
       }
       break;
     }
+
     case "dying":
       if (this.state.isFirst()) {
         this.dead();

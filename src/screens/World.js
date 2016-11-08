@@ -177,9 +177,15 @@ class World extends Phaser.State {
     } else {
       this.player.switchTool(tool);
     }
+
+    if (tool.item === "steak") {
+      this.player.health.powerUp(1, this.player);
+      this.inventory.useItem(tool.item);
+    }
   }
 
   playerHurt (health, maxHealth) {
+    console.log("oh here!");
     this.HUD.setHealth(health, maxHealth);
   }
 
