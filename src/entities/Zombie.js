@@ -79,6 +79,7 @@ class Zombie extends Phaser.Sprite {
     this.x = x * 32;
     this.y = y * 32;
     this.health.health = this.health.maxHealth;
+    this.walkSpeed = this.defaultWalkSpeed;
     bmax.map.makePath(this, x, y); // lol... damn it.
   }
 
@@ -99,19 +100,12 @@ class Zombie extends Phaser.Sprite {
       return;
     }
     this.lastPathSet = now;
-    // FIXME: hack for chasing player at close range
-    if (this.isClose && path.length > 2) {
-      path = path.slice(1);
-    }
+
     //const ppath = this.pathWalker.path;
     //console.log("path", path.map(({x, y}) => `${x}:${y}`).join(", "));
     //console.log("ppath", ppath && ppath.map(({x, y}) => `${x}:${y}`).join(", "));
     const cx = Math.floor(this.x / 32);
     const cy = Math.floor(this.y / 32);
-    //if (path.length && cx === path[0].x && cy === path[0].y) {
-      // console.log("same zombie pos. slice it.");
-      //path = path.slice(1);
-    //}
 
     if (path.length) {
       if (cx > path[0].x) this.direction.set("left");

@@ -33,6 +33,11 @@ class World extends Phaser.State {
   }
 
   create (game) {
+
+    //game.time.advancedTiming = true;
+    //game.time.desiredFps = 60;
+    //game.time.slowMotion = 10.0;
+
     this.stayte = new State("getready");
     this.stats = {
       dailyHP: 0,
