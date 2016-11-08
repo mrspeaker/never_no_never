@@ -23,6 +23,19 @@ class Map {
     map.addTilesetImage("mid", "mid");
     const mid = this.layerz.mid = map.createLayer("mid");
 
+    // TODO: set tile stats.
+    mid.layer.data.forEach(row => row.forEach(cell => {
+      if (cell.index > -1) {
+        const block = Blocks.getByTileId(cell.index);
+        const props = cell.properties;
+        if (block.hardness) {
+          props.maxHardness = block.hardness;
+          props.hardness = block.hardness;
+          props.hit = false;
+        }
+      }
+    }));
+
     Object.keys(Blocks)
       .map(k => Blocks[k])
       .filter(b => b.tile !== undefined && !b.walk)

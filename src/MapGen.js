@@ -1,3 +1,7 @@
+/*
+  Returns a generated map in the Tiled format
+*/
+
 import Blocks from "./Blocks";
 import FastSimplexNoise from "fast-simplex-noise";
 
@@ -36,7 +40,6 @@ export default function () {
   const h = 100;
   const w = 100;
 
-  let min = 1, max = 0;
   for (let x = 0; x < h; x++) {
     grid[x] = [];
     gridMid[x] = [];
@@ -110,7 +113,7 @@ export default function () {
     return [...acc, ...el];
   }, []);
 
-  const lol = {
+  return {
     "height":h,
     "width": w,
     "layers":[{
@@ -166,5 +169,4 @@ export default function () {
     }],
     "version":1,
   };
-  return lol;
 }

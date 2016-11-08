@@ -248,6 +248,7 @@ class World extends Phaser.State {
       p.emitting = true;
       p.x = xt * 32 + 16;
       p.y = yt * 32 + 8;
+
       player.mineTile(block, tile, toolEfficiency, () => {
         this.addHP(block.hp || 0);
         p.emitting = false;

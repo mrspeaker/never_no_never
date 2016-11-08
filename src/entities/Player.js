@@ -219,10 +219,7 @@ class Player extends Phaser.Sprite {
     }
   }
 
-
-
   mineTile (block, tile, toolEfficiency, onDone) {
-
     const x1 = this.x / 32 | 0;
     const y1 = this.y / 32 | 0;
     const {x, y} = tile;
@@ -235,9 +232,10 @@ class Player extends Phaser.Sprite {
 
     this.state.set("mining", {
       onMined: onDone,
-      toolEfficiency,
-      hardness: block.hardness
+      tile,
+      toolEfficiency
     });
+
   }
 
   someoneClose () {
@@ -312,8 +310,24 @@ class Player extends Phaser.Sprite {
 
   updateMining () {
     const {data} = this.state;
-    const {toolEfficiency, onMined} = data;
-    if ((data.hardness -= (0.1 * toolEfficiency)) <= 0) {
+    const {toolEfficiency, onMined, tile} = data;
+
+    const props = tile.properties;
+    const {hardness, maxHardness} = props;
+    if (!props.hit) {
+      props.hit = true;
+      // TODO: add this to a group.
+      props.prog = this.game.add.sprite(tile.x * 32, tile.y * 32, "icons4x4");
+      props.prog.frame = 3;
+    }
+    const prog = props.prog;
+    const ratio = hardness / maxHardness;
+    prog.scale.set(ratio * 2, 1);
+    prog.x = tile.x * 32 + ((1 - ratio) * 16);
+    props.hardness -= (0.1 * toolEfficiency);
+
+    if (props.hardness <= 0) {
+      prog.destroy();
       onMined();
       this.state.set("idle");
     }
