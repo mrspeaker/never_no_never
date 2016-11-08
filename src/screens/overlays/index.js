@@ -16,7 +16,7 @@ class Overlays {
     };
   }
 
-  show (overlayName, {onDone, data}) {
+  show (overlayName, {onDone, data} = {}) {
     const {game} = this;
     const o = this.overlays[overlayName];
     if (!o) {
@@ -28,7 +28,7 @@ class Overlays {
       this.current = null;
     }
     this.current = overlayName;
-    this.onDone = onDone;
+    if (onDone) this.onDone = onDone;
     if (o.pauseGame) {
       game.input.onDown.add(this.pausedClickHandler, this);
       game.paused = true;

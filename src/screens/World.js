@@ -481,7 +481,7 @@ class World extends Phaser.State {
           const multiplier = skateToPuck ? 32 : 1;
           // TODO: check player on walkable tile, else go to nearest walkable
           // TODO: if line of sight, run at player.
-          this.map.makePath(m, target.x * multiplier, target.y * multiplier);
+          this.map.makePath(m, target.x * multiplier + 16, target.y * multiplier + 16);
 
           // Should we shoot?
           // todo: lol, shooting is player, not vehicle

@@ -161,7 +161,7 @@ class Crafting {
     if (justPressed) {
       if (y < 70) {
         // TODO: crafting shouldn't know about world state
-        //this.world.overlays.hide();
+        this.world.overlays.hide();
       }
 
       if (y >= recipeYo && y <= game.height - 60) {

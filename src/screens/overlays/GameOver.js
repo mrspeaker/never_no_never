@@ -14,21 +14,21 @@ class GameOver {
   constructor (game, world) {
     this.world = world;
     this.game = game;
+
     const group = this.group = game.add.group();
+    group.fixedToCamera = true;
     group.visible = false;
-    const icons = this.icons = game.add.group();
 
     const bg = group.create(0, 0, "crafting");
-    bg.fixedToCamera = true;
-    group.add(icons);
+    group.add(bg);
 
     const craft = group.create(game.width - 64, 30, "icons");
-    craft.fixedToCamera = true;
     craft.frame = 21;
 
-    this.redraw();
+    const icons = this.icons = game.add.group();
+    group.add(icons);
 
-    this.visible = false;
+    this.redraw();
   }
 
   show () {
@@ -48,21 +48,18 @@ class GameOver {
 
     icons.removeAll();
 
-    icons.add(Title(game, "death.", 36, 50, 120, true).img);
-    icons.add(Title(game, "but you did good, kid.", 9, 50, 180, true).img);
-    icons.add(Title(game, "here's the deets...", 9, 50, 200, true).img);
-    icons.add(Title(game, "hp: " + data.gameHP, 36, 60, 230, true).img);
-    icons.add(Title(game, "lifetime hp: " + data.lifetimeHP, 9, 60, 270, true).img);
-    icons.add(Title(game, "unlocks: " + (data.gameCraftUnlocks.join(",") || "0"), 9, 60, 290, true).img);
-
+    icons.add(Title(game, "death.", 36, 50, 120).img);
+    icons.add(Title(game, "but you did good, kid.", 9, 50, 180).img);
+    icons.add(Title(game, "here's the deets...", 9, 50, 200).img);
+    icons.add(Title(game, "hp: " + data.gameHP, 36, 60, 230).img);
+    icons.add(Title(game, "lifetime hp: " + data.lifetimeHP, 9, 60, 270).img);
+    icons.add(Title(game, "unlocks: " + (data.gameCraftUnlocks.join(",") || "0"), 9, 60, 290).img);
   }
 
   doUpdate () {
     const {world} = this;
     const {controls} = world;
     const {justPressed, y} = controls;
-
-    console.log("Gameover upping. presed:", justPressed);
 
     if (justPressed) {
       if (y < 70) {
