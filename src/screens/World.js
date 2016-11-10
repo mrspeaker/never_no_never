@@ -1,5 +1,4 @@
-const Phaser = window.Phaser;
-
+import Phaser from "phaser";
 import Map from "../Map";
 import Controls from "../Controls";
 import Player from "../entities/Player";
@@ -166,6 +165,7 @@ class World extends Phaser.State {
   }
 
   switchedTool (tool) {
+    // TODO: this should delegate to "use tool", "stop using tool"
     if (tool.item === "empty") {
       if (this.stayte.is("driving")) {
         this.toggleDriving();

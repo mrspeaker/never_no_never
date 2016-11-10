@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 import Title from "./Title";
 
 class HUD extends Phaser.Group {

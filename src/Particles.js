@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 
 class Particle extends Phaser.Sprite {
   constructor (game, x, y, col, sheet = "icons", scale = 0.3) {

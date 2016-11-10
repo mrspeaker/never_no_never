@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 import Explosion from "./Explosion";
 
 class Bullet extends Phaser.Sprite {

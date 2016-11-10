@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 import Blocks from "./Blocks";
 import BLOCK_TYPE from "./BLOCK_TYPE";
 import EasyStar from "easystarjs";

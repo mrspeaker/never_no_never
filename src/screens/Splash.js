@@ -1,5 +1,5 @@
-const Phaser = window.Phaser;
-
+//@flow
+import {State, Game} from "phaser";
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
@@ -15,9 +15,16 @@ const startWiths = [
   [{item: "stone_pick", amount: 4, unlocked: false, question: true}],
 ];
 
-class Splash extends Phaser.State {
+class Splash extends State {
 
-  create (game) {
+  goingToNext: bool = false;
+
+  player: any;
+  starts: Array<any>;
+  controls: any;
+  ui: Object;
+
+  create (game: Game) {
     game.stage.backgroundColor = "#000000";
 
     if (data.permanentUnlocks[0]) {
@@ -25,10 +32,10 @@ class Splash extends Phaser.State {
     }
 
     game.add.sprite(0, 0, "splash");
-    this.p = new Player(game, 3, 13);
-    this.p.scale.set(2);
-    this.p.shadow.scale.set(2);
-    this.p.update = () => {};
+    this.player = new Player(game, 3, 13);
+    this.player.scale.set(2);
+    this.player.shadow.scale.set(2);
+    this.player.update = () => {};
 
     game.add.sprite(32 * 4, 0, "splash-cover");
     game.add.sprite(32 * 4, 2, "splash-cover");
@@ -101,9 +108,9 @@ class Splash extends Phaser.State {
     };
   }
 
-  update (game) {
+  update (game: Game) {
 
-    this.p.syncShadow();
+    this.player.syncShadow();
     if (this.goingToNext) {
       return;
     }
@@ -118,18 +125,18 @@ class Splash extends Phaser.State {
     });
 
     const xo = Math.sign(Math.sin(Date.now() / 500));
-    this.p.x += xo;
-    this.p.doAnim("walk_" + (xo > 0 ? "right": "left"));
+    this.player.x += xo;
+    this.player.doAnim("walk_" + (xo > 0 ? "right": "left"));
 
 
     if (justPressed) {
       this.goingToNext = true;
-      this.p.doAnim("walk_right");
-      const tweenA = game.add.tween(this.p).to({ x: 145, y: 300 }, 1000);
-      const tweenB = game.add.tween(this.p).to({ y: -40 }, 1000, "Quart.easeOut");
+      this.player.doAnim("walk_right");
+      const tweenA = game.add.tween(this.player).to({ x: 145, y: 300 }, 1000);
+      const tweenB = game.add.tween(this.player).to({ y: -40 }, 1000, "Quart.easeOut");
       tweenA.chain(tweenB);
       tweenA.start();
-      tweenA.onComplete.add(() => this.p.doAnim("walk_up"), this);
+      tweenA.onComplete.add(() => this.player.doAnim("walk_up"), this);
       tweenB.onComplete.add(this.next, this);
     }
   }

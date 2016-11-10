@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 
 import Health from "../components/Health";
 import State from "../State";

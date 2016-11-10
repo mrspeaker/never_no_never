@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 
 class Car extends Phaser.Sprite {
 

@@ -1,5 +1,4 @@
-const Phaser = window.Phaser;
-
+import Phaser from "phaser";
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";

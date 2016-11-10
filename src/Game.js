@@ -1,16 +1,17 @@
+// @flow
+import Phaser from "phaser";
 import Preload from "./screens/Preload";
 import Splash from "./screens/Splash";
 import World from "./screens/World";
 import DayOver from "./screens/DayOver";
-
 import debug from "./debug";
 
-const Phaser = window.Phaser;
+const { Game, AUTO } = Phaser;
 
-class Game extends Phaser.Game {
+class Bmax extends Game {
 
-  constructor (game) {
-    super(374, 559, Phaser.AUTO, "bmax", null);
+  constructor (game: Game) {
+    super(374, 559, AUTO, "bmax", null);
     this.state.add("Preload", Preload, false);
     this.state.add("Splash", Splash, false);
     this.state.add("World", World, false);
@@ -23,11 +24,11 @@ class Game extends Phaser.Game {
     debug.game = game;
   }
 
-  update (game) {
-    super.update(game);
+  update (time: number) {
+    super.update(time);
     debug.update(this.state);
   }
 
 }
 
-export default Game;
+export default Bmax;

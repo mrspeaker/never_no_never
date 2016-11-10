@@ -1,8 +1,9 @@
-const Phaser = window.Phaser;
+// @flow
+import {Game, State} from "phaser";
 
-class Preload extends Phaser.State {
+class Preload extends State {
 
-  preload (game) {
+  preload (game: Game) {
     game.load.image("tiles", "res/tiles.png");
     game.load.image("mid", "res/mid.png");
     game.load.image("inventory", "res/inventory.png");
@@ -22,7 +23,7 @@ class Preload extends Phaser.State {
     game.load.spritesheet("inv-selection", "res/inv-selection.png", 52, 48);
   }
 
-  update (game) {
+  update (game: Game) {
     game.state.start("Splash");
   }
 

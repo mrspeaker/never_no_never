@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from "phaser";
 import State from "../State";
 
 class Plane extends Phaser.Sprite {
