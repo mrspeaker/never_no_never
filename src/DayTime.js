@@ -1,17 +1,18 @@
+// @flow
 class DayTime {
 
-  day = -1;
-  time = 0;
-  DAY_LENGTH = 200;
-  dayOver = false;
+  day: number = -1;
+  time: number = 0;
+  DAY_LENGTH: number = 200;
+  dayOver: boolean = false;
 
-  _dayOvers = [];
+  _dayOvers: Array<()=>void> = [];
 
-  addDayOverListener (cb) {
+  addDayOverListener (cb: ()=>void) {
     this._dayOvers.push(cb);
   }
 
-  update (dt) {
+  update (dt: number) {
     this.time += dt;
     if (this.time >= this.DAY_LENGTH) {
       if (!this.dayOver) {
@@ -27,7 +28,7 @@ class DayTime {
     this.wakeUp();
   }
 
-  get firstDayOnTheJob () {
+  get firstDayOnTheJob (): boolean {
     return this.day <= 0;
   }
 
@@ -37,7 +38,7 @@ class DayTime {
     this.time = 0;
   }
 
-  get percent () {
+  get percent (): number {
     return this.time / this.DAY_LENGTH;
   }
 

@@ -1,7 +1,7 @@
 // @flow
 import {Game} from "phaser";
 
-function Title (game: Game, text: string, size: number, x: number, y: number, fixed?: bool) {
+function Title (game: Game, text: string, size: number, x: number, y: number, fixed?: boolean) {
 
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
   const fontName = size === 9 ? "bmaxFont9" : "bmaxFont9x4";

@@ -1,9 +1,13 @@
-import Phaser from "phaser";
+//@flow
+import {Game, Group, Sprite, RetroFont} from "phaser";
 import Title from "./Title";
 
-class HUD extends Phaser.Group {
+class HUD extends Group {
 
-  constructor (game) {
+  subtitle: RetroFont;
+
+  constructor (game: Game) {
+
     super(game);
 
     for (let i = 0; i <= 10; i++) {
@@ -24,9 +28,9 @@ class HUD extends Phaser.Group {
 
   }
 
-  setHealth (health, maxHealth) {
+  setHealth (health: number, maxHealth: number) {
     let i = 0;
-    this.forEach(h => {
+    this.forEach((h: Sprite) => {
       if (i < health) h.frame = 0;
       else if (i < maxHealth) h.frame = 1;
       else if (i < 10) h.frame = 2;

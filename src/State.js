@@ -1,8 +1,17 @@
+//@flow
 class State {
-  constructor (state = "") {
+
+  state: string;
+  last: string;
+  count: number;
+  time: number;
+  first: boolean;
+  data: any;
+
+  constructor (state: string = "") {
     this.set(state);
   }
-  set (state, data) {
+  set (state: string, data: any) {
     this.last = this.state;
     this.state = state;
     this.count = 0;
@@ -18,7 +27,7 @@ class State {
   get () {
     return this.state;
   }
-  is (...states) {
+  is (...states: Array<string>) {
     return states.includes(this.state);
   }
 }

@@ -1,5 +1,4 @@
 //@flow
-
 import Phaser from "phaser";
 import Preload from "./screens/Preload";
 import Splash from "./screens/Splash";
@@ -11,7 +10,7 @@ const { Game, AUTO } = Phaser;
 
 class Bmax extends Game {
 
-  constructor (game: Game) {
+  constructor () {
     super(374, 559, AUTO, "bmax", null);
     this.state.add("Preload", Preload, false);
     this.state.add("Splash", Splash, false);
@@ -22,7 +21,7 @@ class Bmax extends Game {
     // Needed for taking screen shots.
     this.preserveDrawingBuffer = true;
 
-    debug.game = game;
+    debug.game = this;
   }
 
   update (time: number) {

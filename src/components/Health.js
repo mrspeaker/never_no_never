@@ -1,17 +1,20 @@
+//@flow
 class Health {
-  health = 1;
-  onDie = null;
-  onHurt = null;
+  health: number = 1;
+  maxHealth: number;
+  minHurtTime: number;
+  onDie: ?((e:Object)=>void) = null;
+  onHurt: ?((health:number, maxHealth:number, e:Object)=>void) = null;
 
-  lastHurt = Date.now();
+  lastHurt: number = Date.now();
 
-  constructor (health, maxHealth, minHurtTime = 1000) {
+  constructor (health: number, maxHealth: number, minHurtTime: number = 1000) {
     this.health = health;
     this.maxHealth = maxHealth;
     this.minHurtTime = minHurtTime;
   }
 
-  damage (amount = 1, e) {
+  damage (amount: number = 1, e: Object) {
     const now = Date.now();
     if (now - this.lastHurt < this.minHurtTime) {
       return this.health;
@@ -27,7 +30,7 @@ class Health {
     return this.health;
   }
 
-  powerUp (amount = 1, e) {
+  powerUp (amount: number = 1, e: Object) {
     this.health = Math.min(this.health + amount, this.maxHealth);
     this.onHurt && this.onHurt(this.health, this.maxHealth, e);
   }

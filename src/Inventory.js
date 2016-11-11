@@ -1,13 +1,17 @@
-import Phaser from "phaser";
+//@flow
+
+import Phaser, {Game, Group, Sprite, RetroFont} from "phaser";
 import Items from "./Items";
 import Title from "./Title";
 
-class Slot extends Phaser.Group {
+class Slot extends Group {
 
-  item = null;
-  amount = 0;
+  idx: number;
+  item: ?string = null;
+  amount: number = 0;
+  ui: { icon: Sprite, amount: RetroFont};
 
-  constructor (game, idx) {
+  constructor (game: Game, idx: number) {
     super(game);
     this.idx = idx;
 
@@ -28,17 +32,17 @@ class Slot extends Phaser.Group {
   updateUI () {
     const {item, amount, ui} = this;
     ui.icon.frame = !item ? Items.empty.icon : Items[item].icon;
-    ui.amount.text((amount < 2 ? "" : amount) + "");
+    ui.amount.text = (amount < 2 ? "" : amount) + "";
   }
 
-  setItem (item, amount = 1) {
+  setItem (item: string, amount: number = 1): this {
     this.item = item;
     this.amount = amount;
     this.updateUI();
     return this;
   }
 
-  addItem (amount = 1) {
+  addItem (amount: number = 1): this {
     this.amount += amount;
     if (this.amount <= 0) {
       this.item = null;
@@ -48,7 +52,7 @@ class Slot extends Phaser.Group {
     return this;
   }
 
-  is (prop) {
+  is (prop: string) {
     return this.item && Items[this.item][prop];
   }
 
@@ -59,8 +63,8 @@ class Slot extends Phaser.Group {
     };
   }
 
-  deserialize ({item, amount}) {
-    this.setItem(item, amount);
+  deserialize ({item, amount}: {item: ?string, amount: number}) {
+    item && this.setItem(item, amount);
   }
 
 }
@@ -79,7 +83,18 @@ class Inventory extends Phaser.Group {
   xo = 40;
   yo = 28;
 
-  constructor (game, onItemSwitch) {
+  slots: Array<Slot>;
+  emptySlot: Slot;
+  onItemSwitch: (item: any) => void;
+  miniPDA: Sprite;
+  pda: Sprite;
+  selected: number;
+  ui: {
+    box: Sprite,
+    selected: Sprite
+  };
+
+  constructor (game: Game, onItemSwitch: (item: any) => void = () => {}) {
     super(game);
     game.add.existing(this);
 
@@ -120,7 +135,7 @@ class Inventory extends Phaser.Group {
 
   }
 
-  autoStab () {
+  autoStab (): boolean {
     if (this.holding().is("damage")) {
       return false;
     }
@@ -132,7 +147,7 @@ class Inventory extends Phaser.Group {
     return false;
   }
 
-  autoDig () {
+  autoDig (): boolean {
     if (this.holding().is("efficiency")) {
       return false;
     }
@@ -144,13 +159,13 @@ class Inventory extends Phaser.Group {
     return false;
   }
 
-  onClick (box, click) {
+  onClick (box: Sprite, click: {x: number, y: number}) {
     const x = (click.x - box.cameraOffset.x - this.xo) / this.slotTileW | 0;
     const y = (click.y - box.cameraOffset.y - this.yo) / this.slotTileH | 0;
     this.selectItem(y * this.slotsPerRow + x);
   }
 
-  selectItem (idx, dontDeselect) {
+  selectItem (idx: number, dontDeselect: ?boolean) {
     const deselect = this.selected === idx;
     if (dontDeselect && deselect) {
       return this.selected;
@@ -182,7 +197,7 @@ class Inventory extends Phaser.Group {
     return this.slots[this.selected];
   }
 
-  addItem (item, amount = 1) {
+  addItem (item: string, amount: number = 1): ?Slot {
     const firstMatch = this.slots.find(s => s.item === item);
     const firstEmpty = this.slots.find(s => s.item === null);
 
@@ -208,17 +223,20 @@ class Inventory extends Phaser.Group {
     return slot;
   }
 
-  hasItem (item, amount = 1) {
+  hasItem (item: string, amount: number = 1): boolean {
     const match = this.slots.find(s => s.item === item);
-    return match && match.amount >= amount;
+    return !!match && match.amount >= amount;
   }
 
-  count (item) {
+  count (item: string): number {
     const match = this.slots.find(s => s.item === item);
     return match ? match.amount : 0;
   }
 
-  useItem (item, amount = 1) {
+  useItem (item: ?string, amount: number = 1): boolean {
+    if (!item) {
+      return false;
+    }
     const match = this.slots.find(s => s.item === item);
     if (match && match.amount >= amount) {
       match.addItem(-amount);
@@ -233,13 +251,14 @@ class Inventory extends Phaser.Group {
     return false;
   }
 
-  serialize () {
+  serialize (): Object {
     return {
       slots: this.slots.map(s => s.serialize()),
       selected: this.selected
     };
   }
-  deserialize (inv) {
+
+  deserialize (inv: Inventory) {
     inv.slots && inv.slots.forEach((s, i) => {
       this.slots[i].deserialize(s);
     });

@@ -1,5 +1,5 @@
 // @flow
-import Phaser, {State as PState, Game, Group, Sprite} from "phaser";
+import Phaser, {State as PState, Game, Group, Sprite, Filter} from "phaser";
 import Map from "../Map";
 import Controls from "../Controls";
 import Player from "../entities/Player";
@@ -20,13 +20,23 @@ import State from "../State";
 import data from "../data";
 import shaders from "../shaders";
 
+type Stats = {
+  dailyHP: number,
+  gameHP: number,
+  permanentUnlocks: Array<?boolean>,
+  gameCraftUnlocks: Array<string>,
+  dailyCraftUnlocks: number,
+  lifetimeHP: number
+}
+
 class World extends PState {
 
-  _cheat: bool = false;
-  haveEverCrafted: bool = false;
-  haveEverFoundRecipe: bool = false;
+  _cheat: boolean = false;
+  haveEverCrafted: boolean = false;
+  haveEverFoundRecipe: boolean = false;
 
   game: Game;
+  stayte: State;
   maingroup: Group;
   perma: Group;
   mobs: Group;
@@ -35,25 +45,25 @@ class World extends PState {
   groundTarget: Sprite;
   cameraTarget: Sprite;
 
-  player: any;
+  player: Player;
+  controls: Controls;
+  inventory: Inventory;
   protagonist: any;
+  map: Map;
+
+  overlays: Overlays;
+  particles: Particles;
+  stats: Stats;
+  HUD: HUD;
+  filter: Filter;
+
   segway: any;
   plane: any;
-  controls: any;
-  map: any;
-  inventory: any;
-  HUD: any;
-  overlays: any;
-
-  particles: any;
-  stats: any;
-  stayte: any;
-  filter: any;
 
   reset () {
     this.stats.dailyHP = 0;
     this.stats.gameCraftUnlocks = [];
-    this.stats.dailyCraftUnlocks = [];
+    this.stats.dailyCraftUnlocks = 0;
     this.serialize();
     this.game.state.start("Splash");
   }
@@ -68,14 +78,14 @@ class World extends PState {
       dailyHP: 0,
       gameHP: 0,
       lifetimeHP: 0,
-      dailyCraftUnlocks: [],
+      dailyCraftUnlocks: 0,
       permanentUnlocks: [],
       gameCraftUnlocks: []
     };
 
     game.stage.backgroundColor = "#343436";
 
-    this.filter = new Phaser.Filter(game, shaders.green.uniforms, shaders.green.frag.split("\n"));
+    this.filter = new Filter(game, shaders.green.uniforms, shaders.green.frag.split("\n"));
 
     //game.stage.disableVisibilityChange = true;
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -190,7 +200,7 @@ class World extends PState {
     // this.maingroup.filters = [this.filter];
   }
 
-  switchedTool (tool:any) {
+  switchedTool (tool: {item: string}) {
     // TODO: this should delegate to "use tool", "stop using tool"
     if (tool.item === "empty") {
       if (this.stayte.is("driving")) {
@@ -210,7 +220,7 @@ class World extends PState {
     }
   }
 
-  playerHurt (health:number, maxHealth:number) {
+  playerHurt (health: number, maxHealth: number) {
     this.HUD.setHealth(health, maxHealth);
   }
 
@@ -242,7 +252,7 @@ class World extends PState {
   addHP (amount: number) {
     if (!amount) return;
     this.stats.dailyHP += amount;
-    this.HUD.subtitle.text(`HP: ${this.stats.dailyHP}`);
+    this.HUD.subtitle.text = `HP: ${this.stats.dailyHP}`;
   }
 
   toggleCheat () {
@@ -552,7 +562,7 @@ class World extends PState {
     }
   }
 
-  collideWithMob (m:any) {
+  collideWithMob (m: any) {
     // TODO: player, not vehicle
     const {player, inventory} = this;
 
@@ -618,7 +628,7 @@ class World extends PState {
       un.forEach(u => {
         data.recipes[u] = true;
       });
-      this.HUD.subtitle.text(un.join(", "));
+      this.HUD.subtitle.text = un.join(", ");
       break;
     }
     this.haveEverFoundRecipe = true;
@@ -667,7 +677,7 @@ class World extends PState {
 
   }
 
-  toggleDriving (vehicleName: string) {
+  toggleDriving (vehicleName: ?string) {
     const {protagonist, player, stayte} = this;
     if (!vehicleName && stayte.is("driving")) {
       stayte.set("exploring");
@@ -749,7 +759,7 @@ class World extends PState {
     //data.lifetimeHP = this.stats.lifetimeHP; um, why comment?...
   }
 
-  deserialize (doInventory:bool = true) {
+  deserialize (doInventory: boolean = true) {
     if (doInventory && data.inventory) {
       this.inventory.deserialize(data.inventory);
     }

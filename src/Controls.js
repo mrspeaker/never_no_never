@@ -1,18 +1,25 @@
+// @flow
+import {Game} from "phaser";
+
 class Controls {
 
-  isDown = false;
-  justPressed = false;
-  lastX = 0;
-  lastY = 0;
+  isDown: boolean = false;
+  justPressed: boolean = false;
+  lastX: number = 0;
+  lastY: number = 0;
 
-  _angle = 0;
-  _pitch = 0;
+  _angle: number = 0;
+  _pitch: number = 0;
 
-  attack = 0;
-  sustain = 0;
-  decay = 0;
+  attack: number = 0;
+  sustain: number = 0;
+  decay: number = 0;
 
-  constructor (game) {
+  game: Game;
+
+  pointer: Object;
+
+  constructor (game: Game) {
     this.game = game;
     this.setActive();
     // "activePointer" seems to change on mobile
@@ -21,16 +28,16 @@ class Controls {
     }, 2000);
   }
 
-  get angle () {
+  get angle (): number {
     return this._angle;
   }
-  set angle (v) {
+  set angle (v: number) {
     this._angle = v;
   }
-  get pitch () {
+  get pitch (): number {
     return this._pitch;
   }
-  set pitch (v) {
+  set pitch (v: number) {
     this._pitch = v;
   }
 
@@ -64,19 +71,19 @@ class Controls {
     this.lastY = pointer.y;
   }
 
-  get x () {
+  get x (): number {
     return this.pointer.x;
   }
 
-  get y () {
+  get y (): number {
     return this.pointer.y;
   }
 
-  get worldX () {
+  get worldX (): number {
     return this.pointer.worldX;
   }
 
-  get worldY () {
+  get worldY (): number {
     return this.pointer.worldY;
   }
 

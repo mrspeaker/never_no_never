@@ -1,7 +1,12 @@
-import Phaser from "phaser";
+// @flow
+import {Sprite, Game} from "phaser";
 
-class Particle extends Phaser.Sprite {
-  constructor (game, x, y, col, sheet = "icons", scale = 0.3) {
+class Particle extends Sprite {
+  life: number;
+  velX: number;
+  velY: number;
+
+  constructor (game: Game, x: number, y: number, col: number = 0, sheet: ?string = "icons", scale: ?number = 0.3) {
     super(game, x, y, sheet);
     this.frame = col;
     this.scale.set(scale);
@@ -9,7 +14,7 @@ class Particle extends Phaser.Sprite {
     this.visible = false;
   }
 
-  activate (frame) {
+  activate (frame: number) {
     this.frame = frame;
     this.x = Math.random() * 8 - 4;
     this.y = Math.random() * 8 - 4;
@@ -31,14 +36,15 @@ class Particle extends Phaser.Sprite {
   }
 }
 
-class Particles extends Phaser.Sprite {
-
+class Particles extends Sprite {
   lastParticle = Date.now();
   emitting = true;
   emitRate = 200;
   tile = 1;
 
-  constructor (game, x, y, tile, sheet, scale) {
+  particles: Array<Particle>;
+
+  constructor (game: Game, x: number, y: number, tile: number, sheet: ?string, scale: ?number) {
     super(game, x, y);
     this.tile = tile;
     game.add.existing(this);

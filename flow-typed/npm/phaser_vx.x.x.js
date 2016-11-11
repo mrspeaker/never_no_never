@@ -3,23 +3,41 @@ declare module "phaser" {
   declare class DisplayObject {
     x: number;
     y: number;
+    cameraOffset: {
+      x: number,
+      y: number
+    };
+    visible: boolean;
+    rotation: number;
     scale: any;
     tint: any;
     alpha: number;
     destroy: () => void;
-    fixedToCamera: bool;
+    fixedToCamera: boolean;
     data: Object;
+    game: Game;
+    inputEnabled: boolean;
+    events: Object;
 
-    // I need to implement in superclasses!
-    dead: bool;
-    isClose: bool;
+    addChild<T:DisplayObject> (child: T): T;
+
+    // HACK: I need to implement in Entity classes!
+    dead: () => void;
+    isClose: boolean;
     walkSpeed: number;
     defaultWalkSpeed: number;
   }
 
+  declare class Animation {}
+  declare class AnimationManager {
+    add (name: string, frames: ?Array<string | number>, frameRate: ?number, loop: ?boolean, useNumericIndex: ?boolean): Animation;
+    stop (name: ?string, resetFrame: ?boolean):void;
+    play (name: string, frameRate: ?number, loop: ?boolean, killOnComplete: ?boolean):void;
+  }
+
   declare class Sprite extends DisplayObject {
     frame: number;
-    animations: any;
+    animations: AnimationManager;
   }
 
   declare class Image extends DisplayObject {
@@ -34,17 +52,22 @@ declare module "phaser" {
 
   }
 
-  declare class Group extends DisplayObject {
+  declare class DisplayObjectContainer extends DisplayObject {
+    children: Array<DisplayObject>;
+  }
+
+  declare class Group extends DisplayObjectContainer {
     constructor(
       game: Game,
       parent: ?DisplayObject,
       name: ?string,
-      addToStage: ?bool,
-      enableBody: ?bool,
+      addToStage: ?boolean,
+      enableBody: ?boolean,
       physicsBodyType: ?number):this;
-    add: (child: DisplayObject, silent?: bool, index?: number) => DisplayObject;
-    forEach: (callback: (child:DisplayObject) => void, context?: Object, checkExists?: bool) => void;
     children: Array<DisplayObject>;
+    add<T: DisplayObject> (child: T, silent?: boolean, index?: number): T;
+    create (x: number, y: number, key?: string, frame?: number, exists?: boolean, index?: number): Sprite;
+    forEach<T: DisplayObject> (callback: (child: T) => void, context?: Object, checkExists?: boolean): void;
     getRandom: () => DisplayObject;
   }
 
@@ -54,19 +77,42 @@ declare module "phaser" {
     text: string
   }
 
+  declare class Tilemap {
+    constructor (
+      game: Game,
+      key?: string,
+      tileWidth?: number,
+      tileHeight?: number,
+      width: ?number,
+      height: ?number
+    ):this;
+    addTilesetImage (): Tileset;
+    createLayer (): TilemapLayer;
+    setCollision (): void;
+
+    TILED_JSON: number
+  }
+
+  declare class Tileset {}
+  declare class TilemapLayer {
+    layer: any;
+    resizeWorld (): any;
+  }
+
   declare class GameObjectFactory {
     group: () => Group;
     sprite: (x: number, y: number, key: string) => Sprite;
-    image: (x: number, y: number, key: string|RenderTexture) => Image;
+    image: (x: number, y: number, key: string | RenderTexture) => Image;
     existing: (displayObject: DisplayObject) => DisplayObject;
-    tween: (props: Object) => Tween;
-    retroFont: (font: string, characterWidth: number,
+    tween (props: Object): Tween;
+    retroFont (font: string, characterWidth: number,
       characterHeight: number, chars: string, charsPerRow: number,
-      xSpacing?: number, ySpacing?: number, xOffset?: number, yOffset?: number) => RetroFont;
+      xSpacing?: number, ySpacing?: number, xOffset?: number, yOffset?: number): RetroFont;
+    tilemap (key: ?string, tileWidth: ?number, tileHeight: ?number, width: ?number, height: ?number): Tilemap;
   }
 
   declare class Loader {
-    image (key: string, url?: string, overwrite?: bool):this;
+    image (key: string, url?: string, overwrite?: boolean):this;
     spritesheet (
       key: string,
       url: string,
@@ -75,13 +121,14 @@ declare module "phaser" {
       frameMax?: number,
       margin?: number,
       spacing?: number):this;
+    tilemap (key: string, url: ?string, data: ?(Object | string), format: ?number): Tilemap;
   }
 
   declare class StateManager {
     constructor(game: Game, state: ?State):this;
     current: string;
-    add (key: string, state: Class<State> | () => State, autoStart: bool): void;
-    start (key: string, clearWorld?: bool, clearCache?: bool): void;
+    add (key: string, state: Class<State> | () => State, autoStart: boolean): void;
+    start (key: string, clearWorld?: boolean, clearCache?: boolean): void;
     states: {[key: string]: State};
   }
 
@@ -94,7 +141,7 @@ declare module "phaser" {
   }
 
   declare class Stage {
-    backgroundColor: number|string;
+    backgroundColor: number | string;
   }
 
   declare class Tween {
@@ -105,21 +152,27 @@ declare module "phaser" {
     x: number;
     y: number;
     focusOn (displayObject: DisplayObject): void;
-    follow (target:Sprite|Image|Text, style?:number, lerpX?:number, lerpY:number): void;
+    follow (target: Sprite | Image | Text, style?: number, lerpX?: number, lerpY: number): void;
     flash (tint: number, duration: number): void;
+    shake (): void;
 
     FOLLOW_LOCKON: number;
   }
 
   declare class Math {
-    static distance: (x1: number, y1: number, x2: number, y2: number) => number;
-    static angleBetween: (x1: number, y1: number, x2: number, y2: number) => number;
+    distance: (x1: number, y1: number, x2: number, y2: number) => number;
+    angleBetween: (x1: number, y1: number, x2: number, y2: number) => number;
   }
 
   declare class Physics {
     startSystem: any;
     arcade: any;
     ARCADE: number;
+  }
+
+  declare class Input {
+    onDown: any;
+    activePointer: Object;
   }
 
   declare class Game {
@@ -134,15 +187,17 @@ declare module "phaser" {
       physicsConfig: ?Object):this;
     width: number;
     height: number;
+    paused: boolean;
     state: StateManager;
     stage: Stage;
     add: GameObjectFactory;
     load: Loader;
     camera: Camera;
+    input: Input;
     math: Math;
     physics: Physics;
     time: any;
-    preserveDrawingBuffer: bool;
+    preserveDrawingBuffer: boolean;
     update (time: number): void;
   }
 
@@ -154,7 +209,9 @@ declare module "phaser" {
     Image: Class<Image>;
     DisplayObject: Class<DisplayObject>;
     StateManager: Class<StateManager>;
+    RetroFont: Class<RetroFont>;
 
+    Tilemap: Tilemap;
     Camera: Camera;
     Physics: Physics;
     Math: Math;

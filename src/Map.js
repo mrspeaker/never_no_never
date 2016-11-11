@@ -1,16 +1,25 @@
-import Phaser from "phaser";
+//@flow
+import Phaser, {Game} from "phaser";
 import Blocks from "./Blocks";
 import BLOCK_TYPE from "./BLOCK_TYPE";
 import EasyStar from "easystarjs";
 import Player from "./entities/Player";
 import MapGen from "./MapGen";
+
+import type {Point} from "./types";
+
 class Map {
 
-  constructor (game) {
+  map: any;
+  layerz: Object;
+  grid: Array<Array<number>>;
+  estar: any;
+
+  constructor (game: Game) {
     this.create(game);
   }
 
-  create (game) {
+  create (game: Game) {
 
     game.load.tilemap("world", null, MapGen(), Phaser.Tilemap.TILED_JSON);
 
@@ -57,7 +66,7 @@ class Map {
     // estar.setIterationsPerCalculation(1000);
   }
 
-  mapToGrid (map) {
+  mapToGrid (map: any) {
     const h = map.layers[0].data.length;
     const w = map.layers[0].data[0].length;
 
@@ -83,11 +92,11 @@ class Map {
     return grid;
   }
 
-  getTileXY (x, y) {
+  getTileXY (x: number, y: number) {
     return this.getTile(x / 32 | 0, y / 32 | 0);
   }
 
-  getTile (x, y) {
+  getTile (x: number, y: number) {
     const layers = this.map.layers;
     const baseLayer = layers[0].data;
     const midLayer = layers[1].data;
@@ -107,17 +116,17 @@ class Map {
     };
   }
 
-  setTileXY (tile, x, y, layer = 1) {
+  setTileXY (tile: number, x: number, y: number, layer: number = 1) {
     this.setTile(tile, x / 32 | 0, y / 32 | 0, layer);
   }
 
-  setTile (tile, xt, yt, layer = 1) {
+  setTile (tile: number, xt: number, yt: number, layer: number = 1) {
     this.map.putTile(tile, xt, yt, layer);
     const block = Blocks.getByTileId(tile);
     this.grid[yt][xt] = block.walk ? BLOCK_TYPE.walkable : BLOCK_TYPE.solid;
   }
 
-  getNeighbours (x, y)  {
+  getNeighbours (x: number, y: number)  {
     // nope... need to think it out... base vs mid.
     const grid = this.map;
     const l = x == 0 ? Blocks.clear.tile : grid[y][x - 1];
@@ -129,7 +138,7 @@ class Map {
     };
   }
 
-  makePath (e, tx, ty, onWalked, force) {
+  makePath (e: Object, tx: number, ty: number, onWalked?: () => void, force?: boolean) {
     const layer = this.layerz.base;
     const xt = layer.getTileX(tx);
     const yt = layer.getTileY(ty);
@@ -177,9 +186,9 @@ class Map {
     this.grid[yt][xt] = oldx;
   }
 
-  findEmptySpot () {
-    let y = null;
-    let x = null;
+  findEmptySpot (): Point {
+    let y = -1;
+    let x = -1;
     let spot = -1;
 
     while (spot !== 0) {
@@ -190,9 +199,9 @@ class Map {
     return {x, y};
   }
 
-  findEmptySpotAtCenter (area = 4) {
-    let y = null;
-    let x = null;
+  findEmptySpotAtCenter (area: number = 4): Point {
+    let y = -1;
+    let x = -1;
     let spot = -1;
 
     let midX = this.map.width / 2 | 0;
@@ -210,7 +219,7 @@ class Map {
     return {x, y};
   }
 
-  findEmptySpotFurtherThan (e, CLOSE_PIXELS = 400) {
+  findEmptySpotFurtherThan (e: Object, CLOSE_PIXELS: number = 400): Point {
     let close = true;
     let x = -1;
     let y = -1;
@@ -226,7 +235,7 @@ class Map {
     return {x, y};
   }
 
-  placeBlockAt (block, worldX, worldY) {
+  placeBlockAt (block: number, worldX: number, worldY: number): boolean {
     const {base, mid} = this.getTileXY(worldX, worldY);
     if (mid.name === "clear") {
       if (block === Blocks.sand.tile) {

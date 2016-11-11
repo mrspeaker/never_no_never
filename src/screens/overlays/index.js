@@ -1,12 +1,25 @@
+// @flow
+import {Game} from "phaser";
 import Crafting from "./Crafting";
 import GameOver from "./GameOver";
 import Info from "./Info";
+import World from "../World";
+
+interface Overlay {
+  hide(): boolean;
+  show(): boolean;
+  doUpdate(): void;
+}
 
 class Overlays {
   onDone = null;
-  current = null;
+  current: ?string = null;
 
-  constructor (game, world) {
+  game: Game;
+  overlays: {[key: string]: Overlay};
+  world: World;
+
+  constructor (game: Game, world: World) {
     this.game = game;
     this.world = world;
     this.overlays = {
@@ -16,8 +29,9 @@ class Overlays {
     };
   }
 
-  show (overlayName, {onDone, data} = {}) {
+  show (overlayName: string, params: Object = {}) {
     const {game} = this;
+    const {onDone, data}:{onDone: ?() => void, data: any} = params;
     const o = this.overlays[overlayName];
     if (!o) {
       console.error("no overlay called ", overlayName);
@@ -36,8 +50,8 @@ class Overlays {
     o.show(data);
   }
 
-  hide () {
-    const o = this.overlays[this.current];
+  hide (): boolean {
+    const o = this.current && this.overlays[this.current];
     if (o && o.hide()) {
       this.onDone && this.onDone();
       this.onDone = null;
@@ -55,7 +69,7 @@ class Overlays {
     }
   }
 
-  update () {
+  update (): void {
     if (!this.current) return;
     const o = this.overlays[this.current];
     o.doUpdate();

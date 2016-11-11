@@ -9,26 +9,30 @@ import Tween from "../Tween";
 import Blocks from "../Blocks";
 import Bullet from "./Bullet";
 import Particles from "../Particles";
+import Inventory from "../Inventory";
 
 import type {Point} from "../types";
 
 class Player extends Sprite {
 
-  walkSpeed = 3;
-  hp = 0;
-  armour = 0;
-  maxArmour = 3;
+  walkSpeed: number = 3;
+  hp: number = 0;
 
-  died:Object = {};
+  died: Object = {};
   swingingForAttack = false;
   lastAttack = Date.now();
 
   shadow: Sprite;
-  state: any;
-  direction: any;
-  bloods: any;
+  health: Health;
+  bloods: Particles;
+  bloodsTimer: number;
   lastDir: string;
   lastShootTime: number;
+  state: State;
+  inventory: Inventory;
+
+  direction: any;
+  pathWalker: any;
 
   states = {
     idle: "idle",
@@ -39,7 +43,9 @@ class Player extends Sprite {
     dead: "dead"
   };
 
-  constructor (game: Game, xtile: number, ytile: number, onHurt: any, onDie: any) {
+  constructor (game: Game, xtile: number, ytile: number,
+    onHurt: (health: number, maxHealth: number, e: Object) => void = ()=>{},
+    onDie: ()=>void = ()=>{}) {
     super(game, xtile * 32, ytile * 32, "peeps");
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
@@ -73,16 +79,16 @@ class Player extends Sprite {
     this.animations.add("walk_left", [127, 128, 129, 130, 131, 132, 133], 15, true);
 
     this.health = new Health(3, 5);
-    this.health.onHurt = (...args) => {
+    this.health.onHurt = (health: number, maxHealth: number, e: Object) => {
       if (this.died.time) return;
-      this.onHurt(...args);
-      onHurt(...args);
+      this.onHurt(health, maxHealth, e);
+      onHurt(health, maxHealth, e);
     };
     this.health.onDie = onDie;
     this.pathWalker = new PathWalker();
   }
 
-  onHurt (health: number, max: number, by: any) {
+  onHurt (health: number, max: number, by: Object) {
     Tween.flash(this, {alpha: 0});
     this.game.camera.shake(0.01, 200);
     this.state.set("idle");
@@ -98,14 +104,14 @@ class Player extends Sprite {
     this.bloods.emitting = true;
     this.bloods.x = this.x + xo;
     this.bloods.y = this.y + yo;
-    this.bloodsT && clearTimeout(this.bloodsT);
-    this.bloodsT = setTimeout(() => {
+    this.bloodsTimer && clearTimeout(this.bloodsTimer);
+    this.bloodsTimer = setTimeout(() => {
       this.bloods.emitting = false;
     }, 600);
 
   }
 
-  chargedForAttack () {
+  chargedForAttack (): boolean {
     return Date.now() - this.lastAttack > 300;
   }
   rechargeAttack () {
@@ -142,7 +148,7 @@ class Player extends Sprite {
     });
   }
 
-  shoot (e:any) {
+  shoot (e: any): boolean {
     const now = Date.now();
     if (now - this.lastShootTime < 800) {
       return false;
@@ -153,7 +159,7 @@ class Player extends Sprite {
     return true;
   }
 
-  startSwinging (e:Object) {
+  startSwinging (e: Object) {
     this.swingingForAttack = true;
     const dir = e.x > this.x ? "left" : "right";
     this.direction.set(dir);
@@ -164,7 +170,7 @@ class Player extends Sprite {
     this.swingingForAttack = false;
   }
 
-  doAnim (anim: string, force?: bool) {
+  doAnim (anim: string, force?: boolean) {
     if (!anim) {
       this.animations.stop();
     }
@@ -191,7 +197,7 @@ class Player extends Sprite {
 
   }
 
-  handleClick(tool: Object, walk: () => void, place: (tile:Object) => bool) {
+  handleClick(tool: Object, walk: () => void, place: (tile: number) => boolean) {
     const {inventory} = this;
     if (this.state.get() === "building") {
       if (!inventory.hasItem(tool.item)) {
@@ -229,7 +235,7 @@ class Player extends Sprite {
     }
   }
 
-  mineTile (block:Object, tile:Object, toolEfficiency:number, onDone: () => void) {
+  mineTile (block: Object, tile: Object, toolEfficiency: number, onDone: () => void) {
     const x1 = this.x / 32 | 0;
     const y1 = this.y / 32 | 0;
     const {x, y} = tile;
@@ -351,7 +357,7 @@ class Player extends Sprite {
   updateExploring () {
     const {walkSpeed, pathWalker} = this;
 
-    pathWalker.update((c: Point, lastPath: Point, isFirst:bool) => {
+    pathWalker.update((c: Point, lastPath: Point, isFirst: boolean) => {
       const txo = c.x - lastPath.x;
       const tyo = c.y - lastPath.y;
 
@@ -380,8 +386,8 @@ class Player extends Sprite {
         xx = xx / Math.sqrt(2);
         yy = yy / Math.sqrt(2);
       }
-      this.x += xx * 1;//(1 - (DayTime.percent * DayTime.percent));
-      this.y += yy * 1;//(1 - (DayTime.percent * DayTime.percent));
+      this.x += xx * 1; //(1 - (DayTime.percent * DayTime.percent));
+      this.y += yy * 1; //(1 - (DayTime.percent * DayTime.percent));
 
       return Phaser.Math.distance(this.x, this.y, c.x * 32, c.y * 32) < walkSpeed;
     });
