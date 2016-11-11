@@ -1,4 +1,5 @@
-import Phaser from "phaser";
+//@flow
+import Phaser, {Game, Sprite} from "phaser";
 
 import State from "../State";
 import Health from "../components/Health";
@@ -9,16 +10,25 @@ import Blocks from "../Blocks";
 import Bullet from "./Bullet";
 import Particles from "../Particles";
 
-class Player extends Phaser.Sprite {
+import type {Point} from "../types";
+
+class Player extends Sprite {
 
   walkSpeed = 3;
   hp = 0;
   armour = 0;
   maxArmour = 3;
 
-  died = null;
+  died:Object = {};
   swingingForAttack = false;
   lastAttack = Date.now();
+
+  shadow: Sprite;
+  state: any;
+  direction: any;
+  bloods: any;
+  lastDir: string;
+  lastShootTime: number;
 
   states = {
     idle: "idle",
@@ -29,7 +39,7 @@ class Player extends Phaser.Sprite {
     dead: "dead"
   };
 
-  constructor (game, xtile, ytile, onHurt, onDie) {
+  constructor (game: Game, xtile: number, ytile: number, onHurt: any, onDie: any) {
     super(game, xtile * 32, ytile * 32, "peeps");
 
     this.shadow = game.add.sprite(this.x, this.y + 8, "peeps");
@@ -64,7 +74,7 @@ class Player extends Phaser.Sprite {
 
     this.health = new Health(3, 5);
     this.health.onHurt = (...args) => {
-      if (this.died) return;
+      if (this.died.time) return;
       this.onHurt(...args);
       onHurt(...args);
     };
@@ -72,7 +82,7 @@ class Player extends Phaser.Sprite {
     this.pathWalker = new PathWalker();
   }
 
-  onHurt (h, max, by) {
+  onHurt (health: number, max: number, by: any) {
     Tween.flash(this, {alpha: 0});
     this.game.camera.shake(0.01, 200);
     this.state.set("idle");
@@ -102,7 +112,7 @@ class Player extends Phaser.Sprite {
     this.lastAttack = Date.now();
   }
 
-  setPath (path, onDone) {
+  setPath (path: Array<Point>, onDone: () => void) {
     if (this.state.get() === "building") {
       // if building mode, place a brick: don't set a path.
       return;
@@ -132,7 +142,7 @@ class Player extends Phaser.Sprite {
     });
   }
 
-  shoot (e) {
+  shoot (e:any) {
     const now = Date.now();
     if (now - this.lastShootTime < 800) {
       return false;
@@ -143,7 +153,7 @@ class Player extends Phaser.Sprite {
     return true;
   }
 
-  startSwinging (e) {
+  startSwinging (e:Object) {
     this.swingingForAttack = true;
     const dir = e.x > this.x ? "left" : "right";
     this.direction.set(dir);
@@ -154,7 +164,7 @@ class Player extends Phaser.Sprite {
     this.swingingForAttack = false;
   }
 
-  doAnim (anim, force) {
+  doAnim (anim: string, force?: bool) {
     if (!anim) {
       this.animations.stop();
     }
@@ -164,7 +174,7 @@ class Player extends Phaser.Sprite {
     }
   }
 
-  switchTool (tool) {
+  switchTool (tool: Object) {
     const item = Items[tool.item];
     const current = this.state.get();
     // Stop mining if switch tool
@@ -181,7 +191,7 @@ class Player extends Phaser.Sprite {
 
   }
 
-  handleClick(tool, walk, place) {
+  handleClick(tool: Object, walk: () => void, place: (tile:Object) => bool) {
     const {inventory} = this;
     if (this.state.get() === "building") {
       if (!inventory.hasItem(tool.item)) {
@@ -219,7 +229,7 @@ class Player extends Phaser.Sprite {
     }
   }
 
-  mineTile (block, tile, toolEfficiency, onDone) {
+  mineTile (block:Object, tile:Object, toolEfficiency:number, onDone: () => void) {
     const x1 = this.x / 32 | 0;
     const y1 = this.y / 32 | 0;
     const {x, y} = tile;
@@ -261,7 +271,7 @@ class Player extends Phaser.Sprite {
   update () {
     const {animations} = this;
 
-    if (this.died) {
+    if (this.died.time) {
       animations.stop();
       this.shadow.visible = false;
       this.frame = 19;
@@ -341,7 +351,7 @@ class Player extends Phaser.Sprite {
   updateExploring () {
     const {walkSpeed, pathWalker} = this;
 
-    pathWalker.update((c, lastPath, isFirst) => {
+    pathWalker.update((c: Point, lastPath: Point, isFirst:bool) => {
       const txo = c.x - lastPath.x;
       const tyo = c.y - lastPath.y;
 

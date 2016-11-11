@@ -28,7 +28,7 @@ class Slot extends Phaser.Group {
   updateUI () {
     const {item, amount, ui} = this;
     ui.icon.frame = !item ? Items.empty.icon : Items[item].icon;
-    ui.amount.text = (amount < 2 ? "" : amount) + "";
+    ui.amount.text((amount < 2 ? "" : amount) + "");
   }
 
   setItem (item, amount = 1) {

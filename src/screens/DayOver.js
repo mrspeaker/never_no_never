@@ -1,4 +1,5 @@
-import Phaser from "phaser";
+//@flow
+import {Game, State, DisplayObject} from "phaser";
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
@@ -11,9 +12,13 @@ const startWiths = [
   [{item: "stone_pick", amount: 4, unlocked: false, question: true}],
 ];
 
-class DayOver extends Phaser.State {
+class DayOver extends State {
 
-  create (game) {
+  starts: Array<DisplayObject>;
+  ui: Object;
+  controls: any;
+
+  create (game: Game) {
 
     game.stage.backgroundColor = "#001111";
 
@@ -71,7 +76,7 @@ class DayOver extends Phaser.State {
     data.gameHP += data.dailyHP;
   }
 
-  update (game) {
+  update (game: Game) {
     const {controls} = this;
     const {justPressed} = controls;
 

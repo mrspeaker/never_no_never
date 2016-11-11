@@ -1,4 +1,5 @@
-import Phaser from "phaser";
+// @flow
+import Phaser, {State as PState, Game, Group, Sprite} from "phaser";
 import Map from "../Map";
 import Controls from "../Controls";
 import Player from "../entities/Player";
@@ -19,9 +20,35 @@ import State from "../State";
 import data from "../data";
 import shaders from "../shaders";
 
-class World extends Phaser.State {
+class World extends PState {
 
-  _cheat = false;
+  _cheat: bool = false;
+  haveEverCrafted: bool = false;
+  haveEverFoundRecipe: bool = false;
+
+  game: Game;
+  maingroup: Group;
+  perma: Group;
+  mobs: Group;
+  animals: Group;
+  floppies: Group;
+  groundTarget: Sprite;
+  cameraTarget: Sprite;
+
+  player: any;
+  protagonist: any;
+  segway: any;
+  plane: any;
+  controls: any;
+  map: any;
+  inventory: any;
+  HUD: any;
+  overlays: any;
+
+  particles: any;
+  stats: any;
+  stayte: any;
+  filter: any;
 
   reset () {
     this.stats.dailyHP = 0;
@@ -31,8 +58,7 @@ class World extends Phaser.State {
     this.game.state.start("Splash");
   }
 
-  create (game) {
-
+  create (game: Game) {
     //game.time.advancedTiming = true;
     //game.time.desiredFps = 60;
     //game.time.slowMotion = 10.0;
@@ -83,7 +109,7 @@ class World extends Phaser.State {
     }
 
     this.controls = new Controls(game);
-    this.player = new Player(game, x, y, ::this.playerHurt, ::this.playerDied);
+    this.player = new Player(game, x, y, this.playerHurt.bind(this), this.playerDied.bind(this));
     this.maingroup.add(this.player);
     this.protagonist = this.player;
 
@@ -164,7 +190,7 @@ class World extends Phaser.State {
     // this.maingroup.filters = [this.filter];
   }
 
-  switchedTool (tool) {
+  switchedTool (tool:any) {
     // TODO: this should delegate to "use tool", "stop using tool"
     if (tool.item === "empty") {
       if (this.stayte.is("driving")) {
@@ -184,14 +210,13 @@ class World extends Phaser.State {
     }
   }
 
-  playerHurt (health, maxHealth) {
-    console.log("oh here!");
+  playerHurt (health:number, maxHealth:number) {
     this.HUD.setHealth(health, maxHealth);
   }
 
   playerDied () {
     const {stayte, player, protagonist, map, mobs} = this;
-    if (player.died) {
+    if (player.died.time) {
       // I don't think this check is necessary
       console.error("already dead.");
       return;
@@ -214,10 +239,10 @@ class World extends Phaser.State {
     });
   }
 
-  addHP (amount) {
+  addHP (amount: number) {
     if (!amount) return;
     this.stats.dailyHP += amount;
-    this.HUD.subtitle.text = `HP: ${this.stats.dailyHP}`;
+    this.HUD.subtitle.text(`HP: ${this.stats.dailyHP}`);
   }
 
   toggleCheat () {
@@ -225,7 +250,7 @@ class World extends Phaser.State {
     return this._cheat;
   }
 
-  onPathWalked (xt, yt) {
+  onPathWalked (xt: number, yt: number) {
     const {map, player, mobs} = this;
 
     const tile = map.map.layers[1].data[yt][xt];
@@ -276,7 +301,7 @@ class World extends Phaser.State {
     }
   }
 
-  update (game) {
+  update (game: Game) {
     const {protagonist, cameraTarget, controls, stayte, inventory} = this;
 
     controls.update();
@@ -527,7 +552,7 @@ class World extends Phaser.State {
     }
   }
 
-  collideWithMob (m) {
+  collideWithMob (m:any) {
     // TODO: player, not vehicle
     const {player, inventory} = this;
 
@@ -593,7 +618,7 @@ class World extends Phaser.State {
       un.forEach(u => {
         data.recipes[u] = true;
       });
-      this.HUD.subtitle.text = un.join(", ");
+      this.HUD.subtitle.text(un.join(", "));
       break;
     }
     this.haveEverFoundRecipe = true;
@@ -601,7 +626,7 @@ class World extends Phaser.State {
     this.overlays.show("info", {data: un[0]});
   }
 
-  walkToThenAct (worldX, worldY) {
+  walkToThenAct (worldX: number, worldY: number) {
     const {groundTarget} = this;
     this.particles.emitting = false;
     groundTarget.x = (worldX / 32 | 0) * 32;
@@ -618,7 +643,7 @@ class World extends Phaser.State {
     );
   }
 
-  updateExploring (game) {
+  updateExploring (game: Game) {
     const {controls, inventory} = this;
     const {justPressed, x, y, worldX, worldY} = controls;
 
@@ -642,7 +667,7 @@ class World extends Phaser.State {
 
   }
 
-  toggleDriving (vehicleName) {
+  toggleDriving (vehicleName: string) {
     const {protagonist, player, stayte} = this;
     if (!vehicleName && stayte.is("driving")) {
       stayte.set("exploring");
@@ -656,7 +681,8 @@ class World extends Phaser.State {
     }
     else {
       stayte.set("driving");
-      const vehicle = vehicleName ? this[vehicleName] :
+      const vehicle = vehicleName ?
+        (vehicleName === "plane" ? this.plane : this.segway) :
         (Math.random() < 0.5 ? this.plane : this.segway);
       player.visible = false;
       player.shadow.visible = false; // TODO: do this in player!
@@ -667,7 +693,7 @@ class World extends Phaser.State {
     }
   }
 
-  updateDriving (game) {
+  updateDriving (game: Game) {
     const {map, player, protagonist} = this;
     const vehicle = protagonist;
     // TODO: just so shoots from correct pos.
@@ -723,7 +749,7 @@ class World extends Phaser.State {
     //data.lifetimeHP = this.stats.lifetimeHP; um, why comment?...
   }
 
-  deserialize (doInventory = true) {
+  deserialize (doInventory:bool = true) {
     if (doInventory && data.inventory) {
       this.inventory.deserialize(data.inventory);
     }
@@ -737,7 +763,7 @@ class World extends Phaser.State {
     this.haveEverFoundRecipe = data.haveEverFoundRecipe;
   }
 
-  pauseUpdate (game) {
+  pauseUpdate (game: Game) {
     super.pauseUpdate(game);
     this.overlays.update(game);
   }

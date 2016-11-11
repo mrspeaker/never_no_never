@@ -1,4 +1,5 @@
-// @flow
+//@flow
+
 import Phaser from "phaser";
 import Preload from "./screens/Preload";
 import Splash from "./screens/Splash";

@@ -151,13 +151,14 @@ class Info {
       if (Date.now() - state.time > 1000 && (Math.random() < 0.01 || Date.now() - state.time > 5000)) {
         state.set("ready");
       }
-      this.decrypt.text = "decrypting " +
-        (btoa(Date.now()/1000).slice(-10)).split("").sort(()=>0.5 - Math.random()).join("");
+      this.decrypt.text(
+        "decrypting " +
+        (btoa(Date.now()/1000).slice(-10)).split("").sort(()=>0.5 - Math.random()).join(""));
       break;
 
     case "ready":
       if (first) {
-        this.decrypt.text = "";
+        this.decrypt.text("");
         this.redraw(game);
         this.state.set("rendered");
       }

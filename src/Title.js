@@ -1,4 +1,7 @@
-function Title (game, text, size, x, y, fixed) {
+// @flow
+import {Game} from "phaser";
+
+function Title (game: Game, text: string, size: number, x: number, y: number, fixed?: bool) {
 
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ .,!?'\":-$                0123456789";
   const fontName = size === 9 ? "bmaxFont9" : "bmaxFont9x4";
@@ -11,7 +14,7 @@ function Title (game, text, size, x, y, fixed) {
   img.data.title = title;
   return {
     img: img,
-    set text (msg) { title.text = msg; },
+    text: (msg: string) => title.text = msg,
     font: title
   };
 }
