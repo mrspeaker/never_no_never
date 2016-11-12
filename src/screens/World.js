@@ -57,8 +57,8 @@ class World extends PState {
   HUD: HUD;
   filter: Filter;
 
-  segway: any;
-  plane: any;
+  segway: Sprite;
+  plane: Sprite;
 
   reset () {
     this.stats.dailyHP = 0;
@@ -107,7 +107,8 @@ class World extends PState {
     this.maingroup.add(this.perma);
 
     // Position the player and manhole
-    let {x, y} = this.map.findEmptySpotAtCenter();
+    let {x, y} = this.map.findEmptySpotAtCenterTop();
+    console.log(y)
     this.map.setTile(Blocks.manhole.tile, x, y);
     const above = this.map.getTile(x, y - 1);
     const right = this.map.getTile(x + 1, y);

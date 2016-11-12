@@ -30,8 +30,8 @@ class Player extends Sprite {
   lastShootTime: number;
   state: State;
   inventory: Inventory;
-
-  direction: any;
+  direction: State;
+  
   pathWalker: any;
 
   states = {

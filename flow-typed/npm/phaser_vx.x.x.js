@@ -20,12 +20,6 @@ declare module "phaser" {
     events: Object;
 
     addChild<T:DisplayObject> (child: T): T;
-
-    // HACK: I need to implement in Entity classes!
-    dead: () => void;
-    isClose: boolean;
-    walkSpeed: number;
-    defaultWalkSpeed: number;
   }
 
   declare class Animation {}

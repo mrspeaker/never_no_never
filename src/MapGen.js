@@ -37,8 +37,8 @@ export default function () {
 
   const grid = [];
   const gridMid = [];
-  const h = 100;
-  const w = 100;
+  const h = 300;
+  const w = 30;
 
   for (let x = 0; x < h; x++) {
     grid[x] = [];

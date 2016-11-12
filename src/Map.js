@@ -210,8 +210,29 @@ class Map {
     let halfArea = area / 2;
 
     while (spot !== 0) {
-      y = (Math.random() * area - halfArea) + midX | 0;
-      x = (Math.random() * area - halfArea) + midY | 0;
+      x = (Math.random() * area - halfArea) + midX | 0;
+      y = (Math.random() * area - halfArea) + midY | 0;
+      spot = this.grid[y][x];
+      area += 0.5;
+      halfArea = area / 2;
+    }
+    return {x, y};
+  }
+
+  findEmptySpotAtCenterTop (area: number = 4): Point {
+    let y = -1;
+    let x = -1;
+    let spot = -1;
+
+    let midX = this.map.width / 2 | 0;
+    let midY = 10;
+
+    let halfArea = area / 2;
+
+    while (spot !== 0) {
+      y = (Math.random() * area - halfArea) + midY | 0;
+      y = Math.max(0, y);
+      x = (Math.random() * area - halfArea) + midX | 0;
       spot = this.grid[y][x];
       area += 0.5;
       halfArea = area / 2;

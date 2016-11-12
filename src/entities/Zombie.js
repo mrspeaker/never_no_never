@@ -1,10 +1,13 @@
-import Phaser from "phaser";
-
+//@flow
+import Phaser, {Game, Sprite} from "phaser";
+import World from "../screens/World";
 import Health from "../components/Health";
 import State from "../State";
 import PathWalker from "../components/PathWalker";
 import Tween from "../Tween";
 import Particles from "../Particles";
+
+import type {Point} from "../types";
 
 class Zombie extends Phaser.Sprite {
 
@@ -12,7 +15,20 @@ class Zombie extends Phaser.Sprite {
   walkSpeed = 1.5;
   lastAttack = Date.now();
 
-  constructor (game, xtile, ytile, bmax) {
+  lastPathSet: number;
+  hurtPause: number;
+
+  bmax: World;
+  state: State;
+  health: Health;
+  direction: State;
+  shadow: Sprite;
+  bloods: Particles;
+  bloodsTimer: number;
+
+  pathWalker: any;
+
+  constructor (game: Game, xtile: number, ytile: number, bmax: World) {
     super(game, xtile * 32, ytile * 32, "peeps");
 
     this.bmax = bmax;
@@ -45,7 +61,7 @@ class Zombie extends Phaser.Sprite {
 
   }
 
-  onHurt (h, max, by) {
+  onHurt (health: number, max: number, by: Object) {
     this.hurtPause = 50;
     this.lastAttack = Date.now();
     let angle = by.angle - Math.PI / 2 || this.game.math.angleBetween(
@@ -60,8 +76,8 @@ class Zombie extends Phaser.Sprite {
     this.bloods.emitting = true;
     this.bloods.x = this.x + xo;
     this.bloods.y = this.y + yo;
-    this.bloodsT && clearTimeout(this.bloodsT);
-    this.bloodsT = setTimeout(() => {
+    this.bloodsTimer && clearTimeout(this.bloodsTimer);
+    this.bloodsTimer = setTimeout(() => {
       this.bloods.emitting = false;
     }, 600);
   }
@@ -90,7 +106,7 @@ class Zombie extends Phaser.Sprite {
     this.lastAttack = Date.now();
   }
 
-  setPath (path, onDone, force) {
+  setPath (path: Array<Point>, onDone: () => void, force: boolean) {
     if (this.state.get() === "dying") {
       return;
     }
