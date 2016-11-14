@@ -45,8 +45,13 @@ export default function () {
     gridMid[y] = [];
     for (let x = 0; x < w; x++) {
 
-      if (y === 0 || x === 0 || x === w - 1 || y > h - 5 ) {
-        grid[y][x] = Blocks.mountain.tile;
+      if (y === 0 || x < 2 || x > w - 3 || y > h - 5 ) {
+        if (x === 0) {
+          grid[y][x] = Blocks.mountain_top.tile;
+        }
+        else {
+          grid[y][x] = Blocks.mountain.tile;
+        }
         gridMid[y][x] = 0;
         continue
       }

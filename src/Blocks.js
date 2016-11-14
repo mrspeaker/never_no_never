@@ -19,7 +19,8 @@ export default {
   "sand": { name: "sand", tile: 1, walk: true },
   "brick": { name: "brick", tile: 276, mine: true, hardness: 10, yields: [{name: "stone", amount: 1}] },
 
-  "mountain": { name: "mountain", tile: 50 },
+  "mountain": { name: "mountain", tile: 55 },
+  "mountain_top": { name: "mountain_top", tile: 49 },
 
   // TODO: Get this out of here.
   getByTileId: function (id) {
