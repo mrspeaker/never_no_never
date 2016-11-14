@@ -108,7 +108,6 @@ class World extends PState {
 
     // Position the player and manhole
     let {x, y} = this.map.findEmptySpotAtCenterTop();
-    console.log(y)
     this.map.setTile(Blocks.manhole.tile, x, y);
     const above = this.map.getTile(x, y - 1);
     const right = this.map.getTile(x + 1, y);
@@ -420,7 +419,7 @@ class World extends PState {
 
     this.overlays.update();
 
-    if (updateDay && !this.player.died) {
+    if (updateDay && !this.player.died.time) {
       this.doMobStrategy();
       this.collisionsMob();
       this.collisionsAnimals();

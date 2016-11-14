@@ -40,38 +40,44 @@ export default function () {
   const h = 300;
   const w = 30;
 
-  for (let x = 0; x < h; x++) {
-    grid[x] = [];
-    gridMid[x] = [];
-    for (let y = 0; y < w; y++) {
-      grid[x][y] = noiseBase.in2D(x, y) > 0.7 ? Blocks.water.tile : Blocks.sand.tile;
-      gridMid[x][y] = 0;
+  for (let y = 0; y < h; y++) {
+    grid[y] = [];
+    gridMid[y] = [];
+    for (let x = 0; x < w; x++) {
 
-      if (grid[x][y] !== Blocks.sand.tile) {
+      if (y === 0 || x === 0 || x === w - 1 || y > h - 5 ) {
+        grid[y][x] = Blocks.mountain.tile;
+        gridMid[y][x] = 0;
+        continue
+      }
+      grid[y][x] = noiseBase.in2D(x, y) > 0.7 ? Blocks.water.tile : Blocks.sand.tile;
+      gridMid[y][x] = 0;
+
+      if (grid[y][x] !== Blocks.sand.tile) {
         continue;
       }
       const v = noiseTrees.in2D(x, y);
       if (v > 0.7) {
-        gridMid[x][y] = Blocks.tree.tile;
+        gridMid[y][x] = Blocks.tree.tile;
       }
 
       const t2 = noiseTrees2.in2D(x, y);
       if (t2 > 0.9) {
-        gridMid[x][y] = Blocks.rubber_sap.tile;
+        gridMid[y][x] = Blocks.rubber_sap.tile;
       }
 
       const o = noiseOres.in2D(x, y);
       if (o > 0.4 && o < 0.404) {
-        gridMid[x][y] = Blocks.stalegmite.tile;
+        gridMid[y][x] = Blocks.stalegmite.tile;
       }
       else if (o > 0.5 && o < 0.503) {
-        gridMid[x][y] = Blocks.coal_ore.tile;
+        gridMid[y][x] = Blocks.coal_ore.tile;
       }
       else if (o > 0.6 && o < 0.606) {
-        gridMid[x][y] = Blocks.stone_ore.tile;
+        gridMid[y][x] = Blocks.stone_ore.tile;
       }
       else if (o > 0.7 && o < 0.705) {
-        gridMid[x][y] = Blocks.iron_ore.tile;
+        gridMid[y][x] = Blocks.iron_ore.tile;
       }
     }
   }

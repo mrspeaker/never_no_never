@@ -1,5 +1,5 @@
 //@flow
-import {State, Game} from "phaser";
+import {State, Game, RetroFont, Sprite, Image} from "phaser";
 import Controls from "../Controls";
 import Title from "../Title";
 import Items from "../Items";
@@ -17,12 +17,14 @@ const startWiths = [
 
 class Splash extends State {
 
-  goingToNext: bool = false;
+  goingToNext: boolean = false;
 
-  player: any;
-  starts: Array<any>;
+  player: Player;
+  starts: Array<Image | Sprite>;
   controls: any;
-  ui: Object;
+  ui: {
+    title: RetroFont;
+  };
 
   create (game: Game) {
     game.stage.backgroundColor = "#000000";
@@ -35,7 +37,6 @@ class Splash extends State {
     this.player = new Player(game, 3, 13);
     this.player.scale.set(2);
     this.player.shadow.scale.set(2);
-    this.player.update = () => {};
 
     game.add.sprite(32 * 4, 0, "splash-cover");
     game.add.sprite(32 * 4, 2, "splash-cover");
@@ -47,7 +48,6 @@ class Splash extends State {
     const title = Title(game, "never,", 36, xo, yo).font;
     Title(game, "no", 36, xo, yo + 40).font;
     Title(game, "never,", 36, xo, yo + 80).font;
-    //const start = Title(game, "Start with?", 9, 130, 210, true).font;
 
     const x = 160;
     const y = 140;

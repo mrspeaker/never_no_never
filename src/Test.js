@@ -13,19 +13,19 @@ const getCol = (base, mid) => {
     if (mid === Blocks.stalegmite.tile) return "#F9406C";
     return "#" + Math.floor(Math.random()*16777215).toString(16);
   }
+  if (base === Blocks.mountain.tile) return "#880000";
   return "#" + Math.floor(Math.random()*16777215).toString(16);
 };
 
 class TestState extends Phaser.State {
   create (game) {
     const m = new MapGen(game);
-    const size = 5;
+    const size = 2;
     const bmd = game.add.bitmapData(m.width * size, m.height * size);
-    console.log(m);
     for (let y = 0; y < m.height; y++) {
-      for (let x = 0; x < m.height; x++) {
-        const base = m.layers[0].data[y * m.height + x];
-        const mid = m.layers[1].data[y * m.height + x];
+      for (let x = 0; x < m.width; x++) {
+        const base = m.layers[0].data[y * m.width + x];
+        const mid = m.layers[1].data[y * m.width + x];
         const col = getCol(base, mid);
         bmd.ctx.beginPath();
         bmd.ctx.rect(x * size, y * size, size, size);
