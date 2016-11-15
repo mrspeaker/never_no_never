@@ -22,6 +22,7 @@ class Splash extends State {
   player: Player;
   starts: Array<Image | Sprite>;
   controls: any;
+  
   ui: {
     title: RetroFont;
   };

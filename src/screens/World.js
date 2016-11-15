@@ -119,6 +119,8 @@ class World extends PState {
     }
 
     this.controls = new Controls(game);
+    this.controls.addTouchMarks(game);
+
     this.player = new Player(game, x, y, this.playerHurt.bind(this), this.playerDied.bind(this));
     this.maingroup.add(this.player);
     this.protagonist = this.player;
@@ -636,7 +638,7 @@ class World extends PState {
     this.overlays.show("info", {data: un[0]});
   }
 
-  walkToThenAct (worldX: number, worldY: number) {
+  walkToThenAct (worldX: number, worldY: number, doAct: boolean = true) {
     const {groundTarget} = this;
     this.particles.emitting = false;
     groundTarget.x = (worldX / 32 | 0) * 32;
@@ -648,16 +650,16 @@ class World extends PState {
       worldX,
       worldY,
       () => {
-        this.onPathWalked(worldX / 32 | 0, worldY / 32 | 0);
+       doAct && this.onPathWalked(worldX / 32 | 0, worldY / 32 | 0);
       }
     );
   }
 
   updateExploring (game: Game) {
-    const {controls, inventory} = this;
-    const {justPressed, x, y, worldX, worldY} = controls;
+    const {controls, inventory, player} = this;
+    const {justReleased, justPressed, x, y, worldX, worldY, swipe} = controls;
 
-    if (justPressed) {
+    if (justReleased) {
       const bottomOfTouchable = inventory.ui.box.cameraOffset.y - 5;
       if (y > bottomOfTouchable - 5) return;
 
@@ -667,7 +669,18 @@ class World extends PState {
         return;
       }
 
-      this.player.handleClick(
+      if (swipe.power) {
+        //console.log("yp", swipeAngle, controls.sx, controls.sy);
+        const last = swipe.dt[swipe.dt.length - 1];
+        this.walkToThenAct(
+          player.x + Math.cos(swipe.angle) * swipe.power * 8,
+          player.y + Math.sin(swipe.angle) * swipe.power * 8,
+          false
+        );
+        return;
+      }
+
+      player.handleClick(
         inventory.holding(),
         this.walkToThenAct.bind(this, worldX, worldY),
         (block) => this.map.placeBlockAt(block, worldX, worldY)

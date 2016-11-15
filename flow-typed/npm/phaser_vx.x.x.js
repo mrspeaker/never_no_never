@@ -166,7 +166,12 @@ declare module "phaser" {
 
   declare class Input {
     onDown: any;
-    activePointer: Object;
+    activePointer: {
+      x: number,
+      y: number,
+      worldX: number,
+      worldY: number
+    };
   }
 
   declare class Game {
