@@ -4,8 +4,11 @@ import Title from "../../Title";
 import recipes from "../../Recipes";
 import data from "../../data";
 import Floppy from "../../entities/Floppy";
+import World from "../World";
 
 class Crafting {
+
+  world: World;
 
   pauseGame = false;
 
@@ -156,9 +159,9 @@ class Crafting {
   doUpdate () {
     const {game, world, recipeYo, recipeLineSpacing} = this;
     const {controls, inventory} = world;
-    const {justPressed, x, y} = controls;
+    const {justReleased, x, y} = controls;
 
-    if (justPressed) {
+    if (justReleased) {
       if (y < 70) {
         // TODO: crafting shouldn't know about world state
         this.world.overlays.hide();
