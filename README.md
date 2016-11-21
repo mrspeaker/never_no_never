@@ -55,6 +55,7 @@ Browse on localhost:9966
 ## Bugs
 
 * crafting should be paused game
+* pathfind error if player never moves
 * zombie sometimes stays after player dead
 * mining progress bars not in layer
 * multi vehicle when switching / crafting in vehicle

@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import Phaser, {Game, Sprite, Group} from "phaser";
 import Items from "../../Items";
 import Title from "../../Title";
 import recipes from "../../Recipes";
@@ -9,8 +9,15 @@ import World from "../World";
 class Crafting {
 
   world: World;
+  game: Game;
+  group: Group;
+  pda: Sprite;
+  icons: Group;
 
-  pauseGame = false;
+  recipeRow: Array<any>;
+
+  pauseGame = true;
+  noclick = true;
 
   recipeXo = 60;
   recipeYo = 110;
@@ -18,7 +25,7 @@ class Crafting {
   columnWidth = 150;
   columnLength = 6;
 
-  constructor (game, world) {
+  constructor (game: Game, world: World) {
     this.world = world;
     this.game = game;
 
@@ -26,7 +33,7 @@ class Crafting {
     group.fixedToCamera = true;
     group.visible = false;
 
-    group.create(0, 0, "crafting");
+    // group.create(0, 0, "crafting");
     this.pda = group.add(game.add.sprite(-6, 0, "pda"));
 
     // const mask = game.add.graphics(0, 0);
@@ -83,10 +90,14 @@ class Crafting {
   show () {
     this.redraw();
     this.group.visible = true;
+    this.pda.y = this.game.height - 130;
+    this.game.add.tween(this.pda).to( { y: 0 }, 500, Phaser.Easing.Exponential.Out, true);
+
   }
 
   hide () {
     this.group.visible = false;
+    this.game.paused = false;
     return true;
   }
 
@@ -146,7 +157,7 @@ class Crafting {
     });
 
     if (dbIsEmpty) {
-      const flop = new Floppy(game, 80, 200);
+      const flop:Sprite = new Floppy(game, 80, 200);
       flop.scale.set(3);
       icons.add(flop);
       icons.add(Title(game, "error.", 36, 60, 120).img);

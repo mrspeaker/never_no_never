@@ -345,7 +345,7 @@ class World extends PState {
         let count = 0;
         let goodDist = false;
         while (count++ < 100 && !goodDist) {
-          let {x, y} = this.map.findEmptySpotAtCenter(10);
+          let {x, y} = this.map.findEmptySpotAtCenterTop(10);
           const dist = Phaser.Math.distance(x * 32, y * 32, protagonist.x, protagonist.y);
           if (dist > 100 && dist < 180) {
             goodDist = true;
@@ -788,6 +788,9 @@ class World extends PState {
 
   pauseUpdate (game: Game) {
     super.pauseUpdate(game);
+
+    game.tweens.update();
+    this.controls.update();
     this.overlays.update(game);
   }
 

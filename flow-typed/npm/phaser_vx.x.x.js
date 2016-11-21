@@ -60,6 +60,7 @@ declare module "phaser" {
       physicsBodyType: ?number):this;
     children: Array<DisplayObject>;
     add<T: DisplayObject> (child: T, silent?: boolean, index?: number): T;
+    removeAll<T: DisplayObject> (): void;
     create (x: number, y: number, key?: string, frame?: number, exists?: boolean, index?: number): Sprite;
     forEach<T: DisplayObject> (callback: (child: T) => void, context?: Object, checkExists?: boolean): void;
     getRandom: () => DisplayObject;
@@ -139,7 +140,7 @@ declare module "phaser" {
   }
 
   declare class Tween {
-    to: any;
+    to (): Tween;
   }
 
   declare class Camera {

@@ -1,11 +1,13 @@
 // @flow
-import {Game} from "phaser";
+import Phaser, {Game} from "phaser";
 import Crafting from "./Crafting";
 import GameOver from "./GameOver";
 import Info from "./Info";
 import World from "../World";
 
 interface Overlay {
+  x: number;
+  y: number;
   hide(): boolean;
   show(): boolean;
   doUpdate(): void;
@@ -44,10 +46,15 @@ class Overlays {
     this.current = overlayName;
     if (onDone) this.onDone = onDone;
     if (o.pauseGame) {
-      game.input.onDown.add(this.pausedClickHandler, this);
+      if (!o.noclick)
+        game.input.onDown.add(this.pausedClickHandler, this);
       game.paused = true;
     }
+    //const t0 = performance.now();
     o.show(data);
+    //const t1 = performance.now();
+    //console.log((t1 - t0) + " milliseconds.")
+
   }
 
   hide (): boolean {

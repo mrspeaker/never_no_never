@@ -1,3 +1,4 @@
+import {Group} from "phaser";
 import Title from "../../Title";
 import Items from "../../Items";
 import recipes from "../../Recipes";
@@ -9,6 +10,8 @@ class Info {
   pauseGame = true;
   pickup = null;
 
+  group: Group;
+
   constructor (game, world) {
     this.world = world;
     this.game = game;
@@ -19,8 +22,8 @@ class Info {
 
     this.state = new State("hidden");
 
-    const bg = group.add(game.add.sprite(0, 0, "crafting"));
-    bg.alpha = 0.6;
+    //const bg = group.add(game.add.sprite(0, 0, "crafting"));
+    //bg.alpha = 0.6;
     this.pda = group.add(game.add.sprite(-6, 0, "pda"));
 
     this.t1 = Title(game, "craft", 36, 60, 110);
@@ -45,7 +48,11 @@ class Info {
     if (Date.now() - this.shownAt < 1000) {
       return false;
     }
-    this.group.visible = false;
+    const t = this.game.add.tween(this.pda)
+      .to( { y: this.game.height - 130 }, 700, Phaser.Easing.Exponential.InOut, true);
+    t.onComplete.add(() => {
+      this.group.visible = false;
+    }, this);
     return true;
   }
 
@@ -53,7 +60,9 @@ class Info {
     this.pickup = pickup;
     this.deets.removeAll();
     this.state.set(pickup === "intro" ? "intro" : "shown");
+    this.pda.y = this.game.height - 130;
     this.group.visible = true;
+    this.game.add.tween(this.pda).to( { y: 0 }, 700, Phaser.Easing.Exponential.InOut, true);
   }
 
   redraw (game) {
@@ -80,7 +89,7 @@ class Info {
 
     const arrow = g.create(xo, yo, "icons");
     arrow.frame = 30;
-    //arrow.fixedToCamera = true;
+
     xo += 32;
     yields.forEach(({item, amount}) => {
       const icon = g.create(xo, yo, "icons");
