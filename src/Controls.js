@@ -73,33 +73,36 @@ class Controls {
   calculatePowerAndAngle (): {power: number, angle: number, dt: Array<{x: number, y: number}>} {
     let i = 0;
     let ts = [];
+    const noop = {
+      power: 0,
+      angle: 0,
+      dt: []
+    };
     this.touchMarks.forEach(({x, y}) => {
       if (i++ < this.touchIdx) ts.push({x, y});
     });
     if (ts.length < 2) {
-      return {
-        power: 0,
-        angle: 0,
-        dt: []
-      };
+      return noop;
     }
 
     const head = ts[0];
     const last = ts[ts.length - 1];
     const dx = Math.abs(last.x - head.x);
     const dy = Math.abs(last.y - head.y);
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 25) {
+      return noop;
+    }
+
     const off = ts.map(({x, y}) => {
       return {
         x: dx === 0 ? 0 : (x - head.x) / dx,
         y: dy === 0 ? 0 : (y - head.y) / dy
       }
     }).filter(m => m.x !== 0 || m.y !== 0);
+
     if (!off.length) {
-      return {
-        power: 0,
-        angle: 0,
-        dt: []
-      };
+      return noop;
     }
     const power = this.game.math.distance(head.x, head.y, last.x, last.y) / off.length;
     // TODO: least squares fit

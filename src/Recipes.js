@@ -1,4 +1,11 @@
-const Recipes = [{
+export type Recipe = {
+  name: string,
+  source: Array<{item: string, amount: Number}>,
+  yields: Array<{item: string, amount: Number}>,
+  description: string
+};
+
+const Recipes: Array<Recipe> = [{
   name: "wood_pick",
   source: [{item: "wood", amount: 2}],
   yields: [{item: "wood_pick", amount: 4}],

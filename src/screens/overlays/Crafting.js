@@ -1,7 +1,7 @@
 import Phaser, {Game, Sprite, Group} from "phaser";
 import Items from "../../Items";
 import Title from "../../Title";
-import recipes from "../../Recipes";
+import Recipes from "../../Recipes";
 import data from "../../data";
 import Floppy from "../../entities/Floppy";
 import World from "../World";
@@ -123,7 +123,7 @@ class Crafting {
 
     let dbIsEmpty = true;
 
-    this.recipeRow = recipes.map(({name, source, yields}, i) => {
+    this.recipeRow = Recipes.map(({name, source, yields}, i) => {
       let xo = this.recipeXo + (i / this.columnLength | 0) * this.columnWidth;
       let yo = this.recipeYo + ((i % this.columnLength) * this.recipeLineSpacing);
       if (!data.recipes[name]) {
@@ -188,10 +188,10 @@ class Crafting {
           return;
         }
         const idx = col * this.columnLength + row;
-        if (idx > recipes.length - 1) {
+        if (idx > Recipes.length - 1) {
           return;
         }
-        const {source, yields, name} = recipes[idx];
+        const {source, yields, name} = Recipes[idx];
         const isCheat = this.world._cheat;
         const hasRecipe = isCheat || !!data.recipes[name];
         const hasSources = isCheat || source.every(({item, amount}) => inventory.hasItem(item, amount));
