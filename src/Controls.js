@@ -65,7 +65,7 @@ class Controls {
       const s = this.touchMarks.add(game.add.sprite(-1, -1, "icons4x4"));
       s.fixedToCamera = true;
       s.frame = 1;
-      s.alpha = 0.5;
+      s.alpha = 0.1;
       return s;
     });
   }

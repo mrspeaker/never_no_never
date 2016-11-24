@@ -20,24 +20,27 @@ class Info {
     group.fixedToCamera = true;
     group.visible = false;
 
+    const body = this.body = game.add.group();
+    group.add(body);
+
     this.state = new State("hidden");
 
     //const bg = group.add(game.add.sprite(0, 0, "crafting"));
     //bg.alpha = 0.6;
-    this.pda = group.add(game.add.sprite(-6, 0, "pda"));
+    this.pda = body.add(game.add.sprite(-6, 0, "pda"));
 
     this.t1 = Title(game, "craft", 36, 60, 110);
-    group.add(this.t1.img);
+    body.add(this.t1.img);
     this.t2 = Title(game, "unlock!", 36, 74, 140);
-    group.add(this.t2.img);
+    body.add(this.t2.img);
     this.t1.img.visible = false;
     this.t2.img.visible = false;
 
     this.decrypt = Title(game, "", 9, 80, 180);
-    group.add(this.decrypt.img);
+    body.add(this.decrypt.img);
 
     this.deets = game.add.group();
-    group.add(this.deets);
+    body.add(this.deets);
   }
 
   get isOpen () {
@@ -48,7 +51,7 @@ class Info {
     if (Date.now() - this.shownAt < 1000) {
       return false;
     }
-    const t = this.game.add.tween(this.pda)
+    const t = this.game.add.tween(this.body)
       .to( { y: this.game.height - 130 }, 700, Phaser.Easing.Exponential.InOut, true);
     t.onComplete.add(() => {
       this.group.visible = false;
@@ -60,9 +63,9 @@ class Info {
     this.pickup = pickup;
     this.deets.removeAll();
     this.state.set(pickup === "intro" ? "intro" : "shown");
-    this.pda.y = this.game.height - 130;
+    this.body.y = this.game.height - 130;
     this.group.visible = true;
-    this.game.add.tween(this.pda).to( { y: 0 }, 700, Phaser.Easing.Exponential.InOut, true);
+    this.game.add.tween(this.body).to( { y: 0 }, 700, Phaser.Easing.Exponential.InOut, true);
   }
 
   redraw (game) {

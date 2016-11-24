@@ -15,14 +15,14 @@ Browse on localhost:9966
 
 * intro explanation.
   * "start" button at base of ladder... click and player path-finds to ladder, then climbs
-  * floppy screen opens, explains.How to punch? need to find floppies? How to open craft.
 * Treat all entities the same. Dispatch behaviour
 * "arm" projectiles... tap once to arm, once to disarm.
 * Add attack chances (not hit always).
+* still flail if no weapon
 * Knockback when attack
 * Try tap baddies to attack (auto weapon, but not auto attack)
   * maybe, defend yourself by default, tap to attack.
-* Try swipe to move (raycast swipe strenght, move to free spot)
+* fling player (phyics) for attack, move. Tap to mine, precise move.
 * Add a "town"
 * Add a road or a bridge
 * craftings

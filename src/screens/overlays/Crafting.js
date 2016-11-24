@@ -33,37 +33,16 @@ class Crafting {
     group.fixedToCamera = true;
     group.visible = false;
 
-    // group.create(0, 0, "crafting");
-    this.pda = group.add(game.add.sprite(-6, 0, "pda"));
+    const body = this.body = game.add.group();
+    group.add(body);
 
-    // const mask = game.add.graphics(0, 0);
-    // mask.fixedToCamera = true;
-    // mask.beginFill(200, 100, 0 , 0);
-    // mask.drawCircle(100, 100, 200);
-    // //mask.alpha = 0.5;
-    //
-    // //const mask2 = game.add.graphics(0, 0);
-    // //mask2.fixedToCamera = true;
-    // mask.beginFill(0x000000);
-    // mask.drawCircle(100, 100, 50);
-    //
-    // //mask.blendSourceAtop();
-    //
-    // mask.beginFill(0xf0ff55);
-    // mask.drawCircle(190, 100, 50);
-    //
-    // //mask2.alpha = 0.5;
-    // //mask2.blendMode = window.PIXI.blendModes.MULTIPLY;
-    // //mask2.blendMode = window.PIXI.blendModes. LUMINOSITY;
-    //
-    // //mask2.mask = mask;
-    // bg.mask = mask;
+    this.pda = body.add(game.add.sprite(-6, 0, "pda"));
 
     const bottomOfTouchable = this.world.inventory.ui.box.cameraOffset.y;
-    const craft = group.create(game.width - 64, 30, "icons");
+    const craft = body.create(game.width - 64, 30, "icons");
     craft.frame = 21;
 
-    const tmpReset = this.tmpReset = group.create(game.width - 140, game.height - 60, "craft-tmp");
+    const tmpReset = this.tmpReset = body.create(game.width - 140, game.height - 60, "craft-tmp");
     tmpReset.frame = 2;
     tmpReset.inputEnabled = true;
     tmpReset.events.onInputDown.add(() => {
@@ -71,7 +50,7 @@ class Crafting {
       this.world.reset();
     }, this);
 
-    const cheat = this.cheat = group.create(0, game.height - 60, "craft-tmp");
+    const cheat = this.cheat = body.create(0, game.height - 60, "craft-tmp");
     cheat.frame = this.world._cheat ? 1 : 0;
     cheat.inputEnabled = true;
     cheat.events.onInputDown.add(() => {
@@ -82,7 +61,7 @@ class Crafting {
     //cheat.blendMode = window.PIXI.blendModes.DIFFERENCE;
 
     const icons = this.icons = game.add.group();
-    group.add(icons);
+    body.add(icons);
 
     this.redraw();
   }
@@ -90,8 +69,8 @@ class Crafting {
   show () {
     this.redraw();
     this.group.visible = true;
-    this.pda.y = this.game.height - 130;
-    this.game.add.tween(this.pda).to( { y: 0 }, 500, Phaser.Easing.Exponential.Out, true);
+    this.body.y = this.game.height - 130;
+    this.game.add.tween(this.body).to( { y: 0 }, 500, Phaser.Easing.Exponential.Out, true);
 
   }
 
