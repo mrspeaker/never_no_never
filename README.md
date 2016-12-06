@@ -20,9 +20,10 @@ Browse on localhost:9966
 * Add attack chances (not hit always).
 * still flail if no weapon
 * Knockback when attack
+* zombie attack images
 * Try tap baddies to attack (auto weapon, but not auto attack)
   * maybe, defend yourself by default, tap to attack.
-* fling player (phyics) for attack, move. Tap to mine, precise move.
+* fling player (physics) for attack, move. Tap to mine, precise move.
 * Add a "town"
 * Add a road or a bridge
 * craftings
@@ -54,7 +55,6 @@ Browse on localhost:9966
 
 ## Bugs
 
-* crafting should be paused game
 * pathfind error if player never moves
 * zombie sometimes stays after player dead
 * mining progress bars not in layer

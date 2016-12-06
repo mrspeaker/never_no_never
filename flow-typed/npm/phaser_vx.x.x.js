@@ -22,11 +22,31 @@ declare module "phaser" {
     addChild<T:DisplayObject> (child: T): T;
   }
 
-  declare class Animation {}
+  declare class Frame {
+    index: number;
+    x: number;
+    y: number;
+    name: string;
+  }
+
+  declare class Animation {
+    name: string;
+    currentFrame: Frame;
+    delay: number;
+    isFinished: boolean;
+    isPaused: boolean;
+    isPlaying: boolean;
+    isReversed: boolean;
+    killOnComplete: boolean;
+    loop: boolean;
+    loopCount: number;
+  }
+
   declare class AnimationManager {
     add (name: string, frames: ?Array<string | number>, frameRate: ?number, loop: ?boolean, useNumericIndex: ?boolean): Animation;
-    stop (name: ?string, resetFrame: ?boolean):void;
-    play (name: string, frameRate: ?number, loop: ?boolean, killOnComplete: ?boolean):void;
+    stop (name: ?string, resetFrame: ?boolean): Animation;
+    play (name: string, frameRate: ?number, loop: ?boolean, killOnComplete: ?boolean): Animation;
+    currentAnim: Animation;
   }
 
   declare class Sprite extends DisplayObject {

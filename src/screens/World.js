@@ -518,12 +518,12 @@ class World extends PState {
     mobs.forEach(m => {
       const dist = Phaser.Math.distance(m.x, m.y, protagonist.x, protagonist.y);
 
-      m.isClose = false;
+      m.isClose = 0;
       if (dist < 400) {
 
         m.walkSpeed = Math.min(4.5, m.walkSpeed + 0.003);
         if (dist < 200) {
-          m.isClose = true;
+          m.isClose = dist;
           const path = player.pathWalker.path;
           const skateToPuck = path.length > 2;
           const target = skateToPuck ? path[2] : player;
