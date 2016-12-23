@@ -15,7 +15,7 @@ class Zombie extends Phaser.Sprite {
   walkSpeed = 1.5;
   lastAttack = Date.now();
 
-  isClose: number;
+  distToPlayer: number;
 
   lastPathSet: number;
   hurtPause: number;
@@ -138,7 +138,7 @@ class Zombie extends Phaser.Sprite {
         this.x = last.x * 32;
         this.y = last.y * 32;
       }
-      if (this.isClose > 60) {
+      if (this.distToPlayer > 60) {
         this.state.set("idle");
       }
       onDone();
@@ -183,7 +183,7 @@ class Zombie extends Phaser.Sprite {
     const walkSpeed = this.walkSpeed;
 
     const dir = this.direction.get();
-    if (this.isClose < 60 && this.animations.currentAnim.name !== "attack_left") {
+    if (this.distToPlayer < 60 && this.animations.currentAnim.name !== "attack_left") {
       this.animations.play("attack_left");
     } else {
       this.animations.play(`walk_${dir}`);
