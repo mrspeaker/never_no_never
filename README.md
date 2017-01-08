@@ -1,5 +1,7 @@
 # Never, No Never,
 
+wip game.
+
 ## build
 
 * `npm install`
@@ -13,6 +15,9 @@ Browse on localhost:9966
 
 ## TODO
 
+* change relative movment to "dash".
+  * dashing + attack === better attack
+* add dash particles/anim
 * intro explanation.
   * "start" button at base of ladder... click and player path-finds to ladder, then climbs
 * Treat all entities the same. Dispatch behaviour
@@ -21,8 +26,6 @@ Browse on localhost:9966
 * still flail if no weapon
 * Knockback when attack
 * zombie attack images
-* Try tap baddies to attack (auto weapon, but not auto attack)
-  * maybe, defend yourself by default, tap to attack.
 * fling player (physics) for attack, move. Tap to mine, precise move.
 * Add a "town"
 * Add a road or a bridge
